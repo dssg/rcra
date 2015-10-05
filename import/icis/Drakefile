@@ -1,3 +1,2 @@
-/mnt/data/epa/import/icis/ <- download_icis_data.sh [-timecheck]
-    mkdir -p $OUTPUT
-    $INPUT $OUTPUT
+URL="https://echo.epa.gov/files/echodownloads/ICIS-AIR_downloads.zip"
+/mnt/data/epa/import/icis/ICIS-AIR_downloads.zip, /mnt/data/epa/import/icis/ICIS-AIR_downloads/ <- [method:wget_unzip -timecheck]

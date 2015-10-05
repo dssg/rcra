@@ -1,0 +1,6 @@
+wget_unzip()
+    mkdir -p $(dirname $OUTPUT0)
+    wget --output-document="$OUTPUT0" "$URL"
+    unzip -o "$OUTPUT0" -d $OUTPUT1
+
+%call import/icis/Drakefile
