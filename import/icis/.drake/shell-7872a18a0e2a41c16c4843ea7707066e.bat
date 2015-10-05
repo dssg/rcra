@@ -1,0 +1,2 @@
+mkdir -p $OUTPUT
+$INPUT $OUTPUT

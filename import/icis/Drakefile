@@ -1,0 +1,3 @@
+/mnt/data/epa/import/icis/ <- download_icis_data.sh [-timecheck]
+    mkdir -p $OUTPUT
+    $INPUT $OUTPUT
