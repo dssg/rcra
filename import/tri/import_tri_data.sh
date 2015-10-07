@@ -2,7 +2,7 @@
 
 ## Create TRI schema
 
-psql -f create_tri_schema.sql
+psql -f create_schema_tri.sql
 
 # Create all the tables and Load the data
 
