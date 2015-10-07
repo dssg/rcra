@@ -1,0 +1,4 @@
+/mnt/data/epa/import/rcra <- [-timecheck]
+    mkdir -p $OUTPUT
+    wget -P $OUTPUT ftp://ftp.epa.gov/rcrainfodata/rcra_flatfiles/*.gz
+    gunzip -r $OUTPUT
