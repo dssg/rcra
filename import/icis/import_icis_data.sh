@@ -1,11 +1,14 @@
 #!/bin/bash -xv
 
+NPDES_DIR=$1
+NPDES_EFF_DIR=$2
+CASE_DIR=$3
 
 psql -f drop_table_icis.sql
 psql -f create_table_icis.sql
 
 echo loading NPDES_INSPECTIONS.csv from ECHO dashboard into the database ...
-cat NPDES_INSPECTIONS.csv | psql -h dssgsummer2014postgres.c5faqozfo86k.us-west-2.rds.amazonaws.com -U epa -d epa -c '\COPY icis.npdes_inspections FROM STDIN WITH CSV HEADER;'
+cat $NPDES_DIR/NPDES_INSPECTIONS.csv | psql -h dssgsummer2014postgres.c5faqozfo86k.us-west-2.rds.amazonaws.com -U epa -d epa -c '\COPY icis.npdes_inspections FROM STDIN WITH CSV HEADER;'
 echo NPDES_INSPECTIONS.csv has been loaded into the database as icis.npdes_inspections.
 
 echo loading NPDES_CS_VIOLATIONS.csv from ECHO dashboard into the database ...
