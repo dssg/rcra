@@ -3,4 +3,4 @@
         wget -P $OUTPUT http://www3.epa.gov/tri/US_${i}_v13.zip
     done
 
-    unzip $OUTPUT/\*.zip
+    unzip -d $OUTPUT $OUTPUT/\*.zip
