@@ -1,6 +1,6 @@
 --- br_reporting
 
-CREATE TABLE br_reporting( 
+CREATE TABLE rcra.br_reporting( 
 handler_id VARCHAR,
 activity_location VARCHAR,
 source_type VARCHAR,
@@ -56,7 +56,7 @@ waste_code_group VARCHAR
 
 --- bgm_waste_code
 
-CREATE TABLE bgm_waste_code( 
+CREATE TABLE rcra.bgm_waste_code( 
 handler_id VARCHAR,
 activity_location VARCHAR,
 source_type VARCHAR,
@@ -68,7 +68,7 @@ waste_code VARCHAR
 
 --- bwr_waste_code
 
-CREATE TABLE bwr_waste_code( 
+CREATE TABLE rcra.bwr_waste_code( 
 handler_id VARCHAR,
 activity_location VARCHAR,
 source_type VARCHAR,

@@ -1,6 +1,6 @@
 --- gis
 
-CREATE TABLE gis( 
+CREATE TABLE rcra.gis( 
 handler_id VARCHAR,
 gis_owner VARCHAR,
 gis_sequence_number BIGINT,
@@ -29,7 +29,7 @@ verification_method_code VARCHAR
 
 --- gis_lat_long
 
-CREATE TABLE gis_lat_long( 
+CREATE TABLE rcra.gis_lat_long( 
 handler_id VARCHAR,
 gis_owner VARCHAR,
 gis_sequence_number BIGINT,
@@ -40,7 +40,7 @@ longitude_measure FLOAT
 
 --- lu_area_source
 
-CREATE TABLE lu_area_source( 
+CREATE TABLE rcra.lu_area_source( 
 owner VARCHAR,
 area_source_code VARCHAR,
 area_source_code_description VARCHAR,
@@ -49,7 +49,7 @@ active_status VARCHAR
 
 --- lu_coordinate
 
-CREATE TABLE lu_coordinate( 
+CREATE TABLE rcra.lu_coordinate( 
 owner VARCHAR,
 coordinate_data_code VARCHAR,
 coordinate_data_description VARCHAR,
@@ -58,7 +58,7 @@ active_status VARCHAR
 
 --- lu_geographic_reference
 
-CREATE TABLE lu_geographic_reference( 
+CREATE TABLE rcra.lu_geographic_reference( 
 owner VARCHAR,
 geographic_reference_point_code VARCHAR,
 geographic_reference_point_description VARCHAR,
@@ -67,7 +67,7 @@ active_status VARCHAR
 
 --- lu_geometric
 
-CREATE TABLE lu_geometric( 
+CREATE TABLE rcra.lu_geometric( 
 owner VARCHAR,
 geometric_code VARCHAR,
 geometric_description VARCHAR,
@@ -76,7 +76,7 @@ active_status VARCHAR
 
 --- lu_horizontal_collection
 
-CREATE TABLE lu_horizontal_collection( 
+CREATE TABLE rcra.lu_horizontal_collection( 
 owner VARCHAR,
 horizontal_collection_code VARCHAR,
 horizontal_collection_description VARCHAR,
@@ -85,7 +85,7 @@ active_status VARCHAR
 
 --- lu_horizontal_reference
 
-CREATE TABLE lu_horizontal_reference( 
+CREATE TABLE rcra.lu_horizontal_reference( 
 owner VARCHAR,
 horizontal_reference_code VARCHAR,
 horizontal_reference_description VARCHAR,
@@ -94,7 +94,7 @@ active_status VARCHAR
 
 --- lu_verification
 
-CREATE TABLE lu_verification( 
+CREATE TABLE rcra.lu_verification( 
 owner VARCHAR,
 verification_method_code VARCHAR,
 verification_method_description VARCHAR,

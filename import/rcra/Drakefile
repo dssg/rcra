@@ -4,5 +4,3 @@
     gunzip -r $OUTPUT
 
 
-/mnt/data/epa/psql/rcra <- import/rcra/import_rcra_data.sh
-    $INPUT && touch $OUTPUT

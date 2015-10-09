@@ -1,6 +1,6 @@
 --- fcost_estimate
 
-CREATE TABLE fcost_estimate( 
+CREATE TABLE rcra.fcost_estimate( 
 epa_handler_id VARCHAR,
 cost_estimate_activity_location VARCHAR,
 financial_assurance_type VARCHAR,
@@ -19,7 +19,7 @@ notes VARCHAR
 
 --- fln_cost_mechanism_detail
 
-CREATE TABLE fln_cost_mechanism_detail( 
+CREATE TABLE rcra.fln_cost_mechanism_detail( 
 cost_estimate_handler_id VARCHAR,
 cost_estimate_activity_location VARCHAR,
 financial_assurance_type VARCHAR,
@@ -36,7 +36,7 @@ date_of_last_change DATE
 
 --- fmechanism_detail
 
-CREATE TABLE fmechanism_detail( 
+CREATE TABLE rcra.fmechanism_detail( 
 epa_handler_id VARCHAR,
 mechanism_activity_location VARCHAR,
 mechanism_agency VARCHAR,
@@ -53,7 +53,7 @@ notes VARCHAR
 
 --- fmechanism
 
-CREATE TABLE fmechanism( 
+CREATE TABLE rcra.fmechanism( 
 epa_handler_id VARCHAR,
 mechanism_activity_location VARCHAR,
 mechanism_agency VARCHAR,

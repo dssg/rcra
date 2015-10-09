@@ -1,6 +1,6 @@
 --- cmecomp3
 
-CREATE TABLE cmecomp3( 
+CREATE TABLE rcra.cmecomp3( 
 handler_id VARCHAR,
 evaluation_activity_location VARCHAR,
 evaluation_identifier VARCHAR,
@@ -73,7 +73,7 @@ final_amount FLOAT
 
 --- ccitation
 
-CREATE TABLE ccitation( 
+CREATE TABLE rcra.ccitation( 
 handler_id VARCHAR,
 violation_activity_location VARCHAR,
 violation_sequence_number BIGINT,
@@ -88,7 +88,7 @@ citation_type VARCHAR
 
 --- lu_citation
 
-CREATE TABLE lu_citation( 
+CREATE TABLE rcra.lu_citation( 
 owner VARCHAR,
 citation VARCHAR,
 citation_type VARCHAR,

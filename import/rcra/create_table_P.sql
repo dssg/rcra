@@ -1,6 +1,6 @@
 --- pseries
 
-CREATE TABLE pseries( 
+CREATE TABLE rcra.pseries( 
 epa_handler_id VARCHAR,
 series_sequence_number BIGINT,
 series_name VARCHAR,
@@ -10,7 +10,7 @@ responsible_person VARCHAR
 
 --- pevent
 
-CREATE TABLE pevent( 
+CREATE TABLE rcra.pevent( 
 epa_handler_id VARCHAR,
 series_sequence_number BIGINT,
 event_sequence_number BIGINT,
@@ -30,7 +30,7 @@ responsible_person VARCHAR
 
 --- punit
 
-CREATE TABLE punit( 
+CREATE TABLE rcra.punit( 
 epa_handler_id VARCHAR,
 process_unit_sequence_number BIGINT,
 process_unit_name VARCHAR
@@ -38,7 +38,7 @@ process_unit_name VARCHAR
 
 --- punit_detail
 
-CREATE TABLE punit_detail( 
+CREATE TABLE rcra.punit_detail( 
 epa_handler_id VARCHAR,
 process_unit_sequence_number BIGINT,
 process_unit_detail_sequence_number BIGINT,
@@ -58,7 +58,7 @@ standardized_permit_indicator VARCHAR
 
 --- pln_event_unit_detail
 
-CREATE TABLE pln_event_unit_detail( 
+CREATE TABLE rcra.pln_event_unit_detail( 
 event_epa_handler_id VARCHAR,
 series_sequence_number BIGINT,
 permit_event_owner VARCHAR,
@@ -73,7 +73,7 @@ unit_detail_sequence_number BIGINT
 
 --- plu_permit_event_code
 
-CREATE TABLE plu_permit_event_code( 
+CREATE TABLE rcra.plu_permit_event_code( 
 permit_event_code_owner VARCHAR,
 permit_event_code VARCHAR,
 permit_event_code_active_status VARCHAR,
@@ -82,7 +82,7 @@ event_description VARCHAR
 
 --- plu_process_code
 
-CREATE TABLE plu_process_code( 
+CREATE TABLE rcra.plu_process_code( 
 process_code_owner VARCHAR,
 process_code VARCHAR,
 unit_of_measure_owner VARCHAR,
@@ -94,7 +94,7 @@ process_code_description VARCHAR
 
 --- plu_unit_of_measure
 
-CREATE TABLE plu_unit_of_measure( 
+CREATE TABLE rcra.plu_unit_of_measure( 
 unit_of_measure_owner VARCHAR,
 unit_of_measure_type VARCHAR,
 unit_of_measure_active_status VARCHAR,
@@ -104,7 +104,7 @@ unit_of_measure_short_description VARCHAR
 
 --- pln_unit_detail_waste
 
-CREATE TABLE pln_unit_detail_waste( 
+CREATE TABLE rcra.pln_unit_detail_waste( 
 handler_id VARCHAR,
 unit_sequence BIGINT,
 unit_detail_sequence BIGINT,
@@ -114,7 +114,7 @@ waste_code_owner VARCHAR
 
 --- plu_legal_operating_status
 
-CREATE TABLE plu_legal_operating_status( 
+CREATE TABLE rcra.plu_legal_operating_status( 
 legal_operating_status_code_owner VARCHAR,
 legal_operating_status_code VARCHAR,
 legal_operating_status_active_status VARCHAR,

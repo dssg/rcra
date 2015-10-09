@@ -1,6 +1,6 @@
 --- hbasic
 
-CREATE TABLE hbasic( 
+CREATE TABLE rcra.hbasic( 
 epa_handler_id VARCHAR,
 epa_facility_identification_code VARCHAR,
 current_site_name VARCHAR,
@@ -10,7 +10,7 @@ state VARCHAR
 
 --- hcertification
 
-CREATE TABLE hcertification( 
+CREATE TABLE rcra.hcertification( 
 epa_handler_id VARCHAR,
 activity_location VARCHAR,
 source_type VARCHAR,
@@ -25,7 +25,7 @@ certification_last_name VARCHAR
 
 --- hhandler
 
-CREATE TABLE hhandler( 
+CREATE TABLE rcra.hhandler( 
 epa_handler_id VARCHAR,
 activity_location VARCHAR,
 source_type VARCHAR,
@@ -101,7 +101,7 @@ cdx_transaction_id VARCHAR
 
 --- hnaics
 
-CREATE TABLE hnaics( 
+CREATE TABLE rcra.hnaics( 
 epa_handler_id VARCHAR,
 activity_location VARCHAR,
 source_type VARCHAR,
@@ -113,7 +113,7 @@ naics_code VARCHAR
 
 --- hhsm_activity
 
-CREATE TABLE hhsm_activity( 
+CREATE TABLE rcra.hhsm_activity( 
 epa_handler_id VARCHAR,
 activity_location VARCHAR,
 source_type VARCHAR,
@@ -128,7 +128,7 @@ land_based_unit VARCHAR
 
 --- hhsm_basic
 
-CREATE TABLE hhsm_basic( 
+CREATE TABLE rcra.hhsm_basic( 
 epa_handler_id VARCHAR,
 activity_location VARCHAR,
 source_type VARCHAR,
@@ -140,7 +140,7 @@ hsm_fa VARCHAR
 
 --- hhsm_waste_code
 
-CREATE TABLE hhsm_waste_code( 
+CREATE TABLE rcra.hhsm_waste_code( 
 epa_handler_id VARCHAR,
 activity_location VARCHAR,
 source_type VARCHAR,
@@ -152,7 +152,7 @@ waste_code VARCHAR
 
 --- hother_permit
 
-CREATE TABLE hother_permit( 
+CREATE TABLE rcra.hother_permit( 
 epa_handler_id VARCHAR,
 activity_location VARCHAR,
 source_type VARCHAR,
@@ -165,7 +165,7 @@ other_permit_description VARCHAR
 
 --- howner_operator
 
-CREATE TABLE howner_operator( 
+CREATE TABLE rcra.howner_operator( 
 epa_handler_id VARCHAR,
 activity_location VARCHAR,
 source_type VARCHAR,
@@ -188,7 +188,7 @@ owner_operator_street_number VARCHAR
 
 --- hother_id
 
-CREATE TABLE hother_id( 
+CREATE TABLE rcra.hother_id( 
 epa_handler_id VARCHAR,
 activity_location VARCHAR,
 other_id VARCHAR,
@@ -199,7 +199,7 @@ relationship VARCHAR
 
 --- hpart_a
 
-CREATE TABLE hpart_a( 
+CREATE TABLE rcra.hpart_a( 
 epa_handler_id VARCHAR,
 activity_location VARCHAR,
 source_type VARCHAR,
@@ -223,7 +223,7 @@ tsd_date DATE
 
 --- hreport_univ
 
-CREATE TABLE hreport_univ( 
+CREATE TABLE rcra.hreport_univ( 
 epa_handler_id VARCHAR,
 activity_location VARCHAR,
 source_type VARCHAR,
@@ -337,7 +337,7 @@ handler_date_of_last_change DATE
 
 --- hstate_activity
 
-CREATE TABLE hstate_activity( 
+CREATE TABLE rcra.hstate_activity( 
 epa_handler_id VARCHAR,
 activity_location VARCHAR,
 source_type VARCHAR,
@@ -348,7 +348,7 @@ state_activity_type VARCHAR
 
 --- huniversal_waste
 
-CREATE TABLE huniversal_waste( 
+CREATE TABLE rcra.huniversal_waste( 
 epa_handler_id VARCHAR,
 activity_location VARCHAR,
 source_type VARCHAR,
@@ -361,7 +361,7 @@ generated VARCHAR
 
 --- huniverse_detail
 
-CREATE TABLE huniverse_detail( 
+CREATE TABLE rcra.huniverse_detail( 
 epa_handler_id VARCHAR,
 activity_location VARCHAR,
 post_closure_workload_land_disposal VARCHAR,
@@ -443,7 +443,7 @@ permit_renewal_solid_waste_management_unit VARCHAR
 
 --- hwaste_code
 
-CREATE TABLE hwaste_code( 
+CREATE TABLE rcra.hwaste_code( 
 epa_handler_id VARCHAR,
 activity_location VARCHAR,
 source_type VARCHAR,
@@ -454,7 +454,7 @@ hazardous_waste_code VARCHAR
 
 --- lu_country
 
-CREATE TABLE lu_country( 
+CREATE TABLE rcra.lu_country( 
 country_code VARCHAR,
 country_name VARCHAR,
 country_code_active_status VARCHAR
@@ -462,7 +462,7 @@ country_code_active_status VARCHAR
 
 --- lu_county
 
-CREATE TABLE lu_county( 
+CREATE TABLE rcra.lu_county( 
 county_code VARCHAR,
 county_name VARCHAR,
 county_code_active_status VARCHAR
@@ -470,7 +470,7 @@ county_code_active_status VARCHAR
 
 --- lu_foreign_state
 
-CREATE TABLE lu_foreign_state( 
+CREATE TABLE rcra.lu_foreign_state( 
 state_code VARCHAR,
 state_name VARCHAR,
 country_code VARCHAR
@@ -478,7 +478,7 @@ country_code VARCHAR
 
 --- lu_generator_status
 
-CREATE TABLE lu_generator_status( 
+CREATE TABLE rcra.lu_generator_status( 
 generator_status_owner VARCHAR,
 generator_status_code VARCHAR,
 generator_status_description VARCHAR,
@@ -487,7 +487,7 @@ generator_status_active_status VARCHAR
 
 --- lu_hsm_facility_code
 
-CREATE TABLE lu_hsm_facility_code( 
+CREATE TABLE rcra.lu_hsm_facility_code( 
 hsm_facility_code_owner VARCHAR,
 hsm_facility_code VARCHAR,
 hsm_facility_description VARCHAR,
@@ -496,7 +496,7 @@ hsm_facility_active_status VARCHAR
 
 --- lu_naics
 
-CREATE TABLE lu_naics( 
+CREATE TABLE rcra.lu_naics( 
 naics_owner VARCHAR,
 naics_code VARCHAR,
 naics_description VARCHAR,
@@ -506,7 +506,7 @@ naics_cycle VARCHAR
 
 --- lu_other_permit
 
-CREATE TABLE lu_other_permit( 
+CREATE TABLE rcra.lu_other_permit( 
 other_permit_owner VARCHAR,
 other_permit_type VARCHAR,
 other_permit_description VARCHAR,
@@ -515,7 +515,7 @@ other_permit_active_status VARCHAR
 
 --- lu_relationship
 
-CREATE TABLE lu_relationship( 
+CREATE TABLE rcra.lu_relationship( 
 relationship_owner VARCHAR,
 relationship VARCHAR,
 relationship_description VARCHAR,
@@ -524,7 +524,7 @@ relationship_active_status VARCHAR
 
 --- lu_state
 
-CREATE TABLE lu_state( 
+CREATE TABLE rcra.lu_state( 
 postal_code VARCHAR,
 state_name VARCHAR,
 region VARCHAR
@@ -532,7 +532,7 @@ region VARCHAR
 
 --- lu_state_activity
 
-CREATE TABLE lu_state_activity( 
+CREATE TABLE rcra.lu_state_activity( 
 state_activity_owner VARCHAR,
 state_activity_code VARCHAR,
 state_activity_description VARCHAR,
@@ -541,7 +541,7 @@ state_activity_active_status VARCHAR
 
 --- lu_state_district
 
-CREATE TABLE lu_state_district( 
+CREATE TABLE rcra.lu_state_district( 
 state_district_owner VARCHAR,
 state_district_code VARCHAR,
 state_district_description VARCHAR,
@@ -550,7 +550,7 @@ state_district_active_status VARCHAR
 
 --- lu_universal_waste
 
-CREATE TABLE lu_universal_waste( 
+CREATE TABLE rcra.lu_universal_waste( 
 universal_waste_owner VARCHAR,
 universal_waste_code VARCHAR,
 universal_waste_description VARCHAR,
@@ -559,7 +559,7 @@ universal_waste_active_status VARCHAR
 
 --- lu_waste_code
 
-CREATE TABLE lu_waste_code( 
+CREATE TABLE rcra.lu_waste_code( 
 waste_code_owner VARCHAR,
 waste_code VARCHAR,
 code_type VARCHAR,
