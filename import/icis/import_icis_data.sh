@@ -4,8 +4,8 @@ NPDES_DIR=$1
 CASE_DIR=$2
 AIR_DIR=$3
 
-psql -f drop_table_icis.sql
-psql -f create_table_icis.sql
+psql -f import/icis/drop_table_icis.sql
+psql -f import/icis/create_table_icis.sql
 
 echo loading NPDES_INSPECTIONS.csv from ECHO dashboard into the database ...
 cat $NPDES_DIR/NPDES_INSPECTIONS.csv | psql -h dssgsummer2014postgres.c5faqozfo86k.us-west-2.rds.amazonaws.com -U epa -d epa -c '\COPY icis.npdes_inspections FROM STDIN WITH CSV HEADER;'
@@ -122,42 +122,42 @@ echo CASE_RELATED_ACTIVITIES.csv has been loaded into the database as icis.fec_r
 
 
 echo loading ICIS-AIR_FACILITIES.CSV into the database ...
-cat $AIR_DIR/ICIS-AIR_FACILITIES.CSV | psql -h dssgsummer2014postgres.c5faqozfo86k.us-west-2.rds.amazonaws.com -U epa -d epa -c '\COPY icis.air_facilities FROM STDIN WITH CSV HEADER;'
+cat $AIR_DIR/ICIS-AIR_FACILITIES.csv | psql -h dssgsummer2014postgres.c5faqozfo86k.us-west-2.rds.amazonaws.com -U epa -d epa -c '\COPY icis.air_facilities FROM STDIN WITH CSV HEADER;'
 echo ICIS-AIR_FACILITIES.CSV has been loaded into the database as icis.air_facilities.
 
 echo loading ICIS-AIR_PROGRAMS.CSV into the database ...
-cat $AIR_DIR/ICIS-AIR_PROGRAMS.CSV | psql -h dssgsummer2014postgres.c5faqozfo86k.us-west-2.rds.amazonaws.com -U epa -d epa -c '\COPY icis.air_programs FROM STDIN WITH CSV HEADER;'
+cat $AIR_DIR/ICIS-AIR_PROGRAMS.csv | psql -h dssgsummer2014postgres.c5faqozfo86k.us-west-2.rds.amazonaws.com -U epa -d epa -c '\COPY icis.air_programs FROM STDIN WITH CSV HEADER;'
 echo ICIS-AIR_PROGRAMS.CSV has been loaded into the database as icis.air_programs.
 
 echo loading ICIS-AIR_PROGRAM_SUBPARTS.CSV into the database ...
-cat $AIR_DIR/ICIS-AIR_PROGRAM_SUBPARTS.CSV | psql -h dssgsummer2014postgres.c5faqozfo86k.us-west-2.rds.amazonaws.com -U epa -d epa -c '\COPY icis.air_program_subparts FROM STDIN WITH CSV HEADER;'
+cat $AIR_DIR/ICIS-AIR_PROGRAM_SUBPARTS.csv | psql -h dssgsummer2014postgres.c5faqozfo86k.us-west-2.rds.amazonaws.com -U epa -d epa -c '\COPY icis.air_program_subparts FROM STDIN WITH CSV HEADER;'
 echo ICIS-AIR_PROGRAM_SUBPARTS.CSV has been loaded into the database as icis.air_program_subparts.
 
 echo loading ICIS-AIR_POLLUTANTS.CSV into the database ...
-cat $AIR_DIR/ICIS-AIR_POLLUTANTS.CSV | psql -h dssgsummer2014postgres.c5faqozfo86k.us-west-2.rds.amazonaws.com -U epa -d epa -c '\COPY icis.air_pollutants FROM STDIN WITH CSV HEADER;'
+cat $AIR_DIR/ICIS-AIR_POLLUTANTS.csv | psql -h dssgsummer2014postgres.c5faqozfo86k.us-west-2.rds.amazonaws.com -U epa -d epa -c '\COPY icis.air_pollutants FROM STDIN WITH CSV HEADER;'
 echo ICIS-AIR_POLLUTANTS.CSV has been loaded into the database as icis.air_pollutants.
 
 echo loading ICIS-AIR_FCES_PCES.CSV into the database ...
-cat $AIR_DIR/ICIS-AIR_FCES_PCES.CSV | psql -h dssgsummer2014postgres.c5faqozfo86k.us-west-2.rds.amazonaws.com -U epa -d epa -c '\COPY icis.air_fces_pces FROM STDIN WITH CSV HEADER;'
+cat $AIR_DIR/ICIS-AIR_FCES_PCES.csv | psql -h dssgsummer2014postgres.c5faqozfo86k.us-west-2.rds.amazonaws.com -U epa -d epa -c '\COPY icis.air_fces_pces FROM STDIN WITH CSV HEADER;'
 echo ICIS-AIR_FCES_PCES.CSV has been loaded into the database as icis.air_fces_pces.
 
 echo loading ICIS-AIR_STACK_TESTS.CSV into the database ...
-cat $AIR_DIR/ICIS-AIR_STACK_TESTS.CSV | psql -h dssgsummer2014postgres.c5faqozfo86k.us-west-2.rds.amazonaws.com -U epa -d epa -c '\COPY icis.air_stack_tests FROM STDIN WITH CSV HEADER;'
+cat $AIR_DIR/ICIS-AIR_STACK_TESTS.csv | psql -h dssgsummer2014postgres.c5faqozfo86k.us-west-2.rds.amazonaws.com -U epa -d epa -c '\COPY icis.air_stack_tests FROM STDIN WITH CSV HEADER;'
 echo ICIS-AIR_STACK_TESTS.CSV has been loaded into the database as icis.air_stack_tests.
 
 echo loading ICIS-AIR_TITLEV_CERTS.CSV into the database ...
-cat $AIR_DIR/ICIS-AIR_TITLEV_CERTS.CSV | psql -h dssgsummer2014postgres.c5faqozfo86k.us-west-2.rds.amazonaws.com -U epa -d epa -c '\COPY icis.air_titlev_certs FROM STDIN WITH CSV HEADER;'
+cat $AIR_DIR/ICIS-AIR_TITLEV_CERTS.csv | psql -h dssgsummer2014postgres.c5faqozfo86k.us-west-2.rds.amazonaws.com -U epa -d epa -c '\COPY icis.air_titlev_certs FROM STDIN WITH CSV HEADER;'
 echo ICIS-AIR_TITLEV_CERTS.CSV has been loaded into the database as icis.air_titlev_certs.
 
 echo loading ICIS-AIR_FORMAL_ACTIONS.CSV into the database ...
-cat $AIR_DIR/ICIS-AIR_FORMAL_ACTIONS.CSV | psql -h dssgsummer2014postgres.c5faqozfo86k.us-west-2.rds.amazonaws.com -U epa -d epa -c '\COPY icis.air_formal_actions FROM STDIN WITH CSV HEADER;'
+cat $AIR_DIR/ICIS-AIR_FORMAL_ACTIONS.csv | psql -h dssgsummer2014postgres.c5faqozfo86k.us-west-2.rds.amazonaws.com -U epa -d epa -c '\COPY icis.air_formal_actions FROM STDIN WITH CSV HEADER;'
 echo ICIS-AIR_FORMAL_ACTIONS.CSV has been loaded into the database as icis.air_formal_actions.
 
 echo loading ICIS-AIR_INFORMAL_ACTIONS.CSV into the database ...
-cat $AIR_DIR/ICIS-AIR_INFORMAL_ACTIONS.CSV | psql -h dssgsummer2014postgres.c5faqozfo86k.us-west-2.rds.amazonaws.com -U epa -d epa -c '\COPY icis.air_informal_actions FROM STDIN WITH CSV HEADER;'
+cat $AIR_DIR/ICIS-AIR_INFORMAL_ACTIONS.csv | psql -h dssgsummer2014postgres.c5faqozfo86k.us-west-2.rds.amazonaws.com -U epa -d epa -c '\COPY icis.air_informal_actions FROM STDIN WITH CSV HEADER;'
 echo ICIS-AIR_INFORMAL_ACTIONS.CSV has been loaded into the database as icis.air_informal_actions.
 
 echo loading ICIS-AIR_HPV_HISTORY.CSV into the database ...
-cat $AIR_DIR/ICIS-AIR_HPV_HISTORY.CSV | psql -h dssgsummer2014postgres.c5faqozfo86k.us-west-2.rds.amazonaws.com -U epa -d epa -c '\COPY icis.air_hpv_history FROM STDIN WITH CSV HEADER;'
+cat $AIR_DIR/ICIS-AIR_HPV_HISTORY.csv | psql -h dssgsummer2014postgres.c5faqozfo86k.us-west-2.rds.amazonaws.com -U epa -d epa -c '\COPY icis.air_hpv_history FROM STDIN WITH CSV HEADER;'
 echo ICIS-AIR_HPV_HISTORY.CSV has been loaded into the database as icis.air_hpv_history.
 

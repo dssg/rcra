@@ -1,6 +1,9 @@
-/mnt/data/epa/import/tri/ <- [-timecheck]  
+/mnt/data/epa/import/tri/ <- [-timecheck]   
    for i in {1987..2013}; do
         wget -P $OUTPUT http://www3.epa.gov/tri/US_${i}_v13.zip
     done
 
     unzip -d $OUTPUT $OUTPUT/\*.zip
+
+/mnt/data/epa/psql/tri <- import/tri/import_tri_data.sh, /mnt/data/epa/import/tri/
+    $INPUT $INPUT1 && touch $OUTPUT
