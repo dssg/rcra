@@ -5,4 +5,4 @@
 
 
 /mnt/data/epa/psql/rcra <- import/rcra/import_rcra_data.sh
-    $OUTPUT && $INPUT
+    $INPUT && touch $OUTPUT
