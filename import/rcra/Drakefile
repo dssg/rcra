@@ -1,6 +1,3 @@
-/mnt/data/epa/import/rcra <- [-timecheck]
-    mkdir -p $OUTPUT
-    wget -P $OUTPUT ftp://ftp.epa.gov/rcrainfodata/rcra_flatfiles/*.gz
-    gunzip -r $OUTPUT
 
-
+/mnt/data/epa/psql/rcra <- import/rcra/import_rcra_data.sh, /mnt/data/epa/import/rcra/
+    $INPUT $INPUT1 && touch $OUTPUT

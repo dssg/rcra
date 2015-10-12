@@ -14,5 +14,5 @@ dictionaries[BR]="Flat_File_Specification_Waste_Activity_Monitoring_Module.xlsx"
 for prefix in "${!dictionaries[@]}"
 do
 #    echo $dir_path"/"${dictionaries[$prefix]} $prefix 
-    python xlsx2csv.py $dir_path"/"${dictionaries[$prefix]} $prefix
+    python import/rcra/xlsx2schema.py $dir_path"/"${dictionaries[$prefix]} $prefix
 done 
