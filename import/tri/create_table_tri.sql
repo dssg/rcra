@@ -924,7 +924,6 @@ CREATE TABLE tri.type_5 (
 );
 
 CREATE TABLE tri.type_6 ( 
-create table tri_6 (
        "trifid" varchar, 
        "document_control_number" bigint, 
        "cas_number" varchar, 

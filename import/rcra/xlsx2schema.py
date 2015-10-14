@@ -1,7 +1,7 @@
 import pandas as pd
 import re, unicodedata, os, sys
 
-sys.path.insert(0, os.path.join(os.getenv("HOME"),'epa2015/utils'))
+# sys.path.insert(0, os.path.join(os.getenv("HOME"),'epa2015/utils'))
 
 data_dictionary = sys.argv[1]
 prefix = sys.argv[2]
@@ -23,9 +23,11 @@ def spaces_to_snake(column_name):
     
     return s.lower()    
 
-data_dir = "/mnt/data/epa"
+data_dir = "/mnt/data3/epa"
 xl = pd.ExcelFile(data_dictionary)
 names = xl.sheet_names
+
+os.chdir("/mnt/data3/epa/import/rcra")
 
 for name in names:
     
@@ -38,4 +40,4 @@ for name in names:
     df['column'] = df['column'].map(lambda x: spaces_to_snake(x))
 
     schema = df.ix[:, ['column', 'start', 'length']]
-    schema.to_csv('mnt/data/epa/import/rcra/' + table + '_schema.csv', index = False, encoding = 'utf-8')
+    schema.to_csv(table + '_schema.csv', index = False, encoding = 'utf-8')

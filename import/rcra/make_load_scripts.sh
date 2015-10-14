@@ -1,6 +1,6 @@
 #!/bin/bash -xv
 
-dir_path="/mnt/data/epa/import/rcra/data_dictionary/" 
+dir_path="/mnt/data3/epa/import/rcra/data_dictionary" 
 
 declare -A dictionaries
 dictionaries[A]="Flat_File_Specification_A_Corrective_Action.xlsx"
