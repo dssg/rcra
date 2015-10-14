@@ -29,5 +29,5 @@
 !/mnt/data3/epa/import/tri/tri.type_6.csv <- import/tri/create_tri_csv.sh, !/mnt/data3/epa/import/tri/ [-timecheck]
    $INPUT $INPUT1 6 > $OUTPUT
 
-!/mnt/data3/epa/psql/tri <- import/tri/load_tri_data.sh, !/mnt/data3/epa/import/tri/
+!/mnt/data3/epa/psql/tri <- import/tri/load_tri_data.sh, !/mnt/data3/epa/import/tri/ [-timecheck]
    $INPUT $INPUT1 && touch $OUTPUT

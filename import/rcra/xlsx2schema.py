@@ -1,10 +1,9 @@
 import pandas as pd
 import re, unicodedata, os, sys
 
-# sys.path.insert(0, os.path.join(os.getenv("HOME"),'epa2015/utils'))
-
 data_dictionary = sys.argv[1]
 prefix = sys.argv[2]
+output_dir = sys.argv[3]
 
 def spaces_to_snake(column_name):
     
@@ -23,11 +22,10 @@ def spaces_to_snake(column_name):
     
     return s.lower()    
 
-data_dir = "/mnt/data3/epa"
 xl = pd.ExcelFile(data_dictionary)
 names = xl.sheet_names
 
-os.chdir("/mnt/data3/epa/import/rcra")
+os.chdir(output_dir)
 
 for name in names:
     

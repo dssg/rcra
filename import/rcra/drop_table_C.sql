@@ -1,6 +1,0 @@
-DROP TABLE IF EXISTS cmecomp3;
-
-DROP TABLE IF EXISTS ccitation;
-
-DROP TABLE IF EXISTS lu_citation;
-
