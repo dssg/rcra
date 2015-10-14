@@ -2,8 +2,6 @@
 
 RCRA_DIR=$1
 
-psql -f import/rcra/create_table_BR.sql
-
 echo loading br_reporting into the database ...
 $RCRA_DIR/BR/br_reporting.csv | psql -c '\COPY rcra.br_reporting FROM STDIN WITH CSV HEADER'
 echo br_reporting has been loaded into the database.
