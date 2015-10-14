@@ -2,8 +2,6 @@
 
 RCRA_DIR=$1
 
-psql -f import/rcra/create_table_C.sql
-
 echo loading cmecomp3 into the database ...
 cat $RCRA_DIR/C/cmecomp3.csv | psql -c '\COPY rcra.cmecomp3 FROM STDIN WITH CSV HEADER'
 echo cmecomp3 has been loaded into the database.
