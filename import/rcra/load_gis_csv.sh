@@ -2,8 +2,6 @@
 
 RCRA_DIR=$1
 
-psql -f import/rcra/create_table_gis.sql
-
 echo loading gis into the database ...
 cat $RCRA_DIR/gis/gis.csv | psql -c '\COPY rcra.gis FROM STDIN WITH CSV HEADER'
 echo gis has been loaded into the database.
