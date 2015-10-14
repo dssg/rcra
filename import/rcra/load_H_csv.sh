@@ -2,8 +2,6 @@
 
 RCRA_DIR=$1
 
-psql -f import/rcra/create_table_H.sql
-
 echo loading hbasic into the database ...
 cat $RCRA_DIR/H/hbasic.csv | psql -c '\COPY rcra.hbasic FROM STDIN WITH CSV HEADER'
 echo hbasic has been loaded into the database.
