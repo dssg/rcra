@@ -2,8 +2,6 @@
 
 RCRA_DIR=$1
 
-psql -f import/rcra/create_table_A.sql
-
 echo loading aarea into the database ...
 cat $RCRA_DIR/A/aarea.csv | psql -c '\COPY rcra.aarea FROM STDIN WITH CSV HEADER'
 echo aarea has been loaded into the database.
