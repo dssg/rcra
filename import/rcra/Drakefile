@@ -32,3 +32,7 @@
 !/mnt/data3/epa/import/rcra/BR/ <- import/rcra/create_rcra_BR_csv.sh, !/mnt/data3/epa/import/rcra/, !/mnt/data3/epa/import/rcra/dictionaries/
     mkdir -p BR
     $INPUT $INPUT1 $INPUT2 $OUTPUT
+
+
+!/mnt/data3/epa/psql/rcra <- import/rcra/import_rcra_data.sh, !/mnt/data3/epa/import/rcra/
+    $INPUT $INPUT1 && touch $OUTPUT
