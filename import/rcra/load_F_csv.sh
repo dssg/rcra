@@ -2,8 +2,6 @@
 
 RCRA_DIR=$1
 
-psql -f import/rcra/create_table_F.sql
-
 echo loading fcost_estimate into the database ...
 cat $RCRA_DIR/F/fcost_estimate.csv | psql -c '\COPY rcra.fcost_estimate FROM STDIN WITH CSV HEADER'
 echo fcost_estimate has been loaded into the database.
