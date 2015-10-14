@@ -5,5 +5,30 @@
 !/mnt/data3/epa/import/rcra/dictionaries/ <- import/rcra/make_data_dictionaries.sh, import/rcra/data_dictionary/
     $INPUT $INPUT1 $OUTPUT
 
-!/mnt/data3/epa/import/rcra/H/ <- import/rcra/create_rcra_H_csv.sh, !/mnt/data3/epa/import/rcra/, !/mnt/data3/epa/import/rcra/dictionaries/
+!/mnt/data3/epa/import/rcra/A/ <- import/rcra/create_rcra_A_csv.sh, !/mnt/data3/epa/import/rcra/, !/mnt/data3/epa/import/rcra/dictionaries/ [-timecheck]
+    mkdir -p A
+    $INPUT $INPUT1 $INPUT2 $OUTPUT
+
+!/mnt/data3/epa/import/rcra/C/ <- import/rcra/create_rcra_C_csv.sh, !/mnt/data3/epa/import/rcra/, !/mnt/data3/epa/import/rcra/dictionaries/
+    mkdir -p C
+    $INPUT $INPUT1 $INPUT2 $OUTPUT
+
+!/mnt/data3/epa/import/rcra/F/ <- import/rcra/create_rcra_F_csv.sh, !/mnt/data3/epa/import/rcra/, !/mnt/data3/epa/import/rcra/dictionaries/
+    mkdir -p F
+    $INPUT $INPUT1 $INPUT2 $OUTPUT
+
+!/mnt/data3/epa/import/rcra/gis/ <- import/rcra/create_rcra_gis_csv.sh, !/mnt/data3/epa/import/rcra/, !/mnt/data3/epa/import/rcra/dictionaries/
+    mkdir -p gis
+    $INPUT $INPUT1 $INPUT2 $OUTPUT
+
+!/mnt/data3/epa/import/rcra/H/ <- import/rcra/create_rcra_H_csv.sh, !/mnt/data3/epa/import/rcra/, !/mnt/data3/epa/import/rcra/dictionaries/ [-timecheck]
+    mkdir -p H
+    $INPUT $INPUT1 $INPUT2 $OUTPUT
+
+!/mnt/data3/epa/import/rcra/P/ <- import/rcra/create_rcra_P_csv.sh, !/mnt/data3/epa/import/rcra/, !/mnt/data3/epa/import/rcra/dictionaries/
+    mkdir -p P
+    $INPUT $INPUT1 $INPUT2 $OUTPUT
+
+!/mnt/data3/epa/import/rcra/BR/ <- import/rcra/create_rcra_BR_csv.sh, !/mnt/data3/epa/import/rcra/, !/mnt/data3/epa/import/rcra/dictionaries/
+    mkdir -p BR
     $INPUT $INPUT1 $INPUT2 $OUTPUT

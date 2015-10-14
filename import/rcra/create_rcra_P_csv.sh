@@ -27,5 +27,4 @@ in2csv -e iso-8859-1 -f fixed -s $DICT_DIR/plu_unit_of_measure_schema.csv $RCRA_
 
 in2csv -e iso-8859-1 -f fixed -s $DICT_DIR/pln_unit_detail_waste_schema.csv $RCRA_DIR/p9.txt > $OUTPUT_DIR/pln_unit_detail_waste.csv
 
-
 in2csv -e iso-8859-1 -f fixed -s $DICT_DIR/plu_legal_operating_status_schema.csv $RCRA_DIR/lu_legal_operating_status.txt > $OUTPUT_DIR/plu_legal_operating_status.csv
