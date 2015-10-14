@@ -2,8 +2,6 @@
 
 RCRA_DIR=$1
 
-psql -f import/rcra/create_table_P.sql
-
 echo loading pseries into the database ...
 cat $RCRA_DIR/P/pseries.csv | psql -c '\COPY rcra.pseries FROM STDIN WITH CSV HEADER'
 echo pseries has been loaded into the database.
