@@ -33,6 +33,5 @@
     mkdir -p $INPUT1/BR
     $INPUT $INPUT1 $INPUT2 $OUTPUT
 
-
 !/mnt/data3/epa/psql/rcra <- import/rcra/import_rcra_data.sh, !/mnt/data3/epa/import/rcra/
     $INPUT $INPUT1 && touch $OUTPUT
