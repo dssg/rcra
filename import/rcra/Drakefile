@@ -1,6 +1,6 @@
 !/mnt/data3/epa/import/rcra/ <- [-timecheck]   
-  ;  wget -P $OUTPUT ftp://ftp.epa.gov/rcrainfodata/rcra_flatfiles/\*.gz
-  ;  gunzip $OUTPUT/\*.gz
+    wget -N -P $OUTPUT ftp://ftp.epa.gov/rcrainfodata/rcra_flatfiles/\*.gz
+    gunzip $OUTPUT/\*.gz
 
 !/mnt/data3/epa/import/rcra/dictionaries/ <- import/rcra/make_data_dictionaries.sh, import/rcra/data_dictionary/ [-timecheck]
     $INPUT $INPUT1 $OUTPUT
