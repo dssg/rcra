@@ -2,34 +2,34 @@
     wget -N -P $OUTPUT ftp://ftp.epa.gov/rcrainfodata/rcra_flatfiles/\*.gz
     gunzip $OUTPUT/\*.gz
 
-!/mnt/data3/epa/import/rcra/dictionaries/ <- import/rcra/make_data_dictionaries.sh, import/rcra/data_dictionary/ [-timecheck]
+!/mnt/data3/epa/import/rcra/load_scripts/ <- import/rcra/make_data_dictionaries.sh, import/rcra/data_dictionary/ [-timecheck]
     $INPUT $INPUT1 $OUTPUT
 
-!/mnt/data3/epa/import/rcra/A/ <- import/rcra/create_rcra_A_csv.sh, !/mnt/data3/epa/import/rcra/, !/mnt/data3/epa/import/rcra/dictionaries/ [-timecheck]
+!/mnt/data3/epa/import/rcra/A/ <- import/rcra/load_scripts/create_rcra_A_csv.sh, !/mnt/data3/epa/import/rcra/, !/mnt/data3/epa/import/rcra/load_scripts/ [-timecheck]
     mkdir -p $INPUT1/A
     $INPUT $INPUT1 $INPUT2 $OUTPUT
 
-!/mnt/data3/epa/import/rcra/C/ <- import/rcra/create_rcra_C_csv.sh, !/mnt/data3/epa/import/rcra/, !/mnt/data3/epa/import/rcra/dictionaries/ [-timecheck]
+!/mnt/data3/epa/import/rcra/C/ <- import/rcra/load_scripts/create_rcra_C_csv.sh, !/mnt/data3/epa/import/rcra/, !/mnt/data3/epa/import/rcra/load_scripts/ [-timecheck]
     mkdir -p $INPUT1/C
     $INPUT $INPUT1 $INPUT2 $OUTPUT
 
-!/mnt/data3/epa/import/rcra/F/ <- import/rcra/create_rcra_F_csv.sh, !/mnt/data3/epa/import/rcra/, !/mnt/data3/epa/import/rcra/dictionaries/ [-timecheck]
+!/mnt/data3/epa/import/rcra/F/ <- import/rcra/load_scripts/create_rcra_F_csv.sh, !/mnt/data3/epa/import/rcra/, !/mnt/data3/epa/import/rcra/load_scripts/ [-timecheck]
     mkdir -p $INPUT1/F
     $INPUT $INPUT1 $INPUT2 $OUTPUT
 
-!/mnt/data3/epa/import/rcra/gis/ <- import/rcra/create_rcra_gis_csv.sh, !/mnt/data3/epa/import/rcra/, !/mnt/data3/epa/import/rcra/dictionaries/ [-timecheck]
+!/mnt/data3/epa/import/rcra/gis/ <- import/rcra/load_scripts/create_rcra_gis_csv.sh, !/mnt/data3/epa/import/rcra/, !/mnt/data3/epa/import/rcra/load_scripts/ [-timecheck]
     mkdir -p $INPUT1/gis
     $INPUT $INPUT1 $INPUT2 $OUTPUT
 
-!/mnt/data3/epa/import/rcra/H/ <- import/rcra/create_rcra_H_csv.sh, !/mnt/data3/epa/import/rcra/, !/mnt/data3/epa/import/rcra/dictionaries/ [-timecheck]
+!/mnt/data3/epa/import/rcra/H/ <- import/rcra/load_scripts/create_rcra_H_csv.sh, !/mnt/data3/epa/import/rcra/, !/mnt/data3/epa/import/rcra/load_scripts/ [-timecheck]
     mkdir -p $INPUT1/H
     $INPUT $INPUT1 $INPUT2 $OUTPUT
 
-!/mnt/data3/epa/import/rcra/P/ <- import/rcra/create_rcra_P_csv.sh, !/mnt/data3/epa/import/rcra/, !/mnt/data3/epa/import/rcra/dictionaries/ [-timecheck]
+!/mnt/data3/epa/import/rcra/P/ <- import/rcra/load_scripts/create_rcra_P_csv.sh, !/mnt/data3/epa/import/rcra/, !/mnt/data3/epa/import/rcra/load_scripts/ [-timecheck]
     mkdir -p $INPUT1/P
     $INPUT $INPUT1 $INPUT2 $OUTPUT
 
-!/mnt/data3/epa/import/rcra/BR/ <- import/rcra/create_rcra_BR_csv.sh, !/mnt/data3/epa/import/rcra/, !/mnt/data3/epa/import/rcra/dictionaries/ [-timecheck]
+!/mnt/data3/epa/import/rcra/BR/ <- import/rcra/load_scripts/create_rcra_BR_csv.sh, !/mnt/data3/epa/import/rcra/, !/mnt/data3/epa/import/rcra/load_scripts/ [-timecheck]
     mkdir -p $INPUT1/BR
     $INPUT $INPUT1 $INPUT2 $OUTPUT
 
