@@ -6,3 +6,4 @@ wget_unzip()
 %call import/icis/Drakefile
 %call import/tri/Drakefile
 %call import/rcra/Drakefile
+%call import/br_and_rmp/Drakefile

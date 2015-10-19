@@ -4,9 +4,10 @@
 --- agency_epa column for evaluating performance on EPA vs state evaluations
 ---
 
-drop table if exists inspections;
+drop schema if exists output cascade;
+create schema output;
 
-create table inspections as
+create table output.inspections as
 select handler_id as id_number, evaluation_start_date, 
 evaluation_start_date as feature_gen_date, state as state_code,
 max(found_violation_flag) as label, count(*) as num_of_inspections,
@@ -22,4 +23,4 @@ and (violation_determined_date is null or evaluation_start_date <= violation_det
 group by 1,2,3,4;
 
 -- Add unique ID for RCRA ID & evaluation start date pairs
-ALTER TABLE inspections ADD COLUMN unique_id SERIAL PRIMARY KEY;
+ALTER TABLE output.inspections ADD COLUMN unique_id SERIAL PRIMARY KEY;
