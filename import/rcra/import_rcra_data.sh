@@ -15,5 +15,6 @@ psql -f $LOAD_SCRIPTS/create_table_gis.sql
 
 # Loop over the load scripts
 for file in $LOAD_SCRIPTS/load*csv.sh; do
+  chmod 755 $file
   bash $file $RCRA_DIR
 done
