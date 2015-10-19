@@ -1,0 +1,13 @@
+column,start,length
+epa_handler_id,1,12
+mechanism_activity_location,13,2
+mechanism_agency,15,1
+mechanism_sequence_number_,16,4
+mechanism_detail_sequence_number_,20,4
+mechanism_identification,24,40
+face_value_amount,64,13
+effective_date,79,8
+expiration_date,87,8
+user_id_of_last_change,95,6
+date_of_last_change,101,8
+notes,109,2000

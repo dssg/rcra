@@ -1,0 +1,7 @@
+column,start,length
+epa_handler_id,1,12
+activity_location,13,2
+other_id,15,12
+same_facility,27,1
+relationship_owner,28,2
+relationship,30,1

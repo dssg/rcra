@@ -1,0 +1,9 @@
+column,start,length
+epa_handler_id,1,12
+authority_type_owner,13,2
+authority_type,15,1
+authority_effective_date,16,8
+authority_responsible_agency,24,1
+authority_activity_location,25,2
+statutory_citation_owner,27,2
+statutory_citation,29,1

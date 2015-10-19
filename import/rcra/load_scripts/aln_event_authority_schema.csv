@@ -1,0 +1,13 @@
+column,start,length
+event_epa_handler_id,1,12
+event_code_owner,13,2
+event_code,15,7
+event_sequence_number,22,3
+event_responsible_agency,25,1
+event_activity_location,26,2
+authority_epa_handler_id,28,12
+authority_type_owner,40,2
+authority_type,42,1
+authority_effective_date,43,8
+authority_responsible_agency,51,1
+authority_activity_location,52,2

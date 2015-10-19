@@ -1,0 +1,8 @@
+column,start,length
+epa_handler_id,1,12
+activity_location,13,2
+source_type,15,1
+sequence_number,16,6
+hsm_sequence_number,22,2
+waste_code_owner,24,2
+waste_code,26,6

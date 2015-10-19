@@ -1,0 +1,5 @@
+column,start,length
+statutory_citation_owner,1,2
+statutory_citation,3,1
+statutory_citation_active_status,4,1
+statutory_citation_description,5,50

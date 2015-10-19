@@ -1,0 +1,5 @@
+column,start,length
+state_district_owner,1,2
+state_district_code,3,10
+state_district_description,13,80
+state_district_active_status,93,1

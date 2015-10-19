@@ -1,0 +1,8 @@
+column,start,length
+handler_id,1,12
+activity_location,13,2
+source_type,15,1
+sequence_number,16,4
+hazardous_waste_page_number,20,5
+waste_code_owner,25,2
+waste_code,27,6

@@ -1,0 +1,13 @@
+column,start,length
+cost_estimate_handler_id,1,12
+cost_estimate_activity_location,13,2
+financial_assurance_type,15,1
+cost_estimate_responsible_agency_,16,1
+cost_coverage_sequence_number_,17,4
+mechanism_handler_id,21,12
+mechanism_activity_location,33,2
+mechanism_agency,35,1
+mechanism_sequence_number_,36,4
+mechanism_detail_sequence_number_,40,4
+user_id_of_last_change,44,6
+date_of_last_change,50,8

@@ -1,0 +1,14 @@
+column,start,length
+epa_handler_id,1,12
+activity_location,13,2
+responsible_agency,15,1
+authority_owner,16,2
+authority_type,18,1
+effective_date,19,8
+issuance_date,27,8
+end_date,35,8
+repository,43,1
+responsible_person_owner,44,2
+responsible_person,46,5
+suborganization_owner,51,2
+suborganization,53,10

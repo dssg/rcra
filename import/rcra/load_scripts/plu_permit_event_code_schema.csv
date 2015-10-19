@@ -1,0 +1,5 @@
+column,start,length
+permit_event_code_owner,1,2
+permit_event_code,3,7
+permit_event_code_active_status,10,1
+event_description,11,80

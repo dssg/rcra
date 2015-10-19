@@ -1,0 +1,5 @@
+column,start,length
+owner,1,2
+geographic_reference_point_code,13,3
+geographic_reference_point_description,15,240
+active_status,255,1

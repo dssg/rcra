@@ -1,0 +1,6 @@
+column,start,length
+naics_owner,1,2
+naics_code,3,6
+naics_description,9,150
+naics_active_status,159,1
+naics_cycle,160,4

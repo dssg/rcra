@@ -1,0 +1,4 @@
+column,start,length
+country_code,1,2
+country_name,3,100
+country_code_active_status,103,1

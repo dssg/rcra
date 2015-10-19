@@ -1,0 +1,5 @@
+column,start,length
+corrective_action_event_owner,1,2
+corrective_action_event,3,7
+corrective_action_event_active_status,10,1
+corrective_action_event_description,11,80

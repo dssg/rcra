@@ -1,0 +1,4 @@
+column,start,length
+county_code,1,5
+county_name,6,27
+county_code_active_status,33,1

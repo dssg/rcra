@@ -1,0 +1,4 @@
+column,start,length
+state_code,1,2
+state_name,3,50
+country_code,33,2

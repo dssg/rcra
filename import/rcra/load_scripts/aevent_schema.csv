@@ -1,0 +1,15 @@
+column,start,length
+epa_handler_id,1,12
+event_sequence_number,13,3
+event_responsible_agency,16,1
+event_activity_location,17,2
+corrective_action_event_owner,19,2
+corrective_action_event_code,21,7
+original_schedule_date_of_event,28,8
+new_schedule_date_of_event,36,8
+actual_date_of_event,44,8
+best_date,52,8
+responsible_person_owner,60,2
+responsible_person,62,5
+suborganization_owner,67,2
+suborganization,69,10

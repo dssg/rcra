@@ -1,0 +1,11 @@
+column,start,length
+handler_id,1,12
+violation_activity_location,13,2
+violation_sequence_number,15,4
+violation_determined_by_agency,19,1
+citation_sequence_number,20,6
+violation_owner,26,2
+violation_type,28,10
+citation_owner,38,2
+citation,40,35
+citation_type,75,2

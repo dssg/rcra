@@ -1,0 +1,14 @@
+column,start,length
+epa_handler_id,1,12
+area_sequence_number,13,4
+facility_wide_indicator,17,1
+regulated_unit_indicator,18,1
+area_name,19,40
+air_release_indicator,59,1
+groundwater_release_indicator,60,1
+soil_release_indicator,61,1
+surface_waste_release_indicator,62,1
+epa_responsible_person_owner,63,2
+epa_responsible_person,65,5
+state_responsible_person_owner,70,2
+state_responsible_person,72,5

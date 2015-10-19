@@ -1,0 +1,13 @@
+column,start,length
+epa_handler_id,1,12
+mechanism_activity_location,13,2
+mechanism_agency,15,1
+mechanism_sequence_number_,16,4
+mechanism_type_owner,20,2
+mechanism_type,22,1
+provider,23,80
+provider_contact_name_,103,33
+provider_contact_phone_number,136,15
+user_id_of_last_change,151,6
+date_of_last_change,157,8
+notes,165,2000

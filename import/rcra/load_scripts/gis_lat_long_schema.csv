@@ -1,0 +1,7 @@
+column,start,length
+handler_id,1,12
+gis_owner,13,2
+gis_sequence_number,15,4
+gis_latitude_longitude_sequence_number,19,4
+latitude_measure,23,10
+longitude_measure,33,11

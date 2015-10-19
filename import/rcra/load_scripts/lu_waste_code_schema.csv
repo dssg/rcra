@@ -1,0 +1,7 @@
+column,start,length
+waste_code_owner,1,2
+waste_code,3,6
+code_type,9,1
+waste_code_description,10,850
+waste_code_active_status,860,1
+br_waste_code_active_status,861,1

@@ -1,0 +1,5 @@
+column,start,length
+state_activity_owner,1,2
+state_activity_code,3,5
+state_activity_description,8,500
+state_activity_active_status,508,1

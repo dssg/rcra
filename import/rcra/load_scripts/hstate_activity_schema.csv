@@ -1,0 +1,7 @@
+column,start,length
+epa_handler_id,1,12
+activity_location,13,2
+source_type,15,1
+handler_sequence_number,16,6
+state_activity_type_owner,22,2
+state_activity_type,24,5

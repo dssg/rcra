@@ -1,0 +1,98 @@
+--- cmecomp3
+
+CREATE TABLE rcra.cmecomp3( 
+handler_id VARCHAR,
+evaluation_activity_location VARCHAR,
+evaluation_identifier VARCHAR,
+evaluation_start_date VARCHAR,
+evaluation_agency VARCHAR,
+found_violation_flag VARCHAR,
+citizen_complaint_flag VARCHAR,
+multimedia_inspection_flag VARCHAR,
+sampling_flag VARCHAR,
+not_subtitle_c_flag VARCHAR,
+evaluation_type VARCHAR,
+evaluation_type_description VARCHAR,
+focus_area VARCHAR,
+focus_area_description VARCHAR,
+evaluation_responsible_person VARCHAR,
+evaluation_suborganization VARCHAR,
+handler_activity_location VARCHAR,
+handler_name VARCHAR,
+region VARCHAR,
+state VARCHAR,
+land_type VARCHAR,
+request_sequence_number VARCHAR,
+date_of_request VARCHAR,
+date_response_received VARCHAR,
+request_agency VARCHAR,
+request_activity_location VARCHAR,
+violation_activity_location VARCHAR,
+violation_sequence_number VARCHAR,
+violation_determined_by_agency VARCHAR,
+violation_type VARCHAR,
+violation_short_description VARCHAR,
+former_citation VARCHAR,
+violation_determined_date VARCHAR,
+actual_return_to_compliance_date VARCHAR,
+return_to_compliance_qualifier VARCHAR,
+violation_responsible_agency VARCHAR,
+scheduled_compliance_date VARCHAR,
+enforcement_activity_location VARCHAR,
+enforcement_identifier VARCHAR,
+enforcement_action_date VARCHAR,
+enforcement_agency VARCHAR,
+docket_number VARCHAR,
+attorney VARCHAR,
+corrective_action_component_flag VARCHAR,
+appeal_initiated_date VARCHAR,
+appeal_resolved_date VARCHAR,
+disposition_status_date VARCHAR,
+disposition_status VARCHAR,
+disposition_status_description VARCHAR,
+cafo_sequence_number VARCHAR,
+respondent_name VARCHAR,
+lead_agency VARCHAR,
+enforcement_type VARCHAR,
+enforcement_type_description VARCHAR,
+enforcement_responsible_person VARCHAR,
+enforcement_suborganization VARCHAR,
+sep_sequence_number VARCHAR,
+expenditure_amount VARCHAR,
+sep_scheduled_completion_date VARCHAR,
+sep_actual_completion_date VARCHAR,
+sep_defaulted_date VARCHAR,
+sep_type VARCHAR,
+sep_type_description VARCHAR,
+proposed_penalty_amount VARCHAR,
+final_monetary_amount VARCHAR,
+paid_amount VARCHAR,
+final_count VARCHAR,
+final_amount VARCHAR
+);
+
+--- ccitation
+
+CREATE TABLE rcra.ccitation( 
+handler_id VARCHAR,
+violation_activity_location VARCHAR,
+violation_sequence_number VARCHAR,
+violation_determined_by_agency VARCHAR,
+citation_sequence_number VARCHAR,
+violation_owner VARCHAR,
+violation_type VARCHAR,
+citation_owner VARCHAR,
+citation VARCHAR,
+citation_type VARCHAR
+);
+
+--- lu_citation
+
+CREATE TABLE rcra.lu_citation( 
+owner VARCHAR,
+citation VARCHAR,
+citation_type VARCHAR,
+citation_description VARCHAR,
+active_status VARCHAR
+);
+

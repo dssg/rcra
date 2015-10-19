@@ -1,0 +1,11 @@
+column,start,length
+epa_handler_id,1,12
+activity_location,13,2
+source_type,15,1
+sequence_number,16,6
+hsm_sequence_number,22,2
+facility_code_owner,24,2
+facility_code,26,2
+estimate_short_tons,28,10
+actual_short_tons,38,10
+land_based_unit,48,2

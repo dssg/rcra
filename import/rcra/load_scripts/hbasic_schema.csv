@@ -1,0 +1,6 @@
+column,start,length
+epa_handler_id,1,12
+epa_facility_identification_code,13,12
+current_site_name,25,80
+region,105,2
+state,107,2

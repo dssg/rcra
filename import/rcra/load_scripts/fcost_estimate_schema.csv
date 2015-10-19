@@ -1,0 +1,15 @@
+column,start,length
+epa_handler_id,1,12
+cost_estimate_activity_location,13,2
+financial_assurance_type,15,1
+cost_estimate_responsible_agency_,16,1
+cost_coverage_sequence_number_,17,4
+cost_estimate_responsible_person_owner,21,2
+cost_estimate_responsible_person,23,5
+cost_estimate_amount,28,13
+cost_estimate_date,43,8
+cost_estimate_reason,51,1
+ca_area_or_permit_unit_notes,52,240
+user_id_of_last_change,292,6
+date_of_last_change,298,8
+notes,306,2000

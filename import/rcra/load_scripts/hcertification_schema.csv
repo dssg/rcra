@@ -1,0 +1,11 @@
+column,start,length
+epa_handler_id,1,12
+activity_location,13,2
+source_type,15,1
+handler_sequence_number,16,6
+certification_sequence_number,22,8
+certification_signed_date,30,8
+certification_title,38,45
+certification_first_name,83,15
+certification_middle_initial,98,1
+certification_last_name,99,15

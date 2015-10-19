@@ -1,0 +1,4 @@
+column,start,length
+postal_code,1,2
+state_name,3,30
+region,33,2

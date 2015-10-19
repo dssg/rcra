@@ -1,0 +1,5 @@
+column,start,length
+relationship_owner,1,2
+relationship,3,1
+relationship_description,4,240
+relationship_active_status,244,1

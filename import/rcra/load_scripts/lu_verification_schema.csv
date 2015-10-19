@@ -1,0 +1,5 @@
+column,start,length
+owner,1,2
+verification_method_code,13,3
+verification_method_description,15,120
+active_status,135,1

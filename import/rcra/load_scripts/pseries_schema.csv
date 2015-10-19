@@ -1,0 +1,6 @@
+column,start,length
+epa_handler_id,1,12
+series_sequence_number,13,4
+series_name,17,40
+responsible_owner,57,2
+responsible_person,59,5

@@ -5,7 +5,7 @@
     gunzip $OUTPUT/*.txt.gz
 
 ; make load scripts (TXT to CSV to SQL) 
-import/rcra/load_scripts/ <- import/rcra/make_data_dictionaries.sh, import/rcra/data_dictionary/ [-timecheck]
+import/rcra/load_scripts/ <- import/rcra/make_import_scripts.sh, import/rcra/data_dictionary/ [-timecheck]
     mkdir -p $OUTPUT
     $INPUT $INPUT1 $OUTPUT
 

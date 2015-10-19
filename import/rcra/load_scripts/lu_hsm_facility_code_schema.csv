@@ -1,0 +1,5 @@
+column,start,length
+hsm_facility_code_owner,1,2
+hsm_facility_code,3,2
+hsm_facility_description,5,100
+hsm_facility_active_status,105,1

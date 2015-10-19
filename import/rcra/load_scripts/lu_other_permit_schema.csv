@@ -1,0 +1,5 @@
+column,start,length
+other_permit_owner,1,2
+other_permit_type,3,1
+other_permit_description,4,50
+other_permit_active_status,54,1
