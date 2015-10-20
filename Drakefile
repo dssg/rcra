@@ -12,10 +12,10 @@ wget_unzip()
 psql()
     psql -v ON_ERROR_STOP=1 -f $INPUT && touch $OUTPUT
 
+; create a schema (does not drop)
 psql_schema()
     schema=$(basename $OUTPUT)
-    psql -v ON_ERROR_STOP=1 -c "DROP SCHEMA IF EXISTS $schema CASCADE; CREATE SCHEMA $schema" && mkdir -p $OUTPUT && touch $OUTPUT/schema
-
+    psql -v ON_ERROR_STOP=1 -c "CREATE SCHEMA IF NOT EXISTS $schema" && mkdir -p $OUTPUT
 
 %include $[BASE]/import/icis/Drakefile
 %include $[BASE]/import/tri/Drakefile

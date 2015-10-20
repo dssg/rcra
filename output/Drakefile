@@ -1,3 +1,3 @@
 $[PSQL_DIR]/output/ <- [method:psql_schema -timecheck]
 
-$[PSQL_DIR]/output/inspections <- output/create_inspection_table.sql, $[PSQL_DIR]/output/ [method:psql]
+$[PSQL_DIR]/output/inspections <- output/create_inspection_table.sql [method:psql]
