@@ -1,6 +1,6 @@
 !/mnt/data3/epa/import/tri/ <- [-timecheck]   
    for i in {1987..2013}; do
-        wget -P $OUTPUT http://www3.epa.gov/tri/US_${i}_v13.zip
+        wget -N -P $OUTPUT http://www3.epa.gov/tri/US_${i}_v13.zip
     done
 
     unzip -d $OUTPUT $OUTPUT/\*.zip

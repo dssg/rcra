@@ -27,7 +27,7 @@ names = xl.sheet_names
 
 os.chdir(output_dir)
 
-with open("create_table_" + prefix + ".sql", 'w') as f, open('load_' + prefix + '_csv.sh', 'w') as c:
+with open("create_table_" + prefix + ".sql", 'w') as f, open('create_rcra_' + prefix + '_csv.sh', 'w') as c:
   
     c.write("#!/bin/bash -xv\n\n") 
     c.write("RCRA_DIR=$1\n")
