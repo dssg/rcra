@@ -4,8 +4,7 @@
 --- agency_epa column for evaluating performance on EPA vs state evaluations
 ---
 
-drop schema if exists output cascade;
-create schema output;
+drop table if exists output.inspections;
 
 create table output.inspections as
 select handler_id as id_number, evaluation_start_date, 

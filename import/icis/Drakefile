@@ -10,5 +10,5 @@ URL="https://echo.epa.gov/files/echodownloads/npdes_eff_downloads.zip"
 URL="https://echo.epa.gov/files/echodownloads/case_downloads.zip"
 !/mnt/data3/epa/import/icis/case_downloads.zip, !/mnt/data3/epa/import/icis/case_downloads/ <- [method:wget_unzip -timecheck]
 
-!/mnt/data3/epa/psql/icis <- import/icis/import_icis_data.sh, !/mnt/data3/epa/import/icis/npdes_downloads/, !/mnt/data3/epa/import/icis/case_downloads/, !/mnt/data3/epa/import/icis/ICIS-AIR_downloads/ [-timecheck]
+$[PSQL_DIR]/icis <- import/icis/import_icis_data.sh, !/mnt/data3/epa/import/icis/npdes_downloads/, !/mnt/data3/epa/import/icis/case_downloads/, !/mnt/data3/epa/import/icis/ICIS-AIR_downloads/ [-timecheck]
     $INPUT $INPUT1 $INPUT2 $INPUT3 && touch $OUTPUT

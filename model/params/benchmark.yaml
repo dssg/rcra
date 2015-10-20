@@ -1,0 +1,17 @@
+---
+data:
+  - name : [epa.model.data.EpaData]
+    today : [2013-01-01]
+    past_years : [5]
+
+transforms:
+  - label : ['violation']
+
+models:
+  - name : [sklearn.ensemble.RandomForestClassifier]
+    n_estimators : [10]
+    criterion : [entropy]
+    n_jobs : [-1]
+
+metrics:
+  - name : [drain.metrics.baseline]

@@ -2,3 +2,5 @@
 !.gitignore
 *.log
 *~
+default_profile
+*.pyc

@@ -39,5 +39,5 @@ import/rcra/load_scripts/ <- import/rcra/make_import_scripts.sh, import/rcra/dat
     $INPUT $INPUT1 $INPUT2 $OUTPUT
 
 ; import CSVs in to PostgreSQL data base
-!/mnt/data3/epa/psql/rcra <- import/rcra/import_rcra_data.sh, !/mnt/data3/epa/import/rcra/, import/rcra/load_scripts
+$[PSQL_DIR]/rcra <- import/rcra/import_rcra_data.sh, !/mnt/data3/epa/import/rcra/, import/rcra/load_scripts
     $INPUT $INPUT1 $INPUT2 && touch $OUTPUT
