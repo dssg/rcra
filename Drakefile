@@ -1,5 +1,4 @@
-BASE:=.
-PSQL_DIR:="!/mnt/data3/epa/psql"
+PSQL_DIR:="/mnt/data3/epa/psql"
 
 PROFILE:=/home/epotash/epa/default_profile
 %include $[PROFILE]
@@ -17,9 +16,9 @@ psql_schema()
     schema=$(basename $OUTPUT)
     psql -v ON_ERROR_STOP=1 -c "CREATE SCHEMA IF NOT EXISTS $schema" && mkdir -p $OUTPUT
 
-%include $[BASE]/import/icis/Drakefile
-%include $[BASE]/import/tri/Drakefile
-%include $[BASE]/import/rcra/Drakefile
-%include $[BASE]/import/br_and_rmp/Drakefile
+%include import/icis/Drakefile
+%include import/tri/Drakefile
+%include import/rcra/Drakefile
+%include import/br_and_rmp/Drakefile
 
-%include $[BASE]/output/Drakefile
+%include output/Drakefile
