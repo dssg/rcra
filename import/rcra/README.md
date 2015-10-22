@@ -4,6 +4,7 @@ We obtain the RCRA flat files for the following ftp site: `ftp://ftp.epa.gov/rcr
 
 These files have historical inspection data, waste reporting, facility registration inofrmation etc.
 
-The script `load_rcra_data.sh` will create corresponding tables for each dataset and load it into a PostgreSQL. 
+The script `make_load_scripts.sh` will generate create table statements for each dataset.
+The script `import_rcra_data.sh` will load the tables into a PostgreSQL database. 
 
-This script assumes that the credentials for the PostgreSQL server have been specified in the `ENV` variables. 
+This script assumes that the credentials for the PostgreSQL server have been specified in `default_profile`. 
