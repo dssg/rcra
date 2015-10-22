@@ -1,3 +1,2 @@
 
-drop schema if exists br_and_rmp cascade;
-create schema br_and_rmp;
+create schema if not exists br_and_rmp;

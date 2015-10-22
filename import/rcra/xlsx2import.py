@@ -50,7 +50,8 @@ with open("create_table_" + prefix + ".sql", 'w') as f, open('create_rcra_' + pr
 
         for k in df['column']:
            db_string = db_string + k + " VARCHAR" + ",\n"
-
+   
+        f.write("DROP TABLE IF EXISTS rcra." + table + "\n") 
         f.write("CREATE TABLE rcra." + table + "( \n" + db_string[:-2] + "\n);\n\n")
         
         c.write("echo loading " + table + " into the database ...\n")
