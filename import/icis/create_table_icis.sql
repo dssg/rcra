@@ -1,6 +1,7 @@
 CREATE SCHEMA IF NOT EXISTS icis;
  
 ---- ICIS NPDES (npdes_downloads.zip)
+DROP TABLE IF EXISTS icis.npdes_facilities;
  
 CREATE TABLE icis.npdes_facilities (
 	icis_facility_interest_id BIGINT NOT NULL, 
@@ -19,6 +20,7 @@ CREATE TABLE icis.npdes_facilities (
 	impaired_waters VARCHAR(16)
 );
 
+DROP TABLE IF EXISTS icis.npdes_cs_violations;
 
 CREATE TABLE icis.npdes_cs_violations (
 	npdes_id VARCHAR(9) NOT NULL, 
@@ -40,6 +42,8 @@ CREATE TABLE icis.npdes_cs_violations (
 	rnc_resolution_date DATE
 );
 
+DROP TABLE IF EXISTS icis.npdes_formal_enforcement_actions;
+
 CREATE TABLE icis.npdes_formal_enforcement_actions (
 	npdes_id VARCHAR(9) NOT NULL, 
 	enf_identifier VARCHAR(20) NOT NULL, 
@@ -53,6 +57,8 @@ CREATE TABLE icis.npdes_formal_enforcement_actions (
 	state_local_penalty_amt FLOAT
 );
 
+DROP TABLE IF EXISTS icis.npdes_informal_enforcement_actions;
+
 CREATE TABLE icis.npdes_informal_enforcement_actions (
 	npdes_id VARCHAR(9) NOT NULL, 
 	registry_id VARCHAR(12) NOT NULL, 
@@ -65,7 +71,9 @@ CREATE TABLE icis.npdes_informal_enforcement_actions (
 	enf_identifier VARCHAR(19) NOT NULL
 );
 
- CREATE TABLE icis.npdes_inspections (
+DROP TABLE IF EXISTS icis.npdes_inspections;
+
+CREATE TABLE icis.npdes_inspections (
 	registry_id VARCHAR(12) NOT NULL, 
 	npdes_id VARCHAR(9) NOT NULL, 
 	activity_id BIGINT NOT NULL, 
@@ -79,6 +87,7 @@ CREATE TABLE icis.npdes_informal_enforcement_actions (
 	activity_outcome_desc VARCHAR(45)
 );
 
+DROP TABLE IF EXISTS icis.npdes_naics;
 
 CREATE TABLE icis.npdes_naics (
 	npdes_id VARCHAR(9) NOT NULL, 
@@ -86,6 +95,8 @@ CREATE TABLE icis.npdes_naics (
 	naics_desc VARCHAR(99) NOT NULL, 
 	primary_indicator_flag BOOLEAN NOT NULL
 );
+
+DROP TABLE IF EXISTS icis.npdes_ps_violations;
 
 CREATE TABLE icis.npdes_ps_violations (
 	npdes_id VARCHAR(9) NOT NULL, 
@@ -105,6 +116,8 @@ CREATE TABLE icis.npdes_ps_violations (
 	rnc_resolution_date DATE
 );
 
+DROP TABLE IF EXISTS icis.npdes_qncr_history;
+
 CREATE TABLE icis.npdes_qncr_history (
 	npdes_id VARCHAR(9) NOT NULL, 
 	yearqtr INTEGER NOT NULL, 
@@ -115,6 +128,8 @@ CREATE TABLE icis.npdes_qncr_history (
 	numpsch INTEGER NOT NULL
 );
 
+
+DROP TABLE IF EXISTS icis.npdes_se_violations;
  
 CREATE TABLE icis.npdes_se_violations (
 	npdes_id VARCHAR(9) NOT NULL, 
@@ -135,6 +150,8 @@ CREATE TABLE icis.npdes_se_violations (
 	rnc_resolution_date DATE
 );
 
+DROP TABLE IF EXISTS icis.npdes_sics;
+
 CREATE TABLE icis.npdes_sics (
 	npdes_id VARCHAR(9) NOT NULL, 
 	sic_code VARCHAR(4) NOT NULL, 
@@ -143,6 +160,8 @@ CREATE TABLE icis.npdes_sics (
 );
 
 --- ------------ ICIS FE&C (case_downloads.zip)
+
+DROP TABLE IF EXISTS icis.fec_enforcements;
 
 CREATE TABLE icis.fec_enforcements (
 	activity_id VARCHAR NOT NULL, 
@@ -172,6 +191,8 @@ CREATE TABLE icis.fec_enforcements (
 	enf_summary_text VARCHAR
 );
 
+DROP TABLE IF EXISTS icis.fec_violations; 
+
 CREATE TABLE icis.fec_violations (
 	activity_id VARCHAR NOT NULL, 
 	case_number VARCHAR NOT NULL, 
@@ -180,6 +201,8 @@ CREATE TABLE icis.fec_violations (
 	violation_type_desc VARCHAR
 );
 
+DROP TABLE IF EXISTS icis.fec_enforcement_type;
+
 CREATE TABLE icis.fec_enforcement_type (
 	activity_id VARCHAR NOT NULL, 
 	case_number VARCHAR NOT NULL, 
@@ -187,12 +210,16 @@ CREATE TABLE icis.fec_enforcement_type (
 	enf_type_desc VARCHAR NOT NULL
 );
 
+DROP TABLE IF EXISTS icis.fec_relief_sought;
+
 CREATE TABLE icis.fec_relief_sought (
 	activity_id BIGINT NOT NULL, 
 	case_number VARCHAR(20) NOT NULL, 
 	relief_code VARCHAR(3) NOT NULL, 
 	relief_desc VARCHAR(39) NOT NULL
 );
+
+DROP TABLE IF EXISTS icis.fec_penalties;
 
 CREATE TABLE icis.fec_penalties (
 	activity_id VARCHAR NOT NULL, 
@@ -205,6 +232,8 @@ CREATE TABLE icis.fec_penalties (
 	state_local_cost_recovery_amt VARCHAR
 );
 
+DROP TABLE IF EXISTS icis.fec_law_sections;
+
 CREATE TABLE icis.fec_law_sections (
 	activity_id VARCHAR, 
 	case_number VARCHAR, 
@@ -213,6 +242,8 @@ CREATE TABLE icis.fec_law_sections (
 	law_section_code VARCHAR, 
 	law_section_desc VARCHAR
 );
+
+DROP TABLE IF EXISTS icis.fec_facilities;
 
 CREATE TABLE icis.fec_facilities (
 	activity_id VARCHAR NOT NULL, 
@@ -227,6 +258,8 @@ CREATE TABLE icis.fec_facilities (
 	primary_naics_code BIGINT
 );
 
+DROP TABLE IF EXISTS icis.fec_defendants;
+
 CREATE TABLE icis.fec_defendants (
 	activity_id VARCHAR NOT NULL, 
 	case_number VARCHAR NOT NULL, 
@@ -234,6 +267,8 @@ CREATE TABLE icis.fec_defendants (
 	named_in_complaint_flag BOOLEAN, 
 	named_in_settlement_flag BOOLEAN
 );
+
+DROP TABLE IF EXISTS icis.fec_milestones;
 
 CREATE TABLE icis.fec_milestones (
 	activity_id VARCHAR NOT NULL, 
@@ -243,6 +278,8 @@ CREATE TABLE icis.fec_milestones (
 	actual_date DATE
 );
 
+DROP TABLE IF EXISTS icis.fec_pollutants;
+
 
 CREATE TABLE icis.fec_pollutants (
 	activity_id BIGINT NOT NULL, 
@@ -251,6 +288,8 @@ CREATE TABLE icis.fec_pollutants (
 	pollutant_desc VARCHAR(83), 
 	chemical_abstract_service_nmbr VARCHAR(9)
 );
+
+DROP TABLE IF EXISTS icis.fec_enforcement_conclusions;
 
 CREATE TABLE icis.fec_enforcement_conclusions (
 	activity_id VARCHAR NOT NULL, 
@@ -268,6 +307,8 @@ CREATE TABLE icis.fec_enforcement_conclusions (
 	cost_recovery_awarded_amt FLOAT
 );
 
+DROP TABLE IF EXISTS icis.fec_enforcement_conclusion_pollutants;
+
 CREATE TABLE icis.fec_enforcement_conclusion_pollutants (
 	activity_id VARCHAR NOT NULL, 
 	case_number VARCHAR NOT NULL, 
@@ -284,6 +325,8 @@ CREATE TABLE icis.fec_enforcement_conclusion_pollutants (
 	sep_or_comp_flag VARCHAR(1) 
 );
 
+DROP TABLE IF EXISTS icis.fec_enforcement_conclusion_complying_actions;
+
 CREATE TABLE icis.fec_enforcement_conclusion_complying_actions (
 	activity_id VARCHAR NOT NULL, 
 	case_number VARCHAR NOT NULL, 
@@ -294,6 +337,8 @@ CREATE TABLE icis.fec_enforcement_conclusion_complying_actions (
 	comp_action_type_desc VARCHAR NOT NULL, 
 	comp_action_category_type_desc VARCHAR NOT NULL
 );
+
+DROP TABLE IF EXISTS icis.fec_enforcement_conclusion_facilities;
 
 CREATE TABLE icis.fec_enforcement_conclusion_facilities (
 	activity_id VARCHAR NOT NULL, 
@@ -307,6 +352,8 @@ CREATE TABLE icis.fec_enforcement_conclusion_facilities (
 	facility_zip VARCHAR
 );
 
+DROP TABLE IF EXISTS icis.fec_enforcement_conclusion_sep;
+
 CREATE TABLE icis.fec_enforcement_conclusion_sep (
 	activity_id VARCHAR NOT NULL, 
 	case_number VARCHAR NOT NULL, 
@@ -317,6 +364,8 @@ CREATE TABLE icis.fec_enforcement_conclusion_sep (
 	sep_text VARCHAR, 
 	sep_amt FLOAT
 );
+
+DROP TABLE IF EXISTS icis.fec_enforcement_conclusion_dollars;
 
 CREATE TABLE icis.fec_enforcement_conclusion_dollars (
 	activity_id VARCHAR NOT NULL, 
@@ -329,11 +378,15 @@ CREATE TABLE icis.fec_enforcement_conclusion_dollars (
 	sep_cost FLOAT
 );
 
+DROP TABLE IF EXISTS icis.fec_regional_dockets;
+
 CREATE TABLE icis.fec_regional_dockets (
 	activity_id VARCHAR NOT NULL, 
 	case_number VARCHAR NOT NULL, 
 	regional_docket_nmbr VARCHAR
 );
+
+DROP TABLE IF EXISTS icis.fec_related_activities;
 
 CREATE TABLE icis.fec_related_activities (
 	activity_id VARCHAR NOT NULL, 
@@ -345,6 +398,8 @@ CREATE TABLE icis.fec_related_activities (
 
 
 ------ ICIS AIR 
+
+DROP TABLE IF EXISTS icis.air_facilities;
 
 CREATE TABLE icis.air_facilities (
 	pgm_sys_id VARCHAR(18) NOT NULL, 
@@ -368,6 +423,8 @@ CREATE TABLE icis.air_facilities (
 	local_control_region_name VARCHAR(67)
 );
 
+DROP TABLE IF EXISTS icis.air_programs;
+
 CREATE TABLE icis.air_programs (
 	pgm_sys_id VARCHAR(18) NOT NULL, 
 	program_code VARCHAR NOT NULL, 
@@ -376,6 +433,8 @@ CREATE TABLE icis.air_programs (
 	air_operating_status_desc VARCHAR(18) NOT NULL
 );
 
+DROP TABLE IF EXISTS icis.air_program_subparts;
+
 CREATE TABLE icis.air_program_subparts (
 	pgm_sys_id VARCHAR(18) NOT NULL, 
 	program_code VARCHAR NOT NULL, 
@@ -383,6 +442,8 @@ CREATE TABLE icis.air_program_subparts (
 	air_program_subpart_code VARCHAR NOT NULL, 
 	air_program_subpart_desc VARCHAR NOT NULL
 );
+
+DROP TABLE IF EXISTS icis.air_titlev_certs;
 
 CREATE TABLE icis.air_titlev_certs (
 	pgm_sys_id VARCHAR(18) NOT NULL, 
@@ -393,6 +454,8 @@ CREATE TABLE icis.air_titlev_certs (
 	actual_end_date DATE, 
 	facility_rpt_deviation_flag BOOLEAN 
 );
+
+DROP TABLE IF EXISTS icis.air_fces_pces;
 
 CREATE TABLE icis.air_fces_pces (
 	pgm_sys_id VARCHAR(18) NOT NULL, 
@@ -406,6 +469,8 @@ CREATE TABLE icis.air_fces_pces (
 	program_codes VARCHAR NOT NULL
 );
 
+DROP TABLE IF EXISTS icis.air_formal_actions;
+
 CREATE TABLE icis.air_formal_actions (
 	pgm_sys_id VARCHAR(18) NOT NULL, 
 	activity_id BIGINT NOT NULL, 
@@ -418,6 +483,8 @@ CREATE TABLE icis.air_formal_actions (
 	settlement_entered_date DATE, 
 	penalty_amount FLOAT NOT NULL
 );
+
+DROP TABLE IF EXISTS icis.air_hpv_history;
 
 CREATE TABLE icis.air_hpv_history (
 	pgm_sys_id VARCHAR(18) NOT NULL, 
@@ -436,6 +503,7 @@ CREATE TABLE icis.air_hpv_history (
 	hpv_resolved_date DATE
 );
 
+DROP TABLE IF EXISTS icis.air_informal_actions;
 
 CREATE TABLE icis.air_informal_actions (
 	pgm_sys_id VARCHAR(18) NOT NULL, 
@@ -450,6 +518,7 @@ CREATE TABLE icis.air_informal_actions (
 	penalty_amount INTEGER NOT NULL
 );
 
+DROP TABLE IF EXISTS icis.air_pollutants;
 
 CREATE TABLE icis.air_pollutants (
 	pgm_sys_id VARCHAR(18) NOT NULL, 
@@ -461,6 +530,7 @@ CREATE TABLE icis.air_pollutants (
 	air_pollutant_class_desc VARCHAR(32) NOT NULL
 );
 
+DROP TABLE IF EXISTS icis.air_stack_tests;
 
 CREATE TABLE icis.air_stack_tests (
 	pgm_sys_id VARCHAR(18) NOT NULL, 
