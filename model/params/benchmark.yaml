@@ -1,17 +1,20 @@
 ---
 data:
   - name : [epa.model.data.EpaData]
-    today : [2013-01-01]
+    today : [2013-06-01]
     past_years : [5]
 
 transforms:
-  - label : ['violation']
+  - train_years : [5]
+    training_state : [False, True]
 
 models:
   - name : [sklearn.ensemble.RandomForestClassifier]
-    n_estimators : [10]
+    n_estimators : [100]
     criterion : [entropy]
     n_jobs : [-1]
 
 metrics:
   - name : [drain.metrics.baseline]
+  - name : [drain.metrics.precision]
+    k : [100,200,500]
