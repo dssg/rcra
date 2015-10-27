@@ -38,25 +38,25 @@ select
     tsd_activity = 'Y' as hhandler_tsd_activity,
     recycler_activity = 'Y' as hhandler_recycler_activity,
     
-	onsite_burner_exemption = 'Y' as hhandler_onsite_burner_exemption,
-	furnace_exemption = 'Y' as hhandler_furnace_exemption,
-	underground_injection_activity = 'Y' as hhandler_underground_injection_activity,
-	receives_waste_from_off_site = 'Y' as hhandler_receives_waste_from_off_site,
-	universal_waste_destination_facility = 'Y' as hhandler_universal_waste_destination_facility,
-	
-	used_oil_transporter = 'Y' as hhandler_used_oil_transporter,
-	used_oil_transfer_facility = 'Y' as hhandler_used_oil_transfer_facility,
-	used_oil_processor = 'Y' as hhandler_used_oil_processor,
-	used_oil_refiner = 'Y' as hhandler_used_oil_refiner,
-	used_oil_fuel_marketer_to_burner = 'Y' as hhandler_used_oil_fuel_marketer_to_burner,
-	used_oil_specification_marketer = 'Y' as hhandler_used_oil_specification_marketer,
+    onsite_burner_exemption = 'Y' as hhandler_onsite_burner_exemption,
+    furnace_exemption = 'Y' as hhandler_furnace_exemption,
+    underground_injection_activity = 'Y' as hhandler_underground_injection_activity,
+    receives_waste_from_off_site = 'Y' as hhandler_receives_waste_from_off_site,
+    universal_waste_destination_facility = 'Y' as hhandler_universal_waste_destination_facility,
+    
+    used_oil_transporter = 'Y' as hhandler_used_oil_transporter,
+    used_oil_transfer_facility = 'Y' as hhandler_used_oil_transfer_facility,
+    used_oil_processor = 'Y' as hhandler_used_oil_processor,
+    used_oil_refiner = 'Y' as hhandler_used_oil_refiner,
+    used_oil_fuel_marketer_to_burner = 'Y' as hhandler_used_oil_fuel_marketer_to_burner,
+    used_oil_specification_marketer = 'Y' as hhandler_used_oil_specification_marketer,
 	
     under_40_cfr_part_262_subpart_k_as_a_college_or_university = 'Y' as hhandler_university,
-	under_40_cfr_part_262_subpart_k_as_a_teaching_hospital = 'Y' as hhandler_teaching_hospital,
-	under_40_cfr_part_262_subpart_k_as_a_non__profit_research_insti = 'Y' as hhandler_nonprofit,
-	
-	withdrawal_from_40_cfr_part_262_subpart_k = 'Y' as hhandler_withdrawal,
-	include_in_national_report = 'Y' as hhandler_include_in_br
+    under_40_cfr_part_262_subpart_k_as_a_teaching_hospital = 'Y' as hhandler_teaching_hospital,
+    under_40_cfr_part_262_subpart_k_as_a_non__profit_research_insti = 'Y' as hhandler_nonprofit,
+    
+    withdrawal_from_40_cfr_part_262_subpart_k = 'Y' as hhandler_withdrawal,
+    include_in_national_report = 'Y' as hhandler_include_in_br
 
 from rcra.hhandler
 );
