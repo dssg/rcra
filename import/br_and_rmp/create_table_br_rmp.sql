@@ -1,5 +1,5 @@
 
-
+DROP TABLE if EXISTS br_and_rmp.brs_all;
 
 CREATE TABLE br_and_rmp.brs_all (
 	handler_id VARCHAR, 
@@ -103,7 +103,7 @@ update br_and_rmp.brs_all
 	set rec_not_man_or_gen = case when (rec_tons > 0 and man_tons = 0) and
 	(rec_tons > 0 and gen_tons = 0) then 1 else 0 end;
 		
-
+DROP TABLE IF EXISTS br_and_rmp.caa_inspections;
 
 CREATE TABLE br_and_rmp.caa_inspections (
 	activity_id BIGINT NOT NULL, 

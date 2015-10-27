@@ -1,3 +1,5 @@
+DROP TABLE IF EXISTS tri.type_1;
+
 CREATE TABLE tri.type_1 (
        "form_type" varchar, 
        "reporting_year" integer, 
@@ -238,6 +240,9 @@ CREATE TABLE tri.type_1 (
        _unnamed integer
 );
 
+
+DROP TABLE IF EXISTS tri.type_2a;
+
 CREATE TABLE tri.type_2a (
        "reporting_year" integer, 
        "trade_secret_indicator" boolean, 
@@ -388,6 +393,8 @@ CREATE TABLE tri.type_2a (
        _unnamed varchar
 );
 
+DROP TABLE IF EXISTS tri.type_2b;
+
 CREATE TABLE tri.type_2b (
        "reporting_year" integer, 
        "trade_secret_indicator" boolean, 
@@ -519,6 +526,9 @@ CREATE TABLE tri.type_2b (
        "3/2015" boolean, 
        _unnamed varchar
 );
+
+
+DROP TABLE IF EXISTS tri.type_3a;
 
 CREATE TABLE tri.type_3a (
        "trifid" varchar, 
@@ -727,6 +737,8 @@ CREATE TABLE tri.type_3a (
        _unnamed varchar
 );
 
+DROP TABLE IF EXISTS tri.type_3b;
+
 CREATE TABLE tri.type_3b (
        "trifid" varchar, 
        "document_control_number" bigint, 
@@ -813,6 +825,8 @@ CREATE TABLE tri.type_3b (
        _unnamed varchar
 );
 
+DROP TABLE IF EXISTS tri.type_4;
+
 CREATE TABLE tri.type_4 (
        "reporting_year" integer, 
        "title_of_certifying_official" varchar, 
@@ -869,6 +883,8 @@ CREATE TABLE tri.type_4 (
        _unnamed varchar
 );
 
+DROP TABLE IF EXISTS tri.type_5;
+
 CREATE TABLE tri.type_5 (
        "trifid" varchar, 
        "document_control_number" bigint, 
@@ -922,6 +938,8 @@ CREATE TABLE tri.type_5 (
        "3/2015" varchar, 
        _unnamed varchar
 );
+
+DROP TABLE IF EXISTS tri.type_6;
 
 CREATE TABLE tri.type_6 ( 
        "trifid" varchar, 

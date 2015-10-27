@@ -4,7 +4,6 @@ NPDES_DIR=$1
 CASE_DIR=$2
 AIR_DIR=$3
 
-psql -f import/icis/drop_table_icis.sql
 psql -f import/icis/create_table_icis.sql
 
 echo loading NPDES_INSPECTIONS.csv from ECHO dashboard into the database ...
