@@ -1,7 +1,7 @@
 ---
 data:
   - name : [epa.model.data.EpaData]
-    today : [2013-06-01]
+    today : [2014-01-01, 2013-01-01, 2012-01-01]
     past_years : [5]
 
 transforms:
@@ -16,5 +16,7 @@ models:
 
 metrics:
   - name : [drain.metrics.baseline]
+    outcome : [null, formal_enforcement]
   - name : [drain.metrics.precision]
     k : [100,200,500]
+    outcome : [null, formal_enforcement]

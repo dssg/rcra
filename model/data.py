@@ -9,7 +9,7 @@ import pandas as pd
 import numpy as np
 
 class EpaData(ModelData):
-    psql_dir = os.environ['EPA_PSQL_DIR'] if 'EPA_PSQL_DIR' in os.environ else ''
+    psql_dir = os.environ['PSQL_DIR'] if 'PSQL_DIR' in os.environ else ''
     DEPENDENCIES = [os.path.join(psql_dir, d) for d in ['output/evaluations' ]]
 
     def __init__(self, today, past_years, outcome_years=1):
@@ -61,10 +61,10 @@ from output.evaluations
         if not testing_state:
             test = test & index_as_series(df, 'agency_epa')
 
-        df.drop(df.index[~(train | test)], inplace=True)
-        train = train.loc[df.index]
-        test = test.loc[df.index]
+        df,train,test = data.train_test_subset(df, train, test)
         self.cv = (train, test)
+
+        self.masks = df[['formal_enforcement']]
         
         df['state'] = index_as_series(df, 'rcra_id').apply(lambda i: i[:2])
         
