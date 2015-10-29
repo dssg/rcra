@@ -1,6 +1,6 @@
-DROP TABLE IF EXISTS region_crosswalk;
+DROP TABLE IF EXISTS output.region_crosswalk;
 
-CREATE TABLE region_crosswalk(
+CREATE TABLE output.region_crosswalk(
 state VARCHAR, 
 epa_region VARCHAR
 );

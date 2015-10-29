@@ -1,16 +1,18 @@
 ---
 data:
   - name : [epa.model.data.EpaData]
-    today : [2014-01-01, 2013-01-01, 2012-01-01]
+    #today : [2014-01-01, 2013-01-01, 2012-01-01]
+    today : [2013-01-01]
     past_years : [5]
 
 transforms:
   - train_years : [5]
-    training_state : [False, True]
+    training_state : [False]
+    exclude : [ ['handler_.*'], []]
 
 models:
   - name : [sklearn.ensemble.RandomForestClassifier]
-    n_estimators : [100]
+    n_estimators : [500]
     criterion : [entropy]
     n_jobs : [-1]
 
