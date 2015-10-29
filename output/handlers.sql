@@ -53,16 +53,10 @@ select
     used_oil_fuel_marketer_to_burner = 'Y'  as handler_used_oil_fuel_marketer_to_burner,
     used_oil_specification_marketer = 'Y'  as handler_used_oil_specification_marketer,
 	
-<<<<<<< HEAD
-    under_40_cfr_part_262_subpart_k_as_a_college_or_university = 'Y' as handler_university,
-    under_40_cfr_part_262_subpart_k_as_a_teaching_hospital = 'Y' as handler_teaching_hospital,
-    under_40_cfr_part_262_subpart_k_as_a_non_profit_research_instit = 'Y' as handler_nonprofit,
-=======
     under_40_cfr_part_262_subpart_k_as_a_college_or_university = 'Y'  as handler_university,
     under_40_cfr_part_262_subpart_k_as_a_teaching_hospital = 'Y'  as handler_teaching_hospital,
     under_40_cfr_part_262_subpart_k_as_a_non_profit_research_instit = 'Y'  as handler_nonprofit,
->>>>>>> d992645210fc93c219be9869cd28eebf37f16fcf
-    
+
     withdrawal_from_40_cfr_part_262_subpart_k = 'Y'  as handler_withdrawal,
     include_in_national_report = 'Y'  as handler_include_in_br
 
