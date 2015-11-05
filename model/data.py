@@ -39,17 +39,16 @@ with evaluations as (
 select rcra_id, 
        ((extract(year from start_date)::text || '-{doy}')::date - ((extract(year from start_date)::text || '-{doy}')::date > start_date)::int * interval '1 year')::date as date,
         agency_epa, bool_or(violation) as violation,
-        bool_or({formal_enforcement}) as formal_enforcement
+        bool_or(CASE WHEN start_date < '{today}' THEN {formal_enforcement} ELSE formal_enforcement END) as formal_enforcement -- censor formal_enforcement in the training set but not in the test set
 from output.investigations
         where start_date between '{date_min}' and '{date_max}' group by 1,2,3
-
 )
 
 select distinct on(rcra_id, date) *, h.rcra_id is not null as handler_not_null from evaluations e
 join output.handlers h using (rcra_id)
 where e.date > h.receive_date
 order by rcra_id, date, receive_date desc
-        """.format(doy=doy, date_min=date_min, date_max=date_max, formal_enforcement=censor_column('formal_enforcement_date', self.today, 'formal_enforcement')), engine)
+        """.format(today=self.today, doy=doy, date_min=date_min, date_max=date_max, formal_enforcement=censor_column('formal_enforcement_date', self.today, 'formal_enforcement')), engine)
 
         self.df = df
 
