@@ -20,5 +20,6 @@ psql_schema()
 %include $[BASE]/import/tri/Drakefile
 %include $[BASE]/import/rcra/Drakefile
 %include $[BASE]/import/br_and_rmp/Drakefile
+$[PSQL_DIR]/indexes <- import/create_indexes.sql [method:psql]
 
 %include $[BASE]/output/Drakefile

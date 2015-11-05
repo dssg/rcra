@@ -7,7 +7,7 @@ from drain import util
 from drain.aggregate import aggregate
 from drain.util import PgSQLDatabase,prefix_columns
 
-INSPECTION_COLUMNS = {
+INVESTIGATION_COLUMNS = {
         'violation_types': {'numerator': 'violation_types', 'func': aggregate_list},
         'evaluation_types': {'numerator': 'evaluation_types', 'func': aggregate_list},
         'focus_areas': {'numerator': 'focus_areas', 'func': aggregate_list},
