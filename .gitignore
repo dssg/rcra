@@ -4,3 +4,5 @@
 *~
 default_profile
 *.pyc
+model/output
+notebooks
