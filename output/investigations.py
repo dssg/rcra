@@ -1,11 +1,6 @@
 # get_investigations below returns cesnored investigations for a given date used in investigations_aggregated
 import pandas as pd
-
-def censor_column(date_column, today, column = None):
-    if column is None:
-        column = date_column
-    return "(CASE WHEN {date_column} < '{today}' THEN {column} ELSE null END)".format(
-            date_column=date_column, today=today, column=column)
+from drain.data import censor_column
 
 raw_sql = """
 select handler_id as rcra_id, 

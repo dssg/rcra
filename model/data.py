@@ -1,4 +1,4 @@
-from drain.data import ModelData
+from drain.data import ModelData, censor_column
 from drain import util
 from drain.util import index_as_series
 from drain import data
@@ -10,7 +10,7 @@ import numpy as np
 
 class EpaData(ModelData):
     psql_dir = os.environ['PSQL_DIR'] if 'PSQL_DIR' in os.environ else ''
-    DEPENDENCIES = [os.path.join(psql_dir, d) for d in ['output/evaluations', 'output/handlers' ]]
+    DEPENDENCIES = [os.path.join(psql_dir, d) for d in ['output/investigations', 'output/handlers' ]]
 
     EXCLUDE = {'formal_enforcement', 'receive_date'}
 
@@ -39,8 +39,8 @@ with evaluations as (
 select rcra_id, 
        ((extract(year from start_date)::text || '-{doy}')::date - ((extract(year from start_date)::text || '-{doy}')::date > start_date)::int * interval '1 year')::date as date,
         agency_epa, bool_or(violation) as violation,
-        bool_or(formal_enforcement) as formal_enforcement
-from output.evaluations 
+        bool_or({formal_enforcement}) as formal_enforcement
+from output.investigations
         where start_date between '{date_min}' and '{date_max}' group by 1,2,3
 
 )
@@ -49,7 +49,7 @@ select distinct on(rcra_id, date) *, h.rcra_id is not null as handler_not_null f
 join output.handlers h using (rcra_id)
 where e.date > h.receive_date
 order by rcra_id, date, receive_date desc
-        """.format(doy=doy, date_min=date_min, date_max=date_max), engine)
+        """.format(doy=doy, date_min=date_min, date_max=date_max, formal_enforcement=censor_column('formal_enforcement_date', self.today, 'formal_enforcement')), engine)
 
         self.df = df
 
