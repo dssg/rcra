@@ -1,33 +1,33 @@
-!/mnt/data3/epa/import/tri/ <- [-timecheck]   
+!$[DATA_DIR]/import/tri/ <- [-timecheck]   
     for i in {1987..2013}; do
         wget -N -P $OUTPUT http://www3.epa.gov/tri/US_${i}_v13.zip
     done
     unzip -d $OUTPUT $OUTPUT/\*.zip
 
-!/mnt/data3/epa/import/tri/tri.type_1.csv <- import/tri/create_tri_csv.sh, !/mnt/data3/epa/import/tri/ [-timecheck]
+!$[DATA_DIR]/import/tri/tri.type_1.csv <- import/tri/create_tri_csv.sh, !$[DATA_DIR]/import/tri/ [-timecheck]
     $INPUT $INPUT1 1 > $OUTPUT
 
-!/mnt/data3/epa/import/tri/tri.type_2a.csv <- import/tri/create_tri_csv.sh, !/mnt/data3/epa/import/tri/ [-timecheck]
+!$[DATA_DIR]/import/tri/tri.type_2a.csv <- import/tri/create_tri_csv.sh, !$[DATA_DIR]/import/tri/ [-timecheck]
     $INPUT $INPUT1 "2a" > $OUTPUT
 
-!/mnt/data3/epa/import/tri/tri.type_2b.csv <- import/tri/create_tri_csv.sh, !/mnt/data3/epa/import/tri/ [-timecheck]
+!$[DATA_DIR]/import/tri/tri.type_2b.csv <- import/tri/create_tri_csv.sh, !$[DATA_DIR]/import/tri/ [-timecheck]
     $INPUT $INPUT1 "2b" > $OUTPUT
 
-!/mnt/data3/epa/import/tri/tri.type_3a.csv <- import/tri/create_tri_csv.sh, !/mnt/data3/epa/import/tri/ [-timecheck]
+!$[DATA_DIR]/import/tri/tri.type_3a.csv <- import/tri/create_tri_csv.sh, !$[DATA_DIR]/import/tri/ [-timecheck]
     $INPUT $INPUT1 "3a" > $OUTPUT
 
-!/mnt/data3/epa/import/tri/tri.type_3b.csv <- import/tri/create_tri_csv.sh, !/mnt/data3/epa/import/tri/ [-timecheck]
+!$[DATA_DIR]/import/tri/tri.type_3b.csv <- import/tri/create_tri_csv.sh, !$[DATA_DIR]/import/tri/ [-timecheck]
     $INPUT $INPUT1 "3b" > $OUTPUT
 
-!/mnt/data3/epa/import/tri/tri.type_4.csv <- import/tri/create_tri_csv.sh, !/mnt/data3/epa/import/tri/ [-timecheck]
+!$[DATA_DIR]/import/tri/tri.type_4.csv <- import/tri/create_tri_csv.sh, !$[DATA_DIR]/import/tri/ [-timecheck]
     $INPUT $INPUT1 4 > $OUTPUT
 
-!/mnt/data3/epa/import/tri/tri.type_5.csv <- import/tri/create_tri_csv.sh, !/mnt/data3/epa/import/tri/ [-timecheck]
+!$[DATA_DIR]/import/tri/tri.type_5.csv <- import/tri/create_tri_csv.sh, !$[DATA_DIR]/import/tri/ [-timecheck]
    $INPUT $INPUT1 5 > $OUTPUT
 
-!/mnt/data3/epa/import/tri/tri.type_6.csv <- import/tri/create_tri_csv.sh, !/mnt/data3/epa/import/tri/ [-timecheck]
+!$[DATA_DIR]/import/tri/tri.type_6.csv <- import/tri/create_tri_csv.sh, !$[DATA_DIR]/import/tri/ [-timecheck]
    $INPUT $INPUT1 6 > $OUTPUT
 
-$[PSQL_DIR]/tri <- import/tri/load_tri_data.sh, !/mnt/data3/epa/import/tri/ [-timecheck]
+$[PSQL_DIR]/tri <- import/tri/load_tri_data.sh, !$[DATA_DIR]/import/tri/ [-timecheck]
    $INPUT $INPUT1 && touch $OUTPUT
 

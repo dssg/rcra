@@ -10,6 +10,7 @@ select handler_id as rcra_id,
     bool_or(violation_type is not null) as violation,
     sum( (violation_type is not null)::int) as violation_count,
     bool_or(evaluation_agency in ('E','X','C','N')) as agency_epa,
+    bool_and(evaluation_agency not in ('E','X','C','N')) as agency_state,
     
     coalesce(bool_or({enforcement_type}::int between 300 and 799), false) formal_enforcement,
     sum(({enforcement_type}::int between 300 and 799)::int) formal_enforcement,
@@ -85,10 +86,18 @@ columns_to_censor = {
     'sep_defaulted_date' : ['sep_defaulted_date'],
 }
 
+
+date_columns = [
+    'min_formal_enforcement_date', 'max_formal_enforcement_date', 'min_violation_determined_date', 'max_violation_determined_date', 'min_rtc_date', 'max_rtc_date',
+    'min_scheduled_compliance_date', 'max_scheduled_compliance_date', 'min_appeal_initiated_date', 'max_appeal_initiated_date', 'min_appeal_resolved_date',
+    'max_appeal_resolved_date', 'min_sep_actual_completion_date', 'max_sep_actual_completion_date', 'min_sep_defaulted_date', 'max_sep_defaulted_date',
+    'min_sep_scheduled_completion_date', 'max_sep_scheduled_completion_date', 'start_date'
+]
+
 def get_investigations(today, engine):
     censored = {}
     for d in columns_to_censor:
         censored.update({c:censor_column(d, today, c) for c in columns_to_censor[d]})
     
     sql = raw_sql.format(today=today, **censored)
-    return pd.read_sql(sql, engine)
+    return pd.read_sql(sql, engine, parse_dates=date_columns)

@@ -1,4 +1,4 @@
 ; import CSVs in to PostgreSQL data base
-$[PSQL_DIR]/br_and_rmp <- import/br_and_rmp/create_table_br_rmp.sh, !/mnt/data3/epa/import/br_and_rmp/
+$[PSQL_DIR]/br_and_rmp <- import/br_and_rmp/create_table_br_rmp.sh, !$[DATA_DIR]/import/br_and_rmp/
     $INPUT $INPUT1 && touch $OUTPUT
 

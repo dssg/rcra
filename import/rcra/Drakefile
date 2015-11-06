@@ -1,5 +1,5 @@
 ; download and unzip data 
-!/mnt/data3/epa/import/rcra/ <- [-timecheck]   
+!$[DATA_DIR]/import/rcra/ <- [-timecheck]   
     mkdir -p $OUTPUT
     wget -N -P $OUTPUT ftp://ftp.epa.gov/rcrainfodata/rcra_flatfiles/\*.gz
     gunzip $OUTPUT/*.txt.gz
@@ -10,34 +10,34 @@ import/rcra/load_scripts/ <- import/rcra/make_import_scripts.sh, import/rcra/dat
     $INPUT $INPUT1 $OUTPUT
 
 ; for each file type create CSVs
-!/mnt/data3/epa/import/rcra/A/ <- import/rcra/load_scripts/create_rcra_A_csv.sh, !/mnt/data3/epa/import/rcra/, import/rcra/load_scripts/ [-timecheck]
+!$[DATA_DIR]/import/rcra/A/ <- import/rcra/load_scripts/create_rcra_A_csv.sh, !$[DATA_DIR]/import/rcra/, import/rcra/load_scripts/ [-timecheck]
     mkdir -p $INPUT1/A
     $INPUT $INPUT1 $INPUT2 $OUTPUT
 
-!/mnt/data3/epa/import/rcra/C/ <- import/rcra/load_scripts/create_rcra_C_csv.sh, !/mnt/data3/epa/import/rcra/, import/rcra/load_scripts/ [-timecheck]
+!$[DATA_DIR]/import/rcra/C/ <- import/rcra/load_scripts/create_rcra_C_csv.sh, !$[DATA_DIR]/import/rcra/, import/rcra/load_scripts/ [-timecheck]
     mkdir -p $INPUT1/C
     $INPUT $INPUT1 $INPUT2 $OUTPUT
 
-!/mnt/data3/epa/import/rcra/F/ <- import/rcra/load_scripts/create_rcra_F_csv.sh, !/mnt/data3/epa/import/rcra/, import/rcra/load_scripts/ [-timecheck]
+!$[DATA_DIR]/import/rcra/F/ <- import/rcra/load_scripts/create_rcra_F_csv.sh, !$[DATA_DIR]/import/rcra/, import/rcra/load_scripts/ [-timecheck]
     mkdir -p $INPUT1/F
     $INPUT $INPUT1 $INPUT2 $OUTPUT
 
-!/mnt/data3/epa/import/rcra/GIS/ <- import/rcra/load_scripts/create_rcra_GIS_csv.sh, !/mnt/data3/epa/import/rcra/, import/rcra/load_scripts/ [-timecheck]
+!$[DATA_DIR]/import/rcra/GIS/ <- import/rcra/load_scripts/create_rcra_GIS_csv.sh, !$[DATA_DIR]/import/rcra/, import/rcra/load_scripts/ [-timecheck]
     mkdir -p $INPUT1/GIS
     $INPUT $INPUT1 $INPUT2 $OUTPUT
 
-!/mnt/data3/epa/import/rcra/H/ <- import/rcra/load_scripts/create_rcra_H_csv.sh, !/mnt/data3/epa/import/rcra/, import/rcra/load_scripts/ [-timecheck]
+!$[DATA_DIR]/import/rcra/H/ <- import/rcra/load_scripts/create_rcra_H_csv.sh, !$[DATA_DIR]/import/rcra/, import/rcra/load_scripts/ [-timecheck]
     mkdir -p $INPUT1/H
     $INPUT $INPUT1 $INPUT2 $OUTPUT
 
-!/mnt/data3/epa/import/rcra/P/ <- import/rcra/load_scripts/create_rcra_P_csv.sh, !/mnt/data3/epa/import/rcra/, import/rcra/load_scripts/ [-timecheck]
+!$[DATA_DIR]/import/rcra/P/ <- import/rcra/load_scripts/create_rcra_P_csv.sh, !$[DATA_DIR]/import/rcra/, import/rcra/load_scripts/ [-timecheck]
     mkdir -p $INPUT1/P
     $INPUT $INPUT1 $INPUT2 $OUTPUT
 
-!/mnt/data3/epa/import/rcra/BR/ <- import/rcra/load_scripts/create_rcra_BR_csv.sh, !/mnt/data3/epa/import/rcra/, import/rcra/load_scripts/ [-timecheck]
+!$[DATA_DIR]/import/rcra/BR/ <- import/rcra/load_scripts/create_rcra_BR_csv.sh, !$[DATA_DIR]/import/rcra/, import/rcra/load_scripts/ [-timecheck]
     mkdir -p $INPUT1/BR
     $INPUT $INPUT1 $INPUT2 $OUTPUT
 
 ; import CSVs in to PostgreSQL data base
-$[PSQL_DIR]/rcra <- import/rcra/import_rcra_data.sh, !/mnt/data3/epa/import/rcra/, import/rcra/load_scripts
+$[PSQL_DIR]/rcra <- import/rcra/import_rcra_data.sh, !$[DATA_DIR]/import/rcra/, import/rcra/load_scripts
     $INPUT $INPUT1 $INPUT2 && touch $OUTPUT
