@@ -1,6 +1,7 @@
 import pandas as pd
 import numpy as np
 import sys
+import dateutil
 
 from drain import util
 from drain.aggregate import aggregate, aggregate_counts
@@ -82,4 +83,4 @@ if __name__ == '__main__':
     for c in bool_columns:
         df2[c + '_prop'] = df2[c + '_count'] / df2['count']
 
-    df2.to_hdf(output, 'df')
+    df2.to_hdf(output, 'df', mode='w')
