@@ -1,14 +1,13 @@
 ---
 data:
   - name : [epa.model.data.EpaData]
-    #today : [2014-01-01, 2013-01-01, 2012-01-01]
-    today : [2013-01-01]
-    past_years : [5]
+    min_year : [2002]
+    max_year : [2015]
 
 transforms:
-  - train_years : [5]
+  - year : [2012, 2013, 2014]
+    train_years : [4,8]
     training_state : [False]
-    exclude : [ ['handler_.*'], []]
 
 models:
   - name : [sklearn.ensemble.RandomForestClassifier]

@@ -83,4 +83,5 @@ if __name__ == '__main__':
     for c in bool_columns:
         df2[c + '_prop'] = df2[c + '_count'] / df2['count']
 
+    df2 = df2.astype(np.float32)
     df2.to_hdf(output, 'df', mode='w')

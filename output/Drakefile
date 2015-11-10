@@ -5,7 +5,7 @@ $[PSQL_DIR]/output/investigations <- output/investigations.sql, $[PSQL_DIR]/rcra
 $[PSQL_DIR]/output/state_regions <- output/create_state_regions.sql [method:psql]
 $[PSQL_DIR]/output/handlers <- output/handlers.sql, $[PSQL_DIR]/rcra, $[PSQL_DIR]/output/state_regions [method:psql]
 
-$(for y in {2005..2016}; do
+$(for y in {2002..2016}; do
 
 echo "\$[DATA_DIR]/output/investigations_aggregated_"$y"-01-01.hdf <- output/investigations_aggregated.py, output/investigations.py, $[PSQL_DIR]/output/investigations"
 echo "    mkdir -p \$(dirname \$OUTPUT)"

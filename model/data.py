@@ -12,14 +12,16 @@ class EpaData(ModelData):
     psql_dir = os.environ['PSQL_DIR'] if 'PSQL_DIR' in os.environ else ''
     DEPENDENCIES = [os.path.join(psql_dir, d) for d in ['output/investigations', 'output/handlers' ]]
 
-    EXCLUDE = {'formal_enforcement', 'receive_date'}
+    EXCLUDE = {'formal_enforcement', 'receive_date', 'min_formal_enforcement_date'}
 
-    def __init__(self, today, past_years, outcome_years=1):
+    def __init__(self, min_year, max_year, month=1, day=1, outcome_years=1):
         if outcome_years != 1:
             raise NotImplementedError('Currently only outcome_years=1 is implemented')
 
-        self.today = today
-        self.past_years = past_years
+        self.min_year = min_year
+        self.max_year = max_year
+        self.month = month
+        self.day = day
         self.outcome_years = outcome_years
 
     def read(self, directory=None):
@@ -29,9 +31,9 @@ class EpaData(ModelData):
 
         engine = util.create_engine()
 
-        doy = self.today.strftime('%m-%d')
-        date_min = date(self.today.year - self.past_years, self.today.month, self.today.day)
-        date_max = date(self.today.year + self.outcome_years, self.today.month, self.today.day)
+        doy = '%02d-%02d' % (self.month, self.day)
+        date_min = date(self.min_year, self.month, self.day)
+        date_max = date(self.max_year + self.outcome_years, self.month, self.day)
 
         df = pd.read_sql("""
 with evaluations as (
@@ -39,7 +41,8 @@ with evaluations as (
 select rcra_id, 
        ((extract(year from start_date)::text || '-{doy}')::date - ((extract(year from start_date)::text || '-{doy}')::date > start_date)::int * interval '1 year')::date as date,
         agency_epa, bool_or(violation) as violation,
-        bool_or(CASE WHEN start_date < '{today}' THEN {formal_enforcement} ELSE formal_enforcement END) as formal_enforcement -- censor formal_enforcement in the training set but not in the test set
+        bool_or(formal_enforcement) as formal_enforcement,
+        min(formal_enforcement_date) as min_formal_enforcement_date
 from output.investigations
         where start_date between '{date_min}' and '{date_max}' group by 1,2,3
 )
@@ -48,19 +51,30 @@ select distinct on(rcra_id, date) *, h.rcra_id is not null as handler_not_null f
 join output.handlers h using (rcra_id)
 where e.date > h.receive_date
 order by rcra_id, date, receive_date desc
-        """.format(today=self.today, doy=doy, date_min=date_min, date_max=date_max, formal_enforcement=censor_column('formal_enforcement_date', self.today, 'formal_enforcement')), engine)
+        """.format(doy=doy, date_min=date_min, date_max=date_max), engine)
+
+
+        investigations = read_investigations(df[['rcra_id', 'date']])
 
         self.df = df
 
     def write(self, directory):
         self.df.to_hdf(os.path.join(directory, 'df.h5'), 'df', mode='w')
 
-    def transform(self, training_state, train_years=None, testing_state=False, exclude=[], include=[], impute=True, normalize=True):
-        if train_years > self.past_years:
-            raise ValueError('Invalid argument: train_years > past_years')
-        
+    def transform(self, year, training_state, train_years=None, testing_state=False, exclude=[], include=[],
+            impute=True, normalize=True):
+        if year - train_years < self.min_year:
+            raise ValueError('Invalid argument: year - train_years < min_year')
+
+        # TODO: add formal_enforcement as possible outcome
+        # censor it based on formale_enforcement_min_date
+
+        self.today = date(year, self.month, self.day)
         df = self.df
-        # TODO: use train_years
+
+        min_date = date(year-train_years, self.month, self.day)
+        max_date = date(year, self.month, self.day)
+        df = df[(df.date >= min_date) & (df.date <= max_date)]
 
         df.set_index(['rcra_id', 'date', 'agency_epa'], inplace=True)
         df.rename(columns={'handler_state':'state'}, inplace=True)
