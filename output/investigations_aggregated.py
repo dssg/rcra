@@ -36,7 +36,7 @@ INVESTIGATION_COLUMNS = {
         'max_overtime_to_compliance': {'numerator': lambda i: (i['max_rtc_date'] - i['max_scheduled_compliance_date']) / day , 'func': 'max'},
         'avg_overtime_to_compliance': {'numerator': lambda i: (i['max_rtc_date'] - i['max_scheduled_compliance_date']) / day, 'func': 'mean'},
 
-        # init/comply columns  are indicators?
+       
         'max_diff_fmp_paid': {'numerator': lambda i: i['max_final_monetary_amount'] - i['max_paid_amount'], 'func': 'max'},
         'max_diff_fmp_pmp': {'numerator': lambda i: i['max_final_monetary_amount'] - i['max_proposed_penalty_amount'], 'func': 'max'},
         'max_paid_amount': {'numerator': 'max_paid_amount', 'func': 'max'},
