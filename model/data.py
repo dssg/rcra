@@ -53,9 +53,6 @@ where e.date > h.receive_date
 order by rcra_id, date, receive_date desc
         """.format(doy=doy, date_min=date_min, date_max=date_max), engine)
 
-
-        investigations = read_investigations(df[['rcra_id', 'date']])
-
         self.df = df
 
     def write(self, directory):
