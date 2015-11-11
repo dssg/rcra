@@ -1,7 +1,7 @@
 $[PSQL_DIR]/indexes <- import/create_indexes.sql [method:psql]
 
-URL="https://echo.epa.gov/files/echodownloads/frs_downloads.zip"
-!$[DATA_DIR]/import/frs_downloads.zip, !$[DATA_DIR]/import/frs_downloads/ <- [method:wget_unzip -timecheck]
+;URL="https://echo.epa.gov/files/echodownloads/frs_downloads.zip"
+;!$[DATA_DIR]/import/frs_downloads.zip, !$[DATA_DIR]/import/frs_downloads/ <- [method:wget_unzip -timecheck]
 
-$[PSQL_DIR]/frs <- import/import_frs_data.sh, !$[DATA_DIR]/import/frs_downloads/ [-timecheck]
-    $INPUT $INPUT1 && touch $OUTPUT
+;$[PSQL_DIR]/frs <- import/import_frs_data.sh, !$[DATA_DIR]/import/frs_downloads/ [-timecheck]
+;    $INPUT $INPUT1 && touch $OUTPUT

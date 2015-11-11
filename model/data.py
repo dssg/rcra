@@ -89,7 +89,6 @@ order by rcra_id, date, receive_date desc
         self.masks = df[['formal_enforcement']]
         
         self.EXCLUDE.update(exclude)
-        print self.EXCLUDE
         X,y = data.Xy(df, 'violation', exclude=self.EXCLUDE, include=set(include), category_classes={'state'})
 
         if impute:
