@@ -48,7 +48,7 @@ from output.investigations
 )
 
 select distinct on(rcra_id, date) *, h.rcra_id is not null as handler_not_null from evaluations e
-join output.handlers h using (rcra_id)
+left join output.handlers h using (rcra_id)
 where e.date > h.receive_date
 order by rcra_id, date, receive_date desc
         """.format(doy=doy, date_min=date_min, date_max=date_max), engine)
@@ -71,7 +71,7 @@ order by rcra_id, date, receive_date desc
 
         min_date = date(year-train_years, self.month, self.day)
         max_date = date(year, self.month, self.day)
-        df = df[(df.date >= min_date) & (df.date <= max_date)]
+        df = df.loc[df.index[(df.date >= min_date) & (df.date <= max_date)]]
 
         df.set_index(['rcra_id', 'date', 'agency_epa'], inplace=True)
         df.rename(columns={'handler_state':'state'}, inplace=True)
