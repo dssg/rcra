@@ -47,12 +47,12 @@ from output.investigations
         where start_date between '{date_min}' and '{date_max}' group by 1,2,3
 )
 
-select distinct on(rcra_id, date) *, h.rcra_id is not null as handler_not_null from evaluations e
-left join output.handlers h using (rcra_id)
-where e.date > h.receive_date
-order by rcra_id, date, receive_date desc
+select distinct on(e.rcra_id, date, agency_epa) *, h.rcra_id is not null as handler_not_null from evaluations e
+left join output.handlers h on h.rcra_id = e.rcra_id and e.date > h.receive_date
+order by e.rcra_id, date, agency_epa, receive_date desc
         """.format(doy=doy, date_min=date_min, date_max=date_max), engine)
 
+        df = _drop_handler_rcra_id(df)
         self.df = df
 
     def write(self, directory):
@@ -98,3 +98,12 @@ order by rcra_id, date, receive_date desc
 
         self.X = X
         self.y = y
+
+# query returns two rcra id, one from investigations and one from handlers
+# drop the one from handlers because it has nulls
+def _drop_handler_rcra_id(df):
+    ids = [i for i in xrange(len(df.columns)) if df.columns[i] == 'rcra_id']
+    j = ids[np.argmin( map(lambda i: df.ix[:,i].notnull().sum(), ids))]
+    keep = [True] * len(df.columns)
+    keep[j] = False
+    return df.ix[:,keep]
