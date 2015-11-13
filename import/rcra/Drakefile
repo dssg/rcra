@@ -41,3 +41,6 @@ import/rcra/load_scripts/ <- import/rcra/make_import_scripts.sh, import/rcra/dat
 ; import CSVs in to PostgreSQL data base
 $[PSQL_DIR]/rcra <- import/rcra/import_rcra_data.sh, !$[DATA_DIR]/import/rcra/, import/rcra/load_scripts
     $INPUT $INPUT1 $INPUT2 && touch $OUTPUT
+
+URL="https://echo.epa.gov/files/echodownloads/rcra_downloads.zip"
+$[DATA_DIR]/import/rcra/rcra_downloads.zip, $[DATA_DIR]/import/rcra/downloads/ <- [-timecheck method:wget_unzip]
