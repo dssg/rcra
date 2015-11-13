@@ -98,16 +98,15 @@ order by e.rcra_id, date, receive_date desc
         if not testing_state:
             test = test & df.agency_epa
 
-
         df,train,test = data.train_test_subset(df, train, test)
         self.cv = (train, test)
 
         # censor formal enforcements based on corresponding min date
         for c in ['', '_epa', '_state']:
-            df['formal_enforcement'+c] = df['formal_enforcement'+c].where(test | (df['min_formal_enforcement_date'+c] < self.today))
+            df['formal_enforcement'+c] = df['formal_enforcement'+c].where(test | (df['min_formal_enforcement_date'+c] < self.today), False)
         # set violation in training set
-        df.loc[train, 'violation'] = df.loc[train, training_outcome]
-        df.loc[test, 'violation'] = df.loc[test, training_outcome]
+        df.loc[train, 'violation'] = df.loc[train, training_outcome].copy()
+        df.loc[test, 'violation'] = df.loc[test, training_outcome].copy()
 
         self.masks = df[['formal_enforcement']].copy()
         self.masks['active'] = df['active'] & df['handler_not_null']
