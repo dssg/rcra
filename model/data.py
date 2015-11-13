@@ -106,7 +106,7 @@ order by e.rcra_id, date, receive_date desc
             df['formal_enforcement'+c] = df['formal_enforcement'+c].where(test | (df['min_formal_enforcement_date'+c] < self.today), False)
         # set violation in training set
         df.loc[train, 'violation'] = df.loc[train, training_outcome].copy()
-        df.loc[test, 'violation'] = df.loc[test, training_outcome].copy()
+        df.loc[test, 'violation'] = df.loc[test, testing_outcome].copy()
 
         self.masks = df[['formal_enforcement']].copy()
         self.masks['active'] = df['active'] & df['handler_not_null']
