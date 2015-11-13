@@ -62,3 +62,5 @@ select
 
 from rcra.hhandler
 );
+
+create index on output.handlers (rcra_id, receive_date);

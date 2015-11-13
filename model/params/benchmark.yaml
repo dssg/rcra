@@ -8,12 +8,18 @@ transforms:
   - year : [2012, 2013, 2014]
     train_years : [8]
     training_state : [False]
+    training_outcome : [violation, violation_epa, formal_enforcement]
 
 models:
   - name : [sklearn.ensemble.RandomForestClassifier]
     n_estimators : [500]
     criterion : [entropy]
     n_jobs : [-1]
+
+#  - name : [sklearn.linear_model.LogisticRegression]
+#    C : [.01,.1,1]
+#    penalty : [l1]
+
 
 metrics:
   - name : [drain.metrics.baseline]
