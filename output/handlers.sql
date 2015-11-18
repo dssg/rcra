@@ -4,9 +4,9 @@ create table output.handlers as (
 
 select 
     epa_handler_id  as rcra_id,
-    substring(epa_handler_id for 2)  as handler_state,
-    
-    receive_date, 
+    substring(epa_handler_id for 2)  as state,
+    receive_date,
+
     non_notifier = 'X'  as handler_non_notifier,
     non_notifier = 'O'  as handler_non_notifier_former,
     non_notifier = 'E'  as handler_non_notifier_exempt,
