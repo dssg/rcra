@@ -3,7 +3,7 @@ data:
   - name : [epa.model.data.EpaData]
     min_year : [2002]
     max_year : [2014]
-    min_predict_year : [2012]
+    min_predict_year : [2013]
     max_predict_year : [2014]
 
 transforms:
@@ -12,11 +12,12 @@ transforms:
     training_state : [False]
 #    testing_evaluated: [True, False]
     training_outcome : [violation_epa]
+    region : [null, 1, 2, 3, 4, 5, 6, 7, 8,  9]
 #    training_outcome : [violation, violation_epa, formal_enforcement]
 
 models:
   - name : [sklearn.ensemble.RandomForestClassifier]
-    n_estimators : [500]
+    n_estimators : [1000]
     criterion : [entropy]
     n_jobs : [-1]
 

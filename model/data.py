@@ -3,6 +3,8 @@ from drain import util
 from drain.util import index_as_series
 from drain import data
 
+from epa.output.investigations_aggregated import InvestigationsAggregator
+
 import os
 from datetime import date
 import pandas as pd
@@ -10,11 +12,12 @@ import numpy as np
 
 class EpaData(ModelData):
     psql_dir = os.environ['PSQL_DIR'] if 'PSQL_DIR' in os.environ else ''
+    data_dir = os.environ['DATA_DIR'] if 'DATA_DIR' in os.environ else ''
     DEPENDENCIES = [os.path.join(psql_dir, d) for d in ['output/investigations', 'output/handlers', 'output/region_states' ]]
 
     EXCLUDE = {'formal_enforcement_epa', 'formal_enforcement_state', 'formal_enforcement',
                'min_formal_enforcement_date_epa', 'min_formal_enforcement_date_state', 'min_formal_enforcement_date',
-               'receive_date', 'violation_epa', 'violation_state',
+               'receive_date', 'violation_epa', 'violation_state', 'violation',
                'active_today'}
 
     def __init__(self, min_year, max_year, min_predict_year, max_predict_year, month=1, day=1, outcome_years=1):
@@ -101,8 +104,16 @@ where evaluated or (h.rcra_id is not null)
 order by i.rcra_id, date, receive_date desc
 """
         df = pd.read_sql(sql.format(doy=doy, date_min=date_min, date_max=date_max, min_predict_year=self.min_predict_year, max_predict_year=self.max_predict_year), engine)
-
         df = _drop_handler_rcra_id(df)
+
+        investigations_aggregator = InvestigationsAggregator(os.path.join(self.data_dir, 'output/aggregated/'))
+        agg = investigations_aggregator.read(left=df)
+
+        # this should be done in read
+        util.prefix_columns(agg, 'investigations_', ['rcra_id', 'date'])
+
+        df = df.merge(agg, on=['rcra_id', 'date'], how='left')
+
         self.df = df
 
     def write(self, directory):
@@ -112,6 +123,7 @@ order by i.rcra_id, date, receive_date desc
             testing_state=False, # whether or not the test set should be evaluated by epa, i.e. agency_epa=True
             testing_evaluated=False, # True means only predict on evaluated (labeled) facilities
             training_outcome = 'violation_epa', testing_outcome='violation_epa',
+            region = 0,
             exclude=[], include=[],
             impute=True, normalize=True):
         if year - train_years < self.min_year:
@@ -119,6 +131,8 @@ order by i.rcra_id, date, receive_date desc
 
         self.today = date(year, self.month, self.day)
         df = self.df
+        if region != 0:
+            df.drop(df.index[~(df.region == region)], inplace=True)
 
         min_date = date(year-train_years, self.month, self.day)
         max_date = date(year, self.month, self.day)
@@ -139,7 +153,6 @@ order by i.rcra_id, date, receive_date desc
             if not (self.min_predict_year <= year <= self.max_predict_year):
                 raise ValueError('Cannot predict on unevaluated facilities: {1} not between {2} and {3}'.format(
                         year, min_predict_year, max_predict_year))
-        df.loc[test, 'agency_epa'] = not testing_state
 
         df,train,test = data.train_test_subset(df, train, test)
         self.cv = (train, test)
@@ -147,14 +160,16 @@ order by i.rcra_id, date, receive_date desc
         # censor formal enforcements based on corresponding min date
         for c in ['', '_epa', '_state']:
             df['formal_enforcement'+c] = df['formal_enforcement'+c].where(test | (df['min_formal_enforcement_date'+c] < self.today), False)
-        # set violation in training set
-        df.loc[train, 'violation'] = df.loc[train, training_outcome].copy()
-        df.loc[test, 'violation'] = df.loc[test, testing_outcome].copy()
 
-        self.masks = df[['formal_enforcement', 'receive_date', 'active_today', 'region']]
+        self.masks = df[['formal_enforcement', 'active_today', 'region', 'evaluated', 'violation_state', 'violation_epa', 'violation', 'agency_epa', 'handler_received']]
+
+        # set violation in training set
+        df['true'] = df[training_outcome].copy()
+        df.loc[test, 'true'] = df.loc[test, testing_outcome].copy()
+        df.loc[test, 'agency_epa'] = not testing_state
         
         self.EXCLUDE.update(exclude)
-        X,y = data.Xy(df, 'violation', exclude=self.EXCLUDE, include=set(include), category_classes={'state', 'region'})
+        X,y = data.Xy(df, 'true', exclude=self.EXCLUDE, include=set(include), category_classes={'state', 'region'})
 
         if impute:
             X.fillna(0, inplace=True)

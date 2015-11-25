@@ -2,9 +2,10 @@ import pandas as pd
 import numpy as np
 import sys
 import dateutil
+from datetime import date
 
 from drain import util
-from drain.aggregate import aggregate, aggregate_counts
+from drain.aggregate import aggregate, aggregate_counts, SpacetimeAggregator
 from drain import data
 from epa.output.investigations import get_investigations
 
@@ -85,3 +86,12 @@ if __name__ == '__main__':
 
     df2 = df2.astype(np.float32)
     df2.to_hdf(output, 'df', mode='w')
+
+class InvestigationsAggregator(SpacetimeAggregator):
+    def __init__(self, basedir):
+        SpacetimeAggregator.__init__(self, 
+                {'facility':[-1]},
+                ['rcra_id'],
+                [date(y,1,1) for y in xrange(2002,2016+1)],
+                'investigations',
+                basedir)
