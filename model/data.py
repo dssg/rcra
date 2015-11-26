@@ -18,6 +18,7 @@ class EpaData(ModelData):
     EXCLUDE = {'formal_enforcement_epa', 'formal_enforcement_state', 'formal_enforcement',
                'min_formal_enforcement_date_epa', 'min_formal_enforcement_date_state', 'min_formal_enforcement_date',
                'receive_date', 'violation_epa', 'violation_state', 'violation',
+               'violation_future_epa', 'violation_future_state', 'violation_future',
                'active_today'}
 
     def __init__(self, min_year, max_year, min_predict_year, max_predict_year, month=1, day=1, outcome_years=1):
@@ -89,6 +90,16 @@ facility_years as (
     select * from investigations
     UNION ALL
     select * from active_not_investigated
+),
+
+future as (
+    select i1.rcra_id, i1.date,
+        bool_or(CASE WHEN i2.agency_epa THEN i2.violation ELSE null END) as violation_future_epa,
+        bool_or(CASE WHEN i2.agency_epa THEN null ELSE i2.violation END) as violation_future_state,
+        bool_or(i2.violation) as violation_future
+    from facility_years i1 join output.investigations i2
+        on i1.rcra_id = i2.rcra_id and (extract(year from i1.date)::text || '-{doy}')::date <= i2.start_date
+    group by 1,2
 )
 
 select distinct on(i.rcra_id, date) *,
@@ -96,6 +107,7 @@ h.rcra_id is not null as handler_received,
 date - receive_date as handler_age
 
 from facility_years i
+left join future using (rcra_id, date)
 left join output.handlers h
 on h.rcra_id = i.rcra_id and i.date > h.receive_date
 left join output.region_states using (state)
@@ -161,7 +173,9 @@ order by i.rcra_id, date, receive_date desc
         for c in ['', '_epa', '_state']:
             df['formal_enforcement'+c] = df['formal_enforcement'+c].where(test | (df['min_formal_enforcement_date'+c] < self.today), False)
 
-        self.masks = df[['formal_enforcement', 'active_today', 'region', 'evaluated', 'violation_state', 'violation_epa', 'violation', 'agency_epa', 'handler_received']]
+        self.masks = df[['formal_enforcement', 'active_today', 'region', 
+                         'evaluated', 'violation_state', 'violation_epa', 'violation', 'agency_epa', 
+                          'handler_received', 'violation_future', 'violation_future_epa', 'violation_future_state']]
 
         # set violation in training set
         df['true'] = df[training_outcome].copy()

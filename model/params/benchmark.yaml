@@ -12,12 +12,12 @@ transforms:
     training_state : [False]
 #    testing_evaluated: [True, False]
     training_outcome : [violation_epa]
-    region : [null, 1, 2, 3, 4, 5, 6, 7, 8,  9]
+#    region : [0, 1, 2, 3, 4, 5, 6, 7, 8,  9, 10]
 #    training_outcome : [violation, violation_epa, formal_enforcement]
 
 models:
   - name : [sklearn.ensemble.RandomForestClassifier]
-    n_estimators : [1000]
+    n_estimators : [500]
     criterion : [entropy]
     n_jobs : [-1]
 
@@ -31,4 +31,5 @@ metrics:
     outcome : [null, formal_enforcement]
   - name : [drain.metrics.precision]
     k : [100,200,500]
+    dropna : [True]
     outcome : [null, formal_enforcement]
