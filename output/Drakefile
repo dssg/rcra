@@ -7,7 +7,7 @@ $[PSQL_DIR]/output/handlers <- output/handlers.sql, $[PSQL_DIR]/rcra [method:psq
 
 $(for y in {2002..2016}; do
 
-echo "\$[DATA_DIR]/output/investigations_aggregated_"$y"-01-01.hdf <- output/investigations_aggregated.py, output/investigations.py, $[PSQL_DIR]/output/investigations"
+echo "\$[DATA_DIR]/output/aggregated/investigations/"$y"0101.hdf <- output/investigations_aggregated.py, output/investigations.py, $[PSQL_DIR]/output/investigations"
 echo "    mkdir -p \$(dirname \$OUTPUT)"
 echo "    python \$INPUT "$y"-01-01  \$OUTPUT"
 

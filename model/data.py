@@ -20,6 +20,8 @@ class EpaData(ModelData):
                'receive_date', 'violation_epa', 'violation_state', 'violation',
                'violation_future_epa', 'violation_future_state', 'violation_future',
                'active_today'}
+    DATES = {'date', 'min_formal_enforcement_date_epa', 'min_formal_enforcement_date_state', 
+               'min_formal_enforcement_date', 'receive_date'}
 
     def __init__(self, min_year, max_year, min_predict_year, max_predict_year, month=1, day=1, outcome_years=1):
         if outcome_years != 1:
@@ -98,7 +100,7 @@ future as (
         bool_or(CASE WHEN i2.agency_epa THEN null ELSE i2.violation END) as violation_future_state,
         bool_or(i2.violation) as violation_future
     from facility_years i1 join output.investigations i2
-        on i1.rcra_id = i2.rcra_id and (extract(year from i1.date)::text || '-{doy}')::date <= i2.start_date
+        on i1.rcra_id = i2.rcra_id and i1.date <= i2.start_date
     group by 1,2
 )
 
@@ -121,7 +123,7 @@ order by i.rcra_id, date, receive_date desc
         investigations_aggregator = InvestigationsAggregator(os.path.join(self.data_dir, 'output/aggregated/'))
         agg = investigations_aggregator.read(left=df)
 
-        # this should be done in read
+        # TODO: prefix in SpacetimeAggregator.read()
         util.prefix_columns(agg, 'investigations_', ['rcra_id', 'date'])
 
         df = df.merge(agg, on=['rcra_id', 'date'], how='left')
@@ -137,6 +139,7 @@ order by i.rcra_id, date, receive_date desc
             training_outcome = 'violation_epa', testing_outcome='violation_epa',
             region = 0,
             exclude=[], include=[],
+#            spacetime_normalize = None,
             impute=True, normalize=True):
         if year - train_years < self.min_year:
             raise ValueError('Invalid argument: year - train_years < min_year')
@@ -149,6 +152,11 @@ order by i.rcra_id, date, receive_date desc
         min_date = date(year-train_years, self.month, self.day)
         max_date = date(year, self.month, self.day)
         df = df.loc[df.index[(df.date >= min_date) & (df.date <= max_date)]]
+
+#        if spacetime_normalize is not None:
+#            spacetime_columns = data.select_regexes(df.columns, ['investigations_.*'])
+#            df_spacetime = df.loc[:,spacetime_columns]
+#            df.loc[:, spacetime_columns] = df_spacetime.groupby(df['date']).transform(data.normalize)
 
         df.set_index(['rcra_id', 'date'], inplace=True)
         df.rename(columns={'handler_state':'state'}, inplace=True)
