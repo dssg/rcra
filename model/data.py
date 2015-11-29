@@ -140,6 +140,7 @@ order by i.rcra_id, date, receive_date desc
             region = 0,
             exclude=[], include=[],
 #            spacetime_normalize = None,
+            impute_days_since=False,
             impute=True, normalize=True):
         if year - train_years < self.min_year:
             raise ValueError('Invalid argument: year - train_years < min_year')
