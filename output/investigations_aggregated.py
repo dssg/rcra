@@ -85,6 +85,7 @@ class InvestigationsAggregator(SpacetimeAggregator):
         columns = self.get_columns(date)
 
         df2 = aggregate(df, columns, index='rcra_id')
+        df2.reset_index(inplace=True)
         return df2
 
     def expand(self, df):
