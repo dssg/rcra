@@ -5,12 +5,4 @@ $[PSQL_DIR]/output/investigations <- output/investigations.sql, $[PSQL_DIR]/rcra
 $[PSQL_DIR]/output/region_states <- output/create_region_states.sql [method:psql]
 $[PSQL_DIR]/output/handlers <- output/handlers.sql, $[PSQL_DIR]/rcra [method:psql]
 
-;$(for y in {2002..2016}; do
-;
-;echo "\$[DATA_DIR]/output/aggregated/investigations/"$y"0101.hdf <- output/investigations_aggregated.py, output/investigations.py, $[PSQL_DIR]/output/investigations"
-;echo "    mkdir -p \$(dirname \$OUTPUT)"
-;echo "    python \$INPUT "$y"-01-01  \$OUTPUT"
-;
-;done)
-
 $(python ../drain/bin/aggregator_drake.py epa.output.investigations_aggregated.InvestigationsAggregator "\$[DATA_DIR]/output/aggregated/" "\$[PSQL_DIR]")
