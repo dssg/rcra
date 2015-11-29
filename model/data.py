@@ -122,6 +122,7 @@ order by i.rcra_id, date, receive_date desc
 
         investigations_aggregator = InvestigationsAggregator(os.path.join(self.data_dir, 'output/aggregated/'))
         agg = investigations_aggregator.read(left=df)
+        agg = investigations_aggregator.expand(agg)
 
         # TODO: prefix in SpacetimeAggregator.read()
         util.prefix_columns(agg, 'investigations_', ['rcra_id', 'date'])

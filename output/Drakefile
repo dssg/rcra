@@ -5,4 +5,4 @@ $[PSQL_DIR]/output/investigations <- output/investigations.sql, $[PSQL_DIR]/rcra
 $[PSQL_DIR]/output/region_states <- output/create_region_states.sql [method:psql]
 $[PSQL_DIR]/output/handlers <- output/handlers.sql, $[PSQL_DIR]/rcra [method:psql]
 
-$(python ../drain/bin/aggregator_drake.py epa.output.investigations_aggregated.InvestigationsAggregator "\$[DATA_DIR]/output/aggregated/" "\$[PSQL_DIR]")
+$(aggregator_drake.py epa.output.investigations_aggregated.InvestigationsAggregator "\$[DATA_DIR]/output/aggregated/" "\$[PSQL_DIR]")

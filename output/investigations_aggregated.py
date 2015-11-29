@@ -86,17 +86,19 @@ class InvestigationsAggregator(SpacetimeAggregator):
 
         df2 = aggregate(df, columns, index='rcra_id')
         return df2
-        columns = df2.columns
+
+    def expand(self, df):
+        columns = df.columns
         
         for c in self.list_columns:
-            data.expand_counts(df2, c)
+            data.expand_counts(df, c)
         
         # add proportions for all the list columns
-        for c in df2.columns.difference(columns):
-                df2[c + '_prop'] = df2[c] / df2['count']
+        for c in df.columns.difference(columns):
+                df[c + '_prop'] = df[c] / df['count']
         
         # add proportions for the bool column counts
         for c in self.bool_columns:
-            df2[c + '_prop'] = df2[c + '_count'] / df2['count']
+            df[c + '_prop'] = df[c + '_count'] / df['count']
 
-        return df2
+        return df
