@@ -46,11 +46,12 @@ class EpaData(ModelData):
         date_min = date(self.min_year, self.month, self.day)
         date_max = date(self.max_year + self.outcome_years, self.month, self.day)
 
+# TODO: state is missing when handler is missing
+# move state, hnaics region and active to separate table called output.facilities
         sql ="""
 with investigations as (
 select rcra_id,
        ((extract(year from start_date)::text || '-{doy}')::date - ((extract(year from start_date)::text || '-{doy}')::date > start_date)::int * interval '1 year')::date as date,
-        bool_or(active_site != '-----') as active_today,
         true as evaluated,
 
         bool_or(agency_epa) as agency_epa,
@@ -66,21 +67,20 @@ select rcra_id,
         min(CASE WHEN agency_epa THEN null ELSE formal_enforcement_date END) as min_formal_enforcement_date_state,
         min(formal_enforcement_date) as min_formal_enforcement_date
         
-from output.investigations left join rcra.facilities
-            on rcra_id = id_number
+from output.investigations 
         where start_date between '{date_min}' and '{date_max}'
         group by 1,2
 ),
 
 active as (
-    select id_number as rcra_id, (year::text || '-{doy}')::date
-    from rcra.facilities
+    select rcra_id, (year::text || '-{doy}')::date
+    from output.facilities
     join generate_series({min_predict_year}, {max_predict_year}) as year on 1=1
-    where active_site != '-----'
+    where active_today
 ),
 
 active_not_investigated as (
-    select a.rcra_id, a.date, true as active_today, false as evaluated,
+    select a.rcra_id, a.date, false as evaluated,
         null::bool, null::bool, null::bool, null::bool,
         null::bool, null::bool, null::bool,
         null::date, null::date, null::date
@@ -105,14 +105,14 @@ future as (
 )
 
 select distinct on(i.rcra_id, date) *,
-h.rcra_id is not null as handler_received,
-date - receive_date as handler_age
+    h.rcra_id is not null as handler_received,
+    date - receive_date as handler_age
 
 from facility_years i
 left join future using (rcra_id, date)
+left join output.facilities using (rcra_id)
 left join output.handlers h
-on h.rcra_id = i.rcra_id and i.date > h.receive_date
-left join output.region_states using (state)
+    on h.rcra_id = i.rcra_id and i.date > h.receive_date
 
 where evaluated or (h.rcra_id is not null)
 order by i.rcra_id, date, receive_date desc
@@ -154,11 +154,6 @@ order by i.rcra_id, date, receive_date desc
         min_date = date(year-train_years, self.month, self.day)
         max_date = date(year, self.month, self.day)
         df = df.loc[df.index[(df.date >= min_date) & (df.date <= max_date)]]
-
-#        if spacetime_normalize is not None:
-#            spacetime_columns = data.select_regexes(df.columns, ['investigations_.*'])
-#            df_spacetime = df.loc[:,spacetime_columns]
-#            df.loc[:, spacetime_columns] = df_spacetime.groupby(df['date']).transform(data.normalize)
 
         df.set_index(['rcra_id', 'date'], inplace=True)
         df.rename(columns={'handler_state':'state'}, inplace=True)

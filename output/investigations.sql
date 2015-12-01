@@ -25,3 +25,5 @@ from rcra.cmecomp3
    and evaluation_type not in ('FUI','SNN','SNY','FSD')
 
 group by handler_id, evaluation_start_date;
+
+alter table output.investigations add primary key (rcra_id, start_date);

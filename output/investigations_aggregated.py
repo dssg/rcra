@@ -84,9 +84,19 @@ class InvestigationsAggregator(SpacetimeAggregator):
         df = get_investigations(date, engine)
         columns = self.get_columns(date)
 
-        df2 = aggregate(df, columns, index='rcra_id')
-        df2.reset_index(inplace=True)
-        return df2
+        dfs = []
+        for space in spacetimes:
+            for time in spacetimes[space]:
+                # TODO: subset for the given space and time
+                aggregated = aggregate(df, columns, index='rcra_id')
+                aggregated.reset_index(inplace=True)
+
+                aggregated['space']= space
+                aggregated['time'] = time
+
+                dfs.append(aggregated)
+                
+        return pd.concat(dfs)
 
     def expand(self, df):
         columns = df.columns
