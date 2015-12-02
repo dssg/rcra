@@ -4,17 +4,29 @@ DROP TABLE IF EXISTS output.facilities;
 CREATE TABLE output.facilities AS (
 
 -- get a comprehensive list of facilities from handler, cmecomp3 and facilities
-with f as (select epa_handler_id as rcra_id from rcra.hhandler UNION select id_number from rcra.facilities UNION select handler_id from rcra.cmecomp3)
+
+with active_facilities as (
+    select id_number as rcra_id, bool_or(active_site != '-----') as active_today
+    from rcra.facilities group by id_number
+),
+
+naics as (
+    select epa_handler_id as rcra_id, array_agg(distinct naics_code) as naics_codes
+    from rcra.hnaics group by epa_handler_id
+),
+
+f as (select epa_handler_id as rcra_id from rcra.hhandler UNION select rcra_id from active_facilities UNION select handler_id from rcra.cmecomp3)
 
 select rcra_id,
     substring(rcra_id for 2) as state,
     region,
-    active_site != '-----' as active_today,
-    naics_code
+    active_today,
+    naics_codes
 from f
-left join rcra.facilities on rcra_id = id_number
-left join rcra.hnaics on rcra_id = epa_handler_id
+left join active_facilities using (rcra_id)
+left join naics using (rcra_id)
 left join output.region_states on substring(rcra_id for 2) = state
+where rcra_id is not null
 );
 
 alter table output.facilities add primary key (rcra_id);

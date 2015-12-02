@@ -85,14 +85,14 @@ class InvestigationsAggregator(SpacetimeAggregator):
         columns = self.get_columns(date)
 
         dfs = []
-        for space in spacetimes:
-            for time in spacetimes[space]:
+        for space in self.spacetimes:
+            for time in self.spacetimes[space]:
                 # TODO: subset for the given space and time
                 aggregated = aggregate(df, columns, index='rcra_id')
                 aggregated.reset_index(inplace=True)
 
-                aggregated['space']= space
-                aggregated['time'] = time
+                #aggregated['space']= space
+                #aggregated['time'] = time
 
                 dfs.append(aggregated)
                 
@@ -106,10 +106,10 @@ class InvestigationsAggregator(SpacetimeAggregator):
         
         # add proportions for all the list columns
         for c in df.columns.difference(columns):
-                df[c + '_prop'] = df[c] / df['count']
+            df[c + '_prop'] = df[c] / df['investigations_count']
         
         # add proportions for the bool column counts
         for c in self.bool_columns:
-            df[c + '_prop'] = df[c + '_count'] / df['count']
+            df[c + '_prop'] = df[c + '_count'] / df['investigations_count']
 
         return df

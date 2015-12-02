@@ -19,7 +19,7 @@ class EpaData(ModelData):
                'min_formal_enforcement_date_epa', 'min_formal_enforcement_date_state', 'min_formal_enforcement_date',
                'receive_date', 'violation_epa', 'violation_state', 'violation',
                'violation_future_epa', 'violation_future_state', 'violation_future',
-               'active_today'}
+               'active_today', 'naics_codes'}
     DATES = {'date', 'min_formal_enforcement_date_epa', 'min_formal_enforcement_date_state', 
                'min_formal_enforcement_date', 'receive_date'}
 
@@ -126,8 +126,12 @@ order by i.rcra_id, date, receive_date desc
 
         # TODO: prefix in SpacetimeAggregator.read()
         util.prefix_columns(agg, 'investigations_', ['rcra_id', 'date'])
-
         df = df.merge(agg, on=['rcra_id', 'date'], how='left')
+
+        df['naics1'] = df.naics_codes.dropna().apply(lambda n: set(i[0] for i in n) )
+        df['naics2'] = df.naics_codes.dropna().apply(lambda n: set(i[0:2] for i in n) )
+        data.binarize_set(df, 'naics1')
+        data.binarize_set(df, 'naics2')
 
         self.df = df
 
@@ -169,7 +173,7 @@ order by i.rcra_id, date, receive_date desc
         else:
             if not (self.min_predict_year <= year <= self.max_predict_year):
                 raise ValueError('Cannot predict on unevaluated facilities: {1} not between {2} and {3}'.format(
-                        year, min_predict_year, max_predict_year))
+                        year, self.min_predict_year, self.max_predict_year))
 
         df,train,test = data.train_test_subset(df, train, test)
         self.cv = (train, test)
@@ -178,7 +182,7 @@ order by i.rcra_id, date, receive_date desc
         for c in ['', '_epa', '_state']:
             df['formal_enforcement'+c] = df['formal_enforcement'+c].where(test | (df['min_formal_enforcement_date'+c] < self.today), False)
 
-        self.masks = df[['formal_enforcement', 'active_today', 'region', 
+        self.masks = df[['formal_enforcement', 'active_today', 'region', 'state', 'naics_codes',
                          'evaluated', 'violation_state', 'violation_epa', 'violation', 'agency_epa', 
                           'handler_received', 'violation_future', 'violation_future_epa', 'violation_future_state']]
 
