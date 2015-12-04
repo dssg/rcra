@@ -19,7 +19,8 @@ class EpaData(ModelData):
                'min_formal_enforcement_date_epa', 'min_formal_enforcement_date_state', 'min_formal_enforcement_date',
                'receive_date', 'violation_epa', 'violation_state', 'violation',
                'violation_future_epa', 'violation_future_state', 'violation_future',
-               'active_today', 'naics_codes'}
+               'active_today', 'naics_codes', 'max_start_date'}
+
     DATES = {'date', 'min_formal_enforcement_date_epa', 'min_formal_enforcement_date_state', 
                'min_formal_enforcement_date', 'receive_date'}
 

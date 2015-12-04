@@ -11,6 +11,7 @@ transforms:
     train_years : [8]
     training_state : [False]
     training_outcome : [violation_epa]
+    exclude : [null, [investigations_facility_all.*], [investigations_facility_1y.*], [investigations_facility_(1|5)y.*], [investigations_facility_5y.*], [investigations_.*]]
 #    exclude : [ null, [naics.*], [naics2.*], [investigations_.*]]
 #    exclude : [ null, [investigations_.*], [investigations_violation_types.*],[investigations_violation_(types|classes).*] ]
 #    exclude: [[], [investigations_.*]]
