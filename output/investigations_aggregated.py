@@ -3,24 +3,27 @@ import numpy as np
 import sys
 import os
 import dateutil
-from datetime import date
+from datetime import date, datetime
+import logging
 
 from drain import util
-from drain.aggregate import aggregate, aggregate_counts, SpacetimeAggregator
+from drain.aggregate import aggregate, censor, aggregate_counts, SpacetimeAggregator, Spacedeltas
 from drain import data
 from epa.output.investigations import get_investigations
 
 day = np.timedelta64(1, 'D')
 
 class InvestigationsAggregator(SpacetimeAggregator):
+    # these are booleans that get summed
     bool_columns = ['citizen_complaint', 'multimedia_inspection', 'sampling', 'not_subtitle_c', 
                     'corrective_action_component', 'violation_state', 'violation_epa',
                     'enforcement_state', 'enforcement_epa'
     ]
-        
+    
+    # these are arrays that get concatenated and then counted and proportioned
     list_columns = ['violation_types', 'violation_classes', 'enforcement_types', 'evaluation_types', 
                     'focus_areas', 'land_types', 'rtc_qualifiers', 'sep_types',
-                    #'former_citations' ignore former citations for now
+                    #'former_citations' ignore former citations for now...
     ]
  
     def get_columns(self, date):
@@ -29,7 +32,7 @@ class InvestigationsAggregator(SpacetimeAggregator):
                 'epa_count': {'numerator': 'agency_epa'},
                 'state_count': {'numerator': 'agency_state'},
                 
-                'days_since_last_inspection': {'numerator': lambda i: (date - i['start_date']) / day, 'func': 'min'},
+                'days_since_last_evaluation': {'numerator': lambda i: (date - i['start_date']) / day, 'func': 'min'},
                 'days_since_last_violation': {'numerator': lambda i: (date - i['max_violation_determined_date']) / day, 'func': 'min'},
         
                 'max_time_to_violation': {'numerator': lambda i: (i['max_violation_determined_date'] - i['start_date']) / day, 'func': 'max'},
@@ -69,9 +72,8 @@ class InvestigationsAggregator(SpacetimeAggregator):
         
     def __init__(self, basedir, psql_dir=''):
         SpacetimeAggregator.__init__(self, 
-                {'facility':[-1]},
-                ['rcra_id'],
-                [date(y,1,1) for y in xrange(2002,2016+1)],
+                {'facility':Spacedeltas('rcra_id',['all', '5y', '1y']) },
+                [date(y,1,1) for y in xrange(2004,2016+1)],
                 'investigations',
                 basedir)
 
@@ -85,31 +87,21 @@ class InvestigationsAggregator(SpacetimeAggregator):
         columns = self.get_columns(date)
 
         dfs = []
-        for space in self.spacetimes:
-            for time in self.spacetimes[space]:
-                # TODO: subset for the given space and time
-                aggregated = aggregate(df, columns, index='rcra_id')
+        for space, st in self.spacedeltas.iteritems():
+            spatial_index = st.spatial_index
+            df_s = df[df[spatial_index].notnull()] # ignore when spatial index is null
+
+            for s, delta in st.deltas.iteritems():
+                logging.info('Aggregating %s %s' % (space, s))
+
+                df_st = censor(df_s, 'start_date', date, delta)
+                aggregated = aggregate(df_st, columns, index=spatial_index)
                 aggregated.reset_index(inplace=True)
 
-                #aggregated['space']= space
-                #aggregated['time'] = time
+                aggregated.rename(columns={spatial_index:'id'}, inplace=True)
+                aggregated['space'] = space
+                aggregated['delta'] = s
 
                 dfs.append(aggregated)
                 
         return pd.concat(dfs)
-
-    def expand(self, df):
-        columns = df.columns
-        
-        for c in self.list_columns:
-            data.expand_counts(df, c)
-        
-        # add proportions for all the list columns
-        for c in df.columns.difference(columns):
-            df[c + '_prop'] = df[c] / df['investigations_count']
-        
-        # add proportions for the bool column counts
-        for c in self.bool_columns:
-            df[c + '_prop'] = df[c + '_count'] / df['investigations_count']
-
-        return df

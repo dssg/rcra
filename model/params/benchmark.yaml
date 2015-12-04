@@ -11,10 +11,10 @@ transforms:
     train_years : [8]
     training_state : [False]
     training_outcome : [violation_epa]
-    exclude : [ null, [naics.*], [naics2.*], [investigations_.*]]
-#    spacetime_normalize : [True, null]
+#    exclude : [ null, [naics.*], [naics2.*], [investigations_.*]]
+#    exclude : [ null, [investigations_.*], [investigations_violation_types.*],[investigations_violation_(types|classes).*] ]
 #    exclude: [[], [investigations_.*]]
-#    region : [0, 1, 2, 3, 4, 5, 6, 7, 8,  9, 10]
+#    region : [null, 1, 2, 3, 4, 5, 6, 7, 8,  9, 10]
 #    training_outcome : [violation, violation_epa, formal_enforcement]
 
 models:

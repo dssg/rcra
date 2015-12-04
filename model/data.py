@@ -1,12 +1,12 @@
 from drain.data import ModelData, censor_column
-from drain import util
 from drain.util import index_as_series
-from drain import data
+from drain import data, aggregate, util
 
 from epa.output.investigations_aggregated import InvestigationsAggregator
 
 import os
-from datetime import date
+from datetime import date,datetime
+import logging
 import pandas as pd
 import numpy as np
 
@@ -117,17 +117,20 @@ left join output.handlers h
 where evaluated or (h.rcra_id is not null)
 order by i.rcra_id, date, receive_date desc
 """
-        df = pd.read_sql(sql.format(doy=doy, date_min=date_min, date_max=date_max, min_predict_year=self.min_predict_year, max_predict_year=self.max_predict_year), engine)
+        logging.info('Reading investigations')
+        df = pd.read_sql(sql.format(doy=doy, date_min=date_min, date_max=date_max, min_predict_year=self.min_predict_year, max_predict_year=self.max_predict_year), engine, parse_dates=['date'])
         df = _drop_handler_rcra_id(df)
 
+        logging.info('Reading investigations_aggregated')
         investigations_aggregator = InvestigationsAggregator(os.path.join(self.data_dir, 'output/aggregated/'))
         agg = investigations_aggregator.read(left=df)
-        agg = investigations_aggregator.expand(agg)
+#        logging.info('Expanding investigations_aggregated')
+#        agg = investigations_aggregator.expand(agg)
+        
+        logging.info('Joining investigations_aggregated')
+        df = df.merge(agg, left_on=['rcra_id', 'date'], right_index=True, how='left')
 
-        # TODO: prefix in SpacetimeAggregator.read()
-        util.prefix_columns(agg, 'investigations_', ['rcra_id', 'date'])
-        df = df.merge(agg, on=['rcra_id', 'date'], how='left')
-
+        logging.info('Expanding naics codes')
         df['naics1'] = df.naics_codes.dropna().apply(lambda n: set(i[0] for i in n) )
         df['naics2'] = df.naics_codes.dropna().apply(lambda n: set(i[0:2] for i in n) )
         data.binarize_set(df, 'naics1')
@@ -142,15 +145,20 @@ order by i.rcra_id, date, receive_date desc
             testing_state=False, # whether or not the test set should be evaluated by epa, i.e. agency_epa=True
             testing_evaluated=False, # True means only predict on evaluated (labeled) facilities
             training_outcome = 'violation_epa', testing_outcome='violation_epa',
+            investigations_expand_counts=False,
             region = 0,
             exclude=[], include=[],
 #            spacetime_normalize = None,
-            impute_days_since=False,
             impute=True, normalize=True):
+
+        logging.info('Splitting train and test sets')
         if year - train_years < self.min_year:
             raise ValueError('Invalid argument: year - train_years < min_year')
 
         self.today = date(year, self.month, self.day)
+        exclude = set(exclude)
+        include = set(include)
+
         df = self.df
         if region != 0:
             df.drop(df.index[~(df.region == region)], inplace=True)
@@ -160,7 +168,6 @@ order by i.rcra_id, date, receive_date desc
         df = df.loc[df.index[(df.date >= min_date) & (df.date <= max_date)]]
 
         df.set_index(['rcra_id', 'date'], inplace=True)
-        df.rename(columns={'handler_state':'state'}, inplace=True)
 
         train = index_as_series(df, 'date') < self.today
         test = ~train
@@ -186,6 +193,9 @@ order by i.rcra_id, date, receive_date desc
                          'evaluated', 'violation_state', 'violation_epa', 'violation', 'agency_epa', 
                           'handler_received', 'violation_future', 'violation_future_epa', 'violation_future_state']]
 
+        logging.info('Expanding investigations')
+        _expand_investigations(df, expand_counts=investigations_expand_counts)
+
         # set violation in training set
         df['true'] = df[training_outcome].copy()
         df.loc[test, 'true'] = df.loc[test, testing_outcome].copy()
@@ -201,6 +211,27 @@ order by i.rcra_id, date, receive_date desc
 
         self.X = X
         self.y = y
+
+def _expand_investigations(df, expand_counts):
+    columns = df.columns
+    list_columns = data.select_regexes(columns,
+            ['investigations_.*_%s' % c for c in InvestigationsAggregator.list_columns])
+
+    if expand_counts:
+        for c in list_columns:
+            data.expand_counts(df, c)
+
+        for c in df.columns.difference(columns):
+            count_column = aggregate.get_spacetime_prefix(c) + 'count'
+            df[c + '_prop'] = df[c] / df[count_column]
+    else:
+        df.drop(list_columns, axis=1, inplace=True)
+
+    for c in data.select_regexes(columns,
+            ['investigations_.*_%s' % c for c in InvestigationsAggregator.bool_columns]):
+
+        count_column = aggregate.get_spacetime_prefix(c) + 'count'
+        df[c + '_prop'] = df[c + '_count'] / df[count_column]
 
 # query returns two rcra id, one from investigations and one from handlers
 # drop the one from handlers because it has nulls
