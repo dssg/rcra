@@ -77,7 +77,7 @@ active as (
     select rcra_id, (year::text || '-{doy}')::date
     from output.facilities
     join generate_series({min_predict_year}, {max_predict_year}) as year on 1=1
-    where active_today
+    where active_today or max_start_date > (year::text || '-{doy}')::date
 ),
 
 active_not_investigated as (
