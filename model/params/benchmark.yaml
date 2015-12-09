@@ -1,20 +1,22 @@
 ---
 data:
   - name : [epa.model.data.EpaData]
-    min_year : [2004]
+    min_year : [2005]
     max_year : [2014]
-    min_predict_year : [2012]
-    max_predict_year : [2014]
 
 transforms:
-  - year : [2013]
-    train_years : [8]
-    training_state : [False]
-    training_outcome : [violation_epa]
-    exclude : [null, [investigations_facility_all.*], [investigations_facility_1y.*], [investigations_facility_(1|5)y.*], [investigations_facility_5y.*], [investigations_.*]]
+#  - year : [2012, 2013, 2014]
+  - year : [2012]
+#    train_years : [3,5,8]
+    train_years : [5]
+    outcome : [violation_epa]
+    exclude : [[investigations_facility_(all).*]]
+#    exclude : [null, [investigations_facility_all.*], [investigations_facility_1y.*], [investigations_facility_(1|5)y.*], [investigations_facility_5y.*], [investigations_.*] ]
 #    exclude : [ null, [naics.*], [naics2.*], [investigations_.*]]
 #    exclude : [ null, [investigations_.*], [investigations_violation_types.*],[investigations_violation_(types|classes).*] ]
-#    exclude: [[], [investigations_.*]]
+#    exclude: [[], [investigations_.*]]a
+    region : [0]
+    #region : [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
 #    region : [null, 1, 2, 3, 4, 5, 6, 7, 8,  9, 10]
 #    training_outcome : [violation, violation_epa, formal_enforcement]
 
@@ -23,6 +25,7 @@ models:
     n_estimators : [1000]
     criterion : [entropy]
     n_jobs : [-1]
+    balanced : [True]
 #  - name : [sklearn.linear_model.LogisticRegression]
 #    C : [.01,.1,1]
 #    penalty : [l1]

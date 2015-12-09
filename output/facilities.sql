@@ -16,24 +16,25 @@ naics as (
 ),
 
 investigations as (
-    select rcra_id, max(start_date) as max_start_date
+    select rcra_id, min(start_date) as min_start_date, max(start_date) as max_start_date
     from output.investigations
     group by 1
 ),
 
+handlers as (
+    select rcra_id, min(receive_date) as min_receive_date, max(receive_date) as max_receive_date
+    from output.handlers group by 1
+),
+
 f as (select epa_handler_id as rcra_id from rcra.hhandler UNION select rcra_id from active_facilities UNION select handler_id from rcra.cmecomp3)
 
-select rcra_id,
-    substring(rcra_id for 2) as state,
-    region,
-    max_start_date,
-    active_today,
-    naics_codes
+select *
 from f
 left join active_facilities using (rcra_id)
 left join naics using (rcra_id)
 left join investigations using (rcra_id)
 left join output.region_states on substring(rcra_id for 2) = state
+left join handlers using (rcra_id)
 where rcra_id is not null
 );
 

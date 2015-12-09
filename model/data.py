@@ -18,13 +18,15 @@ class EpaData(ModelData):
     EXCLUDE = {'formal_enforcement_epa', 'formal_enforcement_state', 'formal_enforcement',
                'min_formal_enforcement_date_epa', 'min_formal_enforcement_date_state', 'min_formal_enforcement_date',
                'receive_date', 'violation_epa', 'violation_state', 'violation',
+               'evaluation_epa', 'evaluation_state', 'evaluation',
                'violation_future_epa', 'violation_future_state', 'violation_future',
-               'active_today', 'naics_codes', 'max_start_date'}
+               'active_today', 'naics_codes', 'max_start_date', 'handler_id',
+               'min_start_date', 'max_receive_date', 'min_receive_date'}
 
     DATES = {'date', 'min_formal_enforcement_date_epa', 'min_formal_enforcement_date_state', 
                'min_formal_enforcement_date', 'receive_date'}
 
-    def __init__(self, min_year, max_year, min_predict_year, max_predict_year, month=1, day=1, outcome_years=1):
+    def __init__(self, min_year, max_year, month=1, day=1, outcome_years=1, min_predict_year=None, max_predict_year=None):
         if outcome_years != 1:
             raise NotImplementedError('Currently only outcome_years=1 is implemented')
 
@@ -33,100 +35,39 @@ class EpaData(ModelData):
         self.month = month
         self.day = day
         self.outcome_years = outcome_years
-        self.min_predict_year = min_predict_year
-        self.max_predict_year = max_predict_year
+        self.min_predict_year = min_predict_year if min_predict_year is not None else min_year
+        self.max_predict_year = max_predict_year if max_predict_year is not None else max_year
 
     def read(self, directory=None):
         if directory is not None:
-            self.df = pd.read_hdf(os.path.join(directory, 'df.h5'), 'df')
+            dfs = []
+            dfs.extend( (pd.read_hdf(os.path.join(directory, 'df%sTrue.h5' % year))
+                    for year in xrange(self.min_year, self.max_year+1) ))
+            dfs.extend( (pd.read_hdf(os.path.join(directory, 'df%sFalse.h5' % year))
+                    for year in xrange(self.min_predict_year, self.max_predict_year+1) ))
+            self.df = pd.concat(dfs)
             return
 
         engine = util.create_engine()
 
-        doy = '%02d-%02d' % (self.month, self.day)
-        date_min = date(self.min_year, self.month, self.day)
-        date_max = date(self.max_year + self.outcome_years, self.month, self.day)
+        sql_vars = {
+            'doy' : '%02d%02d' % (self.month, self.day),
+            'min_date' : date(self.min_year, self.month, self.day),
+            'max_date' : date(self.max_year, self.month, self.day),
+            'min_predict_date' : date(self.min_predict_year, self.month, self.day),
+            'max_predict_date' : date(self.max_predict_year, self.month, self.day),
+        }
 
-# TODO: state is missing when handler is missing
-# move state, hnaics region and active to separate table called output.facilities
-        sql ="""
-with investigations as (
-select rcra_id,
-       ((extract(year from start_date)::text || '-{doy}')::date - ((extract(year from start_date)::text || '-{doy}')::date > start_date)::int * interval '1 year')::date as date,
-        true as evaluated,
-
-        bool_or(agency_epa) as agency_epa,
-        bool_or(CASE WHEN agency_epa THEN violation ELSE null END) as violation_epa, -- was there a violation in an epa inspection? null if no epa inspections
-        bool_or(CASE WHEN agency_epa THEN null ELSE violation END) as violation_state, -- was there a violation in state inspection? null if no state inspections
-        bool_or(violation) as violation,
-
-        bool_or(CASE WHEN agency_epa THEN formal_enforcement ELSE null END) as formal_enforcement_epa,
-        bool_or(CASE WHEN agency_epa THEN null ELSE formal_enforcement END) as formal_enforcement_state,
-        bool_or(formal_enforcement) as formal_enforcement,
-
-        min(CASE WHEN agency_epa THEN formal_enforcement_date ELSE null END) as min_formal_enforcement_date_epa,
-        min(CASE WHEN agency_epa THEN null ELSE formal_enforcement_date END) as min_formal_enforcement_date_state,
-        min(formal_enforcement_date) as min_formal_enforcement_date
-        
-from output.investigations 
-        where start_date between '{date_min}' and '{date_max}'
-        group by 1,2
-),
-
-active as (
-    select rcra_id, (year::text || '-{doy}')::date
-    from output.facilities
-    join generate_series({min_predict_year}, {max_predict_year}) as year on 1=1
-    where active_today or max_start_date > (year::text || '-{doy}')::date
-),
-
-active_not_investigated as (
-    select a.rcra_id, a.date, false as evaluated,
-        null::bool, null::bool, null::bool, null::bool,
-        null::bool, null::bool, null::bool,
-        null::date, null::date, null::date
-    from active a left join investigations i using (rcra_id, date)
-    where i.rcra_id is null
-),
-
-facility_years as (
-    select * from investigations
-    UNION ALL
-    select * from active_not_investigated
-),
-
-future as (
-    select i1.rcra_id, i1.date,
-        bool_or(CASE WHEN i2.agency_epa THEN i2.violation ELSE null END) as violation_future_epa,
-        bool_or(CASE WHEN i2.agency_epa THEN null ELSE i2.violation END) as violation_future_state,
-        bool_or(i2.violation) as violation_future
-    from facility_years i1 join output.investigations i2
-        on i1.rcra_id = i2.rcra_id and i1.date <= i2.start_date
-    group by 1,2
-)
-
-select distinct on(i.rcra_id, date) *,
-    h.rcra_id is not null as handler_received,
-    date - receive_date as handler_age
-
-from facility_years i
-left join future using (rcra_id, date)
-left join output.facilities using (rcra_id)
-left join output.handlers h
-    on h.rcra_id = i.rcra_id and i.date > h.receive_date
-
-where evaluated or (h.rcra_id is not null)
-order by i.rcra_id, date, receive_date desc
-"""
+        sql = """
+            select * from output.facility_years{doy} where date between '{min_date}' and '{max_date}' and 
+            (evaluation or date between '{min_predict_date}' and '{max_predict_date}')
+        """
         logging.info('Reading investigations')
-        df = pd.read_sql(sql.format(doy=doy, date_min=date_min, date_max=date_max, min_predict_year=self.min_predict_year, max_predict_year=self.max_predict_year), engine, parse_dates=['date'])
-        df = _drop_handler_rcra_id(df)
+        df = pd.read_sql(sql.format(**sql_vars), engine, parse_dates=['date'])
 
         logging.info('Reading investigations_aggregated')
         investigations_aggregator = InvestigationsAggregator(os.path.join(self.data_dir, 'output/aggregated/'))
         agg = investigations_aggregator.read(left=df)
-#        logging.info('Expanding investigations_aggregated')
-#        agg = investigations_aggregator.expand(agg)
         
         logging.info('Joining investigations_aggregated')
         df = df.merge(agg, left_on=['rcra_id', 'date'], right_index=True, how='left')
@@ -140,17 +81,40 @@ order by i.rcra_id, date, receive_date desc
         self.df = df
 
     def write(self, directory):
-        self.df.to_hdf(os.path.join(directory, 'df.h5'), 'df', mode='w')
+        for year in xrange(self.min_year, self.max_year+1):
+            for evaluation in [True, False]:
+                df = self.df[(self.df.date.apply(lambda d: d.year) == year) & (self.df.evaluation == evaluation)]
+                filename = os.path.join(directory, 'df%s%s.h5' % (year, evaluation))
+                logging.info('Writing %s: %s' % (filename, df.shape))
+                df.to_hdf(filename, 'df', mode='w')
 
-    def transform(self, year, training_state, train_years=None,
-            testing_state=False, # whether or not the test set should be evaluated by epa, i.e. agency_epa=True
-            testing_evaluated=False, # True means only predict on evaluated (labeled) facilities
-            training_outcome = 'violation_epa', testing_outcome='violation_epa',
-            investigations_expand_counts=False,
+    def transform(self, year, train_years,
+            outcome='violation_epa', # when None training_outcome=testin_outcome
             region = 0,
+            directory=None,
+            training_outcome = None,
+            # the max handler age to be included (in addition to active_today) in all testing and evaluation training
+            handler_max_age = 365, 
+            investigations_expand_counts=False,
             exclude=[], include=[],
-#            spacetime_normalize = None,
             impute=True, normalize=True):
+
+        if not (self.min_predict_year <= year <= self.max_predict_year):
+            raise ValueError('year {1} not between min_predict_year {2} and max_predict_year {3}'.format(
+                    year, self.min_predict_year, self.max_predict_year))
+
+        testing_outcome = outcome
+        if training_outcome is None:
+            training_outcome = outcome
+
+        # set params for efficient read()
+        self.min_year = year-train_years
+        self.max_year = year
+        self.max_predict_year = year
+        self.min_predict_year = self.min_year if training_outcome.startswith('evaluation') else year
+         
+        logging.info('Reading data')
+        self.read(directory)
 
         logging.info('Splitting train and test sets')
         if year - train_years < self.min_year:
@@ -171,17 +135,15 @@ order by i.rcra_id, date, receive_date desc
         df.set_index(['rcra_id', 'date'], inplace=True)
 
         train = index_as_series(df, 'date') < self.today
-        test = ~train
-        train = train & df.evaluated
+        test = ~train & ((df.handler_age < handler_max_age) | df.active_today)
 
-        if not training_state:
-            train = train & df.agency_epa
-        if testing_evaluated:
-            test = test & df.evaluated
+        if training_outcome.startswith('violation'):
+	    # training set for violation(|_epa|_state) is evaluation(|_epa|_state)
+            train = train & df[training_outcome.replace('violation', 'evaluation')]
         else:
-            if not (self.min_predict_year <= year <= self.max_predict_year):
-                raise ValueError('Cannot predict on unevaluated facilities: {1} not between {2} and {3}'.format(
-                        year, self.min_predict_year, self.max_predict_year))
+            # training set for evaluation is (active today or evaluated or handler under 1 year old)
+            train = train & (df.active_today | df.evaluation | (df.handler_age < handler_max_age))
+        # note test set is independent of outcome
 
         df,train,test = data.train_test_subset(df, train, test)
         self.cv = (train, test)
@@ -191,16 +153,20 @@ order by i.rcra_id, date, receive_date desc
             df['formal_enforcement'+c] = df['formal_enforcement'+c].where(test | (df['min_formal_enforcement_date'+c] < self.today), False)
 
         self.masks = df[['formal_enforcement', 'active_today', 'region', 'state', 'naics_codes',
-                         'evaluated', 'violation_state', 'violation_epa', 'violation', 'agency_epa', 
-                          'handler_received', 'violation_future', 'violation_future_epa', 'violation_future_state']]
+                         'evaluation', 'evaluation_epa', 'evaluation_state', 
+                         'violation_state', 'violation_epa', 'violation',
+                         'violation_future', 'violation_future_epa', 'violation_future_state',
+                         'handler_received', 'handler_age']].copy()
+
+        # active mask for test set: handler received and (active today or handler under 1 year old)
+        self.masks['active'] = df.handler_received & (df.active_today | (df.handler_age < handler_max_age))
 
         logging.info('Expanding investigations')
         _expand_investigations(df, expand_counts=investigations_expand_counts)
 
         # set violation in training set
-        df['true'] = df[training_outcome].copy()
-        df.loc[test, 'true'] = df.loc[test, testing_outcome].copy()
-        df.loc[test, 'agency_epa'] = not testing_state
+        df['true'] = df[training_outcome]
+        df.loc[test, 'true'] = df.loc[test, testing_outcome]
         
         self.EXCLUDE.update(exclude)
         X,y = data.Xy(df, 'true', exclude=self.EXCLUDE, include=set(include), category_classes={'state', 'region'})
@@ -233,12 +199,3 @@ def _expand_investigations(df, expand_counts):
 
         count_column = aggregate.get_spacetime_prefix(c) + 'count'
         df[c + '_prop'] = df[c + '_count'] / df[count_column]
-
-# query returns two rcra id, one from investigations and one from handlers
-# drop the one from handlers because it has nulls
-def _drop_handler_rcra_id(df):
-    ids = [i for i in xrange(len(df.columns)) if df.columns[i] == 'rcra_id']
-    j = ids[np.argmin( map(lambda i: df.ix[:,i].notnull().sum(), ids))]
-    keep = [True] * len(df.columns)
-    keep[j] = False
-    return df.ix[:,keep]

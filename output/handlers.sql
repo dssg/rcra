@@ -62,4 +62,6 @@ select
 from rcra.hhandler
 );
 
+alter table output.handlers add handler_id serial primary key;
+
 create index on output.handlers (rcra_id, receive_date);

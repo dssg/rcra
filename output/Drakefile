@@ -6,4 +6,7 @@ $[PSQL_DIR]/output/region_states <- output/create_region_states.sql [method:psql
 $[PSQL_DIR]/output/handlers <- output/handlers.sql, $[PSQL_DIR]/rcra [method:psql]
 $[PSQL_DIR]/output/facilities <- output/facilities.sql, $[PSQL_DIR]/output/investigations, $[PSQL_DIR]/rcra, $[PSQL_DIR]/rcra_facilities [method:psql]
 
+$[PSQL_DIR]/output/facility_years0101 <- output/facility_years.py, output/facility_years.sql, $[PSQL_DIR]/output/investigations, $[PSQL_DIR]/output/facilities, $[PSQL_DIR]/output/handlers
+    python $INPUT $INPUT1 2005 2016 -01-01
+
 $(aggregator_drake.py epa.output.investigations_aggregated.InvestigationsAggregator "\$[DATA_DIR]/output/aggregated/" "\$[PSQL_DIR]")
