@@ -195,7 +195,7 @@ def _expand_investigations(df, expand_counts):
         df.drop(list_columns, axis=1, inplace=True)
 
     for c in data.select_regexes(columns,
-            ['investigations_.*_%s' % c for c in InvestigationsAggregator.bool_columns]):
+            ['investigations_.*_%s_count' % c for c in InvestigationsAggregator.bool_columns]):
 
         count_column = aggregate.get_spacetime_prefix(c) + 'count'
-        df[c + '_prop'] = df[c + '_count'] / df[count_column]
+        df[c[:-5]+'prop'] = df[c] / df[count_column]
