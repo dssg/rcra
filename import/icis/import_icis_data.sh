@@ -4,7 +4,15 @@ NPDES_DIR=$1
 CASE_DIR=$2
 AIR_DIR=$3
 
-psql -f import/icis/create_table_icis.sql
+psql -v ON_ERROR_STOP=1 -f import/icis/create_table_icis.sql
+
+echo loading ICIS_FACILITIES.csv from ECHO dashboard into the database ...
+cat $NPDES_DIR/ICIS_FACILITIES.csv | psql -v ON_ERROR_STOP=1 -c '\COPY icis.npdes_facilities FROM STDIN WITH CSV HEADER;'
+echo ICIS_FACILITIES.csv has been loaded into the database as icis.npdes_facilities.
+
+echo loading NPDES_PERMITS.csv from ECHO dashboard into the database ...
+cat $NPDES_DIR/ICIS_PERMITS.csv | psql -v ON_ERROR_STOP=1 -c '\COPY icis.npdes_permits FROM STDIN WITH CSV HEADER;'
+echo NPDES_PERMITS.csv has been loaded into the database as icis.npdes_inspections.
 
 echo loading NPDES_INSPECTIONS.csv from ECHO dashboard into the database ...
 cat $NPDES_DIR/NPDES_INSPECTIONS.csv | psql -v ON_ERROR_STOP=1 -c '\COPY icis.npdes_inspections FROM STDIN WITH CSV HEADER;'
@@ -31,7 +39,7 @@ cat $NPDES_DIR/NPDES_PS_VIOLATIONS.csv | psql -v ON_ERROR_STOP=1 -c '\COPY icis.
 echo NPDES_PS_VIOLATIONS.csv has been loaded into the database as icis.npdes_ps_violations.
 
 echo loading NPDES_SE_VIOLATIONS.csv into the database ...
-cat $NPDES_DIR/NPDES_SE_VIOLATIONS.csv | psql -v ON_ERROR_STOP=1 -c '\COPY "icis_npdes_se_violations" FROM STDIN WITH CSV HEADER;'
+cat $NPDES_DIR/NPDES_SE_VIOLATIONS.csv | psql -v ON_ERROR_STOP=1 -c '\COPY icis_npdes_se_violations FROM STDIN WITH CSV HEADER;'
 echo NPDES_SE_VIOLATIONS.csv has been loaded into the database as icis.npdes_se_violations.
 
 echo loading NPDES_QNCR_HISTORY.csv into the database ...
@@ -53,10 +61,6 @@ echo CASE_ENFORCEMENTS.csv has been loaded into the database as icis.fec_enforce
 echo loading CASE_VIOLATIONS.csv into the database ...
 cat $CASE_DIR/CASE_VIOLATIONS.csv | psql -v ON_ERROR_STOP=1 -c '\COPY icis.fec_violations FROM STDIN WITH CSV HEADER;'
 echo CASE_VIOLATIONS.csv has been loaded into the database as icis.fec_violations.
-
-echo loading CASE_ENFORCEMENT_TYPE.csv into the database ...
-cat $CASE_DIR/CASE_ENFORCEMENT_TYPE.csv | psql -v ON_ERROR_STOP=1 -c '\COPY icis.fec_enforcement_type FROM STDIN WITH CSV HEADER;'
-echo CASE_ENFORCEMENT_TYPE.csv has been loaded into the database as icis.fec_enforcement_type.
 
 echo loading CASE_ENFORCEMENT_TYPE.csv into the database ...
 cat $CASE_DIR/CASE_ENFORCEMENT_TYPE.csv | psql -v ON_ERROR_STOP=1 -c '\COPY icis.fec_enforcement_type FROM STDIN WITH CSV HEADER;'
