@@ -94,7 +94,7 @@ class EpaData(ModelData):
             directory=None,
             training_outcome = None,
             # the max handler age to be included (in addition to active_today) in all testing and evaluation training
-            handler_max_age = 365, 
+            training_handler_max_age = 365, 
             investigations_expand_counts=False,
             exclude=[], include=[],
             impute=True, normalize=True):
@@ -135,14 +135,14 @@ class EpaData(ModelData):
         df.set_index(['rcra_id', 'date'], inplace=True)
 
         train = index_as_series(df, 'date') < self.today
-        test = ~train & ((df.handler_age < handler_max_age) | df.active_today)
+        test = ~train
 
         if training_outcome.startswith('violation'):
 	    # training set for violation(|_epa|_state) is evaluation(|_epa|_state)
             train = train & df[training_outcome.replace('violation', 'evaluation')]
         else:
             # training set for evaluation is (active today or evaluated or handler under 1 year old)
-            train = train & (df.active_today | df.evaluation | (df.handler_age < handler_max_age))
+            train = train & ( df.active_today | df.evaluation | (df.handler_age < training_handler_max_age))
         # note test set is independent of outcome
 
         df,train,test = data.train_test_subset(df, train, test)
@@ -155,11 +155,8 @@ class EpaData(ModelData):
         self.masks = df[['formal_enforcement', 'active_today', 'region', 'state', 'naics_codes',
                          'evaluation', 'evaluation_epa', 'evaluation_state', 
                          'violation_state', 'violation_epa', 'violation',
-                         'violation_future', 'violation_future_epa', 'violation_future_state',
-                         'handler_received', 'handler_age']].copy()
-
-        # active mask for test set: handler received and (active today or handler under 1 year old)
-        self.masks['active'] = df.handler_received & (df.active_today | (df.handler_age < handler_max_age))
+                         #'violation_future', 'violation_future_epa', 'violation_future_state',
+			 'handler_received', 'handler_age']].copy()
 
         logging.info('Expanding investigations')
         _expand_investigations(df, expand_counts=investigations_expand_counts)
@@ -187,15 +184,9 @@ def _expand_investigations(df, expand_counts):
     if expand_counts:
         for c in list_columns:
             data.expand_counts(df, c)
-
-        for c in df.columns.difference(columns):
-            count_column = aggregate.get_spacetime_prefix(c) + 'count'
-            df[c + '_prop'] = df[c] / df[count_column]
     else:
         df.drop(list_columns, axis=1, inplace=True)
 
-    for c in data.select_regexes(columns,
-            ['investigations_.*_%s_count' % c for c in InvestigationsAggregator.bool_columns]):
-
+    for c in data.select_regexes(columns, ['investigations_.*_.*_.*_count']):
         count_column = aggregate.get_spacetime_prefix(c) + 'count'
         df[c[:-5]+'prop'] = df[c] / df[count_column]
