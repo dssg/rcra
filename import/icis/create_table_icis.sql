@@ -1,9 +1,9 @@
 CREATE SCHEMA IF NOT EXISTS icis;
  
 ---- ICIS NPDES (npdes_downloads.zip)
-DROP TABLE IF EXISTS icis.npdes_facilities;
+DROP TABLE IF EXISTS icis.icis_facilities;
  
-CREATE TABLE icis.npdes_facilities (
+CREATE TABLE icis.icis_facilities (
 	icis_facility_interest_id BIGINT NOT NULL, 
 	npdes_id VARCHAR(30), 
 	facility_uin BIGINT, 
@@ -20,9 +20,9 @@ CREATE TABLE icis.npdes_facilities (
 	impaired_waters VARCHAR(16)
 );
 
-DROP TABLE IF EXISTS icis.npdes_permits;
+DROP TABLE IF EXISTS icis.icis_permits;
 
-CREATE TABLE icis.npdes_permits (
+CREATE TABLE icis.icis_permits (
         activity_id BIGINT NOT NULL,
         external_permit_nmbr VARCHAR,
         version_nmbr BIGINT,
@@ -47,7 +47,9 @@ CREATE TABLE icis.npdes_permits (
 	dmr_non_receipt_flag VARCHAR,
 	rnc_tracking_flag VARCHAR,
 	master_external_permit_nmbr VARCHAR,
-	tmdl_interface_flag VARCHAR
+	tmdl_interface_flag VARCHAR,
+	edmr_authorization_flag VARCHAR,
+	pretreatment_indicator_flag VARCHAR
 );
 
 
@@ -219,7 +221,8 @@ CREATE TABLE icis.fec_enforcements (
 	hq_division VARCHAR, 
 	branch VARCHAR, 
 	voluntary_self_disclosure_flag VARCHAR, 
-	multimedia_flag VARCHAR
+	multimedia_flag VARCHAR,
+	enf_summary_text VARCHAR
 );
 
 DROP TABLE IF EXISTS icis.fec_violations; 
