@@ -4,11 +4,6 @@ FRS_DIR=$1
 
 psql -f import/create_table_frs.sql
 
-echo loading frs_facilities.csv into the database ...
-cat $FRS/frs_facilities.csv | psql -c '\COPY import.frs_facilities FROM STDIN WITH CSV HEADER;'
-echo frs_facilities has been loaded into the database.
+cat $FRS_DIR/FRS_FACILITIES.csv | psql -c '\COPY frs.facilities FROM STDIN WITH CSV HEADER;'
+cat $FRS_DIR/FRS_PROGRAM_LINKS.csv | psql -c '\COPY frs.program_links FROM STDIN WITH CSV HEADER;'
 
-
-echo loading frs_program_links.csv into the database ...
-cat $FRS/frs_program_links.csv | psql -c '\COPY import.frs_program_links FROM STDIN WITH CSV HEADER;'
-echo frs_program_links has been loaded into the database.
