@@ -3,6 +3,7 @@ import pandas as pd
 from drain.data import censor_column
 
 raw_sql = """
+with investigations as (
 select handler_id as rcra_id, 
     evaluation_start_date start_date,
     count(*) as evaluation_count,
@@ -22,7 +23,6 @@ select handler_id as rcra_id,
     
     bool_or(corrective_action_component_flag = 'Y') as corrective_action_component,
     bool_or(citizen_complaint_flag = 'Y') as citizen_complaint,
-    min(region) as region,
     bool_or(multimedia_inspection_flag = 'Y') as multimedia_inspection,
     bool_or(sampling_flag = 'Y') as sampling,
     bool_or(not_subtitle_c_flag = 'Y') as not_subtitle_c,
@@ -74,7 +74,10 @@ from rcra.cmecomp3
    where handler_id is not null 
    and evaluation_start_date < '{today}'
    and (violation_determined_date is null or evaluation_start_date <= violation_determined_date)
-group by 1,2
+group by 1,2)
+
+select * from investigations
+left join output.region_states rs on substring(rcra_id for 2) = rs.state
 """
 
 columns_to_censor = {

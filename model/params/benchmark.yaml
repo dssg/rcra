@@ -1,22 +1,16 @@
 ---
 data:
   - name : [epa.model.data.EpaData]
-    min_year : [2002]
+    min_year : [2004]
     max_year : [2014]
 
 transforms:
   - year : [2012, 2013, 2014]
-    train_years : [1,2,3,4,5]
+    train_years : [3]
     outcome : [violation_epa]
-    exclude : [[investigations_facility_(all).*]]
-#    exclude : [null, [investigations_facility_all.*], [investigations_facility_1y.*], [investigations_facility_(1|5)y.*], [investigations_facility_5y.*], [investigations_.*] ]
-#    exclude : [ null, [naics.*], [naics2.*], [investigations_.*]]
-#    exclude : [ null, [investigations_.*], [investigations_violation_types.*],[investigations_violation_(types|classes).*] ]
-#    exclude: [[], [investigations_.*]]a
+    investigations : [{facility:[1y,5y], state:[1y]}]
     region : [0]
     #region : [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
-#    region : [null, 1, 2, 3, 4, 5, 6, 7, 8,  9, 10]
-#    training_outcome : [violation, violation_epa, formal_enforcement]
 
 models:
   - name : [sklearn.ensemble.RandomForestClassifier]
@@ -32,11 +26,12 @@ metrics:
   - name : [drain.model.baseline]
     outcome : [null, formal_enforcement]
   - name : [drain.model.count]
-    dropna : [True]
   - name : [drain.model.precision]
+    dropna : [True]
     k : [100,200,500]
   - name : [drain.model.precision]
-    query : [ active_today & (handler_age < 365) ]
+    query : [ handler_received & (active_today & (handler_age < 365)) ]
     p : [1.0]
     dropna : [False]
   - name : [drain.model.auc]
+    dropna : [True]

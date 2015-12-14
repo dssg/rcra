@@ -29,7 +29,10 @@ class InvestigationsAggregator(SpacetimeAggregator):
             
     def __init__(self, basedir, psql_dir=''):
         SpacetimeAggregator.__init__(self, 
-                spacedeltas = {'facility':Spacedeltas('rcra_id',['all', '5y', '1y']) },
+                spacedeltas = {
+                    'facility':Spacedeltas('rcra_id',['all', '5y', '2y', '1y']),
+                    'state':Spacedeltas('state',['5y', '2y', '1y']) 
+                },
                 dates = [date(y,1,1) for y in xrange(2004,2014+1)],
                 prefix = 'investigations',
                 basedir = basedir,
@@ -47,7 +50,7 @@ class InvestigationsAggregator(SpacetimeAggregator):
 
         return df
 
-    def get_aggregates(self, date):
+    def get_aggregates(self, date, data=None):
          aggregates =  [
              Count(),
              Count('agency_epa', name='epa', prop=True),

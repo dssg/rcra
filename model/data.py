@@ -37,6 +37,8 @@ class EpaData(ModelData):
         self.outcome_years = outcome_years
         self.min_predict_year = min_predict_year if min_predict_year is not None else min_year
         self.max_predict_year = max_predict_year if max_predict_year is not None else max_year
+ 
+        self.investigations_aggregator = InvestigationsAggregator(os.path.join(self.data_dir, 'output/aggregated/'))
 
     def read(self, directory=None):
         if directory is not None:
@@ -66,12 +68,8 @@ class EpaData(ModelData):
         df = pd.read_sql(sql.format(**sql_vars), engine, parse_dates=['date'])
 
         logging.info('Reading investigations_aggregated')
-        investigations_aggregator = InvestigationsAggregator(os.path.join(self.data_dir, 'output/aggregated/'))
-        agg = investigations_aggregator.read(left=df)
+        df = self.investigations_aggregator.read(left=df)
         
-        logging.info('Joining investigations_aggregated')
-        df = df.merge(agg, left_on=['rcra_id', 'date'], right_index=True, how='left')
-
         logging.info('Expanding naics codes')
         df['naics1'] = df.naics_codes.dropna().apply(lambda n: set(i[0] for i in n) )
         df['naics2'] = df.naics_codes.dropna().apply(lambda n: set(i[0:2] for i in n) )
@@ -94,7 +92,8 @@ class EpaData(ModelData):
             directory=None,
             training_outcome = None,
             # the max handler age to be included (in addition to active_today) in all testing and evaluation training
-            training_handler_max_age = 365, 
+            training_handler_max_age = 365,
+            investigations={},
             investigations_expand_counts=False,
             exclude=[], include=[],
             impute=True, normalize=True):
@@ -128,6 +127,8 @@ class EpaData(ModelData):
         if region != 0:
             df.drop(df.index[~(df.region == region)], inplace=True)
 
+        df = self.investigations_aggregator.select(df, investigations)
+
         min_date = date(year-train_years, self.month, self.day)
         max_date = date(year, self.month, self.day)
         df = df.loc[df.index[(df.date >= min_date) & (df.date <= max_date)]]
@@ -159,7 +160,7 @@ class EpaData(ModelData):
 			 'handler_received', 'handler_age']].copy()
 
         logging.info('Expanding investigations')
-        _expand_investigations(df, expand_counts=investigations_expand_counts)
+        _expand_investigations(df, investigations_expand_counts)
 
         # set violation in training set
         df['true'] = df[training_outcome]
@@ -180,13 +181,12 @@ def _expand_investigations(df, expand_counts):
     columns = df.columns
     list_columns = data.select_regexes(columns,
             ['investigations_.*_%s' % c for c in InvestigationsAggregator.list_columns])
-
     if expand_counts:
         for c in list_columns:
             data.expand_counts(df, c)
+    
+        for c in df.columns.difference(columns):
+            count_column = aggregate.get_spacetime_prefix(c) + 'count'
+            df[c[:-5]+'prop'] = df[c] / df[count_column]
     else:
         df.drop(list_columns, axis=1, inplace=True)
-
-    for c in data.select_regexes(columns, ['investigations_.*_.*_.*_count']):
-        count_column = aggregate.get_spacetime_prefix(c) + 'count'
-        df[c[:-5]+'prop'] = df[c] / df[count_column]
