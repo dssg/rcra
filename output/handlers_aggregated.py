@@ -18,7 +18,7 @@ class HandlersAggregator(SpacetimeAggregator):
     def __init__(self, basedir, psql_dir=''):
         SpacetimeAggregator.__init__(self, 
                 spacedeltas = {
-                    'facility':Spacedeltas('rcra_id',['all', '5y'])#'all', '5y', '1y']),
+                    'facility':Spacedeltas('rcra_id',['all'])
                 },
                 dates = [date(y,1,1) for y in xrange(2004,2014+1)],
                 prefix = 'handlers',
@@ -32,11 +32,13 @@ class HandlersAggregator(SpacetimeAggregator):
         engine = util.create_engine()
         logging.info('Reading handlers %s' % date)
         df = pd.read_sql("select * from output.handlers where receive_date < '%s'" % date, engine, parse_dates=['receive_date'])
+  
 
         return df
 
     def get_aggregates(self, date, data):
          aggregates = [Count(c, prop=True) for c in data.columns if c not in ('rcra_id', 'receive_date', 'handler_id')]
          aggregates.append(Count())
+         aggregates.append(Aggregate(lambda h: (date - h.receive_date) / day, 'min', name='receive_date'))
 
          return aggregates
