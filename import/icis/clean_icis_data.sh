@@ -2,10 +2,10 @@
 
 ICIS_DIR=$1
 
-FEC_DIR=$ICIS_DIR/case_downloads/
-AIR_DIR=$ICIS_DIR/ICIS-AIR_downloads/
+FEC_DIR=$ICIS_DIR/case_downloads
+AIR_DIR=$ICIS_DIR/ICIS-AIR_downloads
 
-for name in "$FEC_DIR/fec*"
+for name in "$FEC_DIR"/CASE*
 do
     if [ -e "$name" ]
 	then
@@ -15,7 +15,7 @@ do
     fi
 done
 
-for name in "$AIR_DIR/ICIS*"
+for name in "$AIR_DIR"/ICIS*
 do
     if [ -e "$name" ]
 	then

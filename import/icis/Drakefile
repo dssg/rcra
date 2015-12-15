@@ -1,3 +1,4 @@
+; get data from EPA FTP
 URL="https://echo.epa.gov/files/echodownloads/ICIS-AIR_downloads.zip"
 !$[DATA_DIR]/import/icis/ICIS-AIR_downloads.zip, !$[DATA_DIR]/import/icis/ICIS-AIR_downloads/ <- [method:wget_unzip -timecheck]
 
@@ -10,11 +11,18 @@ URL="https://echo.epa.gov/files/echodownloads/npdes_eff_downloads.zip"
 URL="https://echo.epa.gov/files/echodownloads/case_downloads.zip"
 !$[DATA_DIR]/import/icis/case_downloads.zip, !$[DATA_DIR]/import/icis/case_downloads/ <- [method:wget_unzip -timecheck]
 
+; clean up file names 
+!$[DATA_DIR]/import/icis/ <- import/icis/clean_icis_data.sh [-timecheck]
+    $INPUT $OUTPUT
+
+; create icis schema and tables 
 $[PSQL_DIR]/icis <- import/icis/create_table_icis.sql [method:psql -timecheck]
 
-import/icis/test <- import/icis/import_icis_data.sh, !$[DATA_DIR]/import/icis/  [-timecheck]
+; clean up file names
+$[PSQL_DIR]/icis/names <- import/icis/clean_icis_data.sh, !$[DATA_DIR]/import/icis/ [-timecheck]
     $INPUT $INPUT1 && touch $OUTPUT
 
+; load csvs in data base
 $[PSQL_DIR]/icis/npdes <- !$[DATA_DIR]/import/icis/npdes_downloads/, $[PSQL_DIR]/icis [method:load_data -timecheck]
 
 $[PSQL_DIR]/icis/fec <- !$[DATA_DIR]/import/icis/case_downloads/, $[PSQL_DIR]/icis [method:load_data -timecheck]
