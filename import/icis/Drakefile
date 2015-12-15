@@ -12,9 +12,12 @@ URL="https://echo.epa.gov/files/echodownloads/case_downloads.zip"
 
 $[PSQL_DIR]/icis <- import/icis/create_table_icis.sql [method:psql -timecheck]
 
-$[PSQL_DIR]/npdes <- import/icis/import_icis_data.sh, !$[DATA_DIR]/import/icis/, $[PSQL_DIR]/icis 		  
-     $INPUT $INPUT1 & touch $OUTPUT
+import/icis/test <- import/icis/import_icis_data.sh, !$[DATA_DIR]/import/icis/  [-timecheck]
+    $INPUT $INPUT1 && touch $OUTPUT
 
+$[PSQL_DIR]/icis/npdes <- !$[DATA_DIR]/import/icis/npdes_downloads/, $[PSQL_DIR]/icis [method:load_data -timecheck]
 
+$[PSQL_DIR]/icis/fec <- !$[DATA_DIR]/import/icis/case_downloads/, $[PSQL_DIR]/icis [method:load_data -timecheck]
 
+$[PSQL_DIR]/icis/air <- !$[DATA_DIR]/import/icis/ICIS-AIR_downloads/, $[PSQL_DIR]/icis [method:load_data -timecheck]
 

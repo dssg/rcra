@@ -4,30 +4,12 @@
     done
     unzip -d $OUTPUT $OUTPUT/\*.zip
 
-!$[DATA_DIR]/import/tri/tri.type_1.csv <- import/tri/create_tri_csv.sh, !$[DATA_DIR]/import/tri/ [-timecheck]
-    $INPUT $INPUT1 1 > $OUTPUT
+!$[DATA_DIR]/import/tri/agg/ <- import/tri/create_tri_csv.sh, !$[DATA_DIR]/import/tri/ [-timecheck]
+    for i in 1 "2a" "2b" "3a" "3b" 4 5 6; do
+        $INPUT $INPUT1 $i > $OUTPUT/type_$i.csv
+    done
 
-!$[DATA_DIR]/import/tri/tri.type_2a.csv <- import/tri/create_tri_csv.sh, !$[DATA_DIR]/import/tri/ [-timecheck]
-    $INPUT $INPUT1 "2a" > $OUTPUT
+$[PSQL_DIR]/tritables <- import/tri/create_table_tri.sql [method:psql -timecheck]
 
-!$[DATA_DIR]/import/tri/tri.type_2b.csv <- import/tri/create_tri_csv.sh, !$[DATA_DIR]/import/tri/ [-timecheck]
-    $INPUT $INPUT1 "2b" > $OUTPUT
-
-!$[DATA_DIR]/import/tri/tri.type_3a.csv <- import/tri/create_tri_csv.sh, !$[DATA_DIR]/import/tri/ [-timecheck]
-    $INPUT $INPUT1 "3a" > $OUTPUT
-
-!$[DATA_DIR]/import/tri/tri.type_3b.csv <- import/tri/create_tri_csv.sh, !$[DATA_DIR]/import/tri/ [-timecheck]
-    $INPUT $INPUT1 "3b" > $OUTPUT
-
-!$[DATA_DIR]/import/tri/tri.type_4.csv <- import/tri/create_tri_csv.sh, !$[DATA_DIR]/import/tri/ [-timecheck]
-    $INPUT $INPUT1 4 > $OUTPUT
-
-!$[DATA_DIR]/import/tri/tri.type_5.csv <- import/tri/create_tri_csv.sh, !$[DATA_DIR]/import/tri/ [-timecheck]
-   $INPUT $INPUT1 5 > $OUTPUT
-
-!$[DATA_DIR]/import/tri/tri.type_6.csv <- import/tri/create_tri_csv.sh, !$[DATA_DIR]/import/tri/ [-timecheck]
-   $INPUT $INPUT1 6 > $OUTPUT
-
-$[PSQL_DIR]/tri <- import/tri/load_tri_data.sh, !$[DATA_DIR]/import/tri/ [-timecheck]
-   $INPUT $INPUT1 && touch $OUTPUT
+$[PSQL_DIR]/tri <- !$[DATA_DIR]/import/tri/agg/, $[PSQL_DIR]/tritables/ [method:load_data -timecheck]
 
