@@ -14,5 +14,5 @@ dictionaries[BR]="Flat_File_Specification_Waste_Activity_Monitoring_Module.xlsx"
 
 for prefix in "${!dictionaries[@]}"
 do
-    python xlsx2import.py $dir_path"/"${dictionaries[$prefix]} $prefix $output_dir
+    python xlsx2import.py $dir_path"/"${dictionaries[$prefix]} $output_dir
 done 
