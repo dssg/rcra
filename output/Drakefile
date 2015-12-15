@@ -10,3 +10,4 @@ $[PSQL_DIR]/output/facility_years0101 <- output/facility_years.py, output/facili
     python $INPUT $INPUT1 2002 2016 -01-01
 
 $(aggregator_drake.py epa.output.investigations_aggregated.InvestigationsAggregator "\$[DATA_DIR]/output/aggregated/" "\$[PSQL_DIR]")
+$(aggregator_drake.py epa.output.handlers_aggregated.HandlersAggregator "\$[DATA_DIR]/output/aggregated/" "\$[PSQL_DIR]")
