@@ -27,10 +27,11 @@ names = xl.sheet_names
 
 os.chdir(output_dir)
 
-with open("create_table_" + prefix + ".sql", 'w') as f, open('load_' + prefix + '_csv.sh', 'w') as c:
+with open("create_table_rcra.sql", 'a') as f: #, open('load_' + prefix + '_csv.sh', 'w') as c:
   
-    c.write("#!/bin/bash -xv\n\n") 
-    c.write("RCRA_DIR=$1\n")
+   # c.write("#!/bin/bash -xv\n\n") 
+#    c.write("RCRA_DIR=$1\n")
+
 
     for name in names:
     
@@ -54,6 +55,6 @@ with open("create_table_" + prefix + ".sql", 'w') as f, open('load_' + prefix + 
         f.write("DROP TABLE IF EXISTS rcra." + table + "\n") 
         f.write("CREATE TABLE rcra." + table + "( \n" + db_string[:-2] + "\n);\n\n")
         
-        c.write("echo loading " + table + " into the database ...\n")
-        c.write(os.path.join("$RCRA_DIR", prefix.upper(), name.lower() + ".csv") +  " | psql -c '\\COPY rcra." + table + " FROM STDIN WITH CSV HEADER'\n")
-        c.write("echo rcra." + table + " has been loaded into the database.\n\n")
+      #  c.write("echo loading " + table + " into the database ...\n")
+      #  c.write(os.path.join("$RCRA_DIR", prefix.upper(), name.lower() + ".csv") +  " | psql -c '\\COPY rcra." + table + " FROM STDIN WITH CSV HEADER'\n")
+      #  c.write("echo rcra." + table + " has been loaded into the database.\n\n")
