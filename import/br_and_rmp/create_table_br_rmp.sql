@@ -1,3 +1,4 @@
+CREATE SCHEMA IF NOT EXISTS br_and_rmp;
 
 DROP TABLE if EXISTS br_and_rmp.brs_all;
 
@@ -61,9 +62,9 @@ CREATE TABLE br_and_rmp.brs_all (
 	management_category VARCHAR
 );
 
-DROP TABLE IF EXISTS br_and_rmp.caa_inspections;
+DROP TABLE IF EXISTS br_and_rmp.rmp_inspections;
 
-CREATE TABLE br_and_rmp.caa_inspections (
+CREATE TABLE br_and_rmp.rmp_inspections (
 	activity_id BIGINT NOT NULL, 
 	activity_name VARCHAR(100) NOT NULL, 
 	activity_type_desc VARCHAR(21) NOT NULL, 

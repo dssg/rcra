@@ -1,4 +1,7 @@
-; import CSVs in to PostgreSQL data base
-$[PSQL_DIR]/br_and_rmp <- import/br_and_rmp/create_table_br_rmp.sh, !$[DATA_DIR]/import/br_and_rmp/
-    $INPUT $INPUT1 && touch $OUTPUT
+;BR and RMP data received by email as br_reporting_complete.csv and export_CAA112r_Insp2.csv respectively
+
+$[PSQL_DIR]/br_and_rmp_tables <- import/br_and_rmp/create_table_br_rmp.sql [method:psql -timecheck]
+
+$[PSQL_DIR]/br_and_rmp <- !$[DATA_DIR]/import/br_and_rmp/, $[PSQL_DIR]/br_and_rmp_tables [method:load_data -timecheck]
+
 
