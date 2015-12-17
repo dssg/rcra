@@ -47,6 +47,6 @@ with open("create_table_rcra.sql", 'a') as f:
         for k in df['column']:
            db_string = db_string + k + " VARCHAR" + ",\n"
    
-        f.write("DROP TABLE IF EXISTS rcra." + table + "\n") 
+        f.write("DROP TABLE IF EXISTS rcra." + table + "; \n") 
         f.write("CREATE TABLE rcra." + table + "( \n" + db_string[:-2] + "\n);\n\n")
      
