@@ -1,4 +1,4 @@
-#!/bin/bash -xv
+#!/bin/bash
 
 ICIS_DIR=$1
 

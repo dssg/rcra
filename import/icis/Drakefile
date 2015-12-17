@@ -19,13 +19,13 @@ URL="https://echo.epa.gov/files/echodownloads/case_downloads.zip"
 $[PSQL_DIR]/icis <- import/icis/create_table_icis.sql [method:psql -timecheck]
 
 ; clean up file names
-$[PSQL_DIR]/icis/names <- import/icis/clean_icis_data.sh, !$[DATA_DIR]/import/icis/ [-timecheck]
+$[PSQL_DIR]/icis_names <- import/icis/clean_icis_data.sh, !$[DATA_DIR]/import/icis/ [-timecheck]
     $INPUT $INPUT1 && touch $OUTPUT
 
 ; load csvs in data base
-$[PSQL_DIR]/icis/npdes <- !$[DATA_DIR]/import/icis/npdes_downloads/, $[PSQL_DIR]/icis [method:load_data -timecheck]
+$[PSQL_DIR]/icis_npdes <- !$[DATA_DIR]/import/icis/npdes_downloads/, $[PSQL_DIR]/icis [method:load_data -timecheck]
 
-$[PSQL_DIR]/icis/fec <- !$[DATA_DIR]/import/icis/case_downloads/, $[PSQL_DIR]/icis [method:load_data -timecheck]
+$[PSQL_DIR]/icis_fec <- !$[DATA_DIR]/import/icis/case_downloads/, $[PSQL_DIR]/icis [method:load_data -timecheck]
 
-$[PSQL_DIR]/icis/air <- !$[DATA_DIR]/import/icis/ICIS-AIR_downloads/, $[PSQL_DIR]/icis [method:load_data -timecheck]
+$[PSQL_DIR]/icis_air <- !$[DATA_DIR]/import/icis/ICIS-AIR_downloads/, $[PSQL_DIR]/icis [method:load_data -timecheck]
 

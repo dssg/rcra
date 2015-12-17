@@ -1,14 +1,14 @@
 ---
 data:
   - name : [epa.model.data.EpaData]
-    min_year : [2004]
-    max_year : [2014]
+    month : [1]
+    day : [1]
 
 transforms:
-  - year : [2012, 2013, 2014]
+  - name : [epa.model.transform.EpaTransform]
+    year : [2012]
     train_years : [3]
     outcome : [violation_epa]
-    investigations : [{facility:[1y,5y], state:[1y]}]
     region : [0]
     #region : [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
 
