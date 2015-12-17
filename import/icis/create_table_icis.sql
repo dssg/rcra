@@ -250,7 +250,7 @@ CREATE TABLE fec.fec_enforcement_type (
 DROP TABLE IF EXISTS fec.fec_relief_sought;
 
 CREATE TABLE fec.fec_relief_sought (
-	activity_id BIGINT, 
+	activity_id VARCHAR, 
 	case_number VARCHAR, 
 	relief_code VARCHAR, 
 	relief_desc VARCHAR
@@ -319,7 +319,7 @@ DROP TABLE IF EXISTS fec.fec_pollutants;
 
 
 CREATE TABLE fec.fec_pollutants (
-	activity_id BIGINT NOT NULL, 
+	activity_id VARCHAR NOT NULL, 
 	case_number VARCHAR, 
 	pollutant_code INTEGER, 
 	pollutant_desc VARCHAR, 
