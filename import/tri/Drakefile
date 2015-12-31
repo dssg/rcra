@@ -3,7 +3,7 @@
     for i in {1987..2013}; do
         wget -N -P $OUTPUT http://www3.epa.gov/tri/US_${i}_v13.zip
     done
-    unzip -d $OUTPUT $OUTPUT/\*.zip
+    unzip -o -d $OUTPUT $OUTPUT/\*.zip
 
 ; append files for all years for each file type and create CSVs
 !$[DATA_DIR]/import/tri/agg/ <- import/tri/create_tri_csv.sh, !$[DATA_DIR]/import/tri/ [-timecheck]

@@ -2,17 +2,17 @@
 !$[DATA_DIR]/import/rcra/ <- [-timecheck]   
     mkdir -p $OUTPUT
     wget -N -P $OUTPUT ftp://ftp.epa.gov/rcrainfodata/rcra_flatfiles/\*.gz
-    gunzip $OUTPUT/*.txt.gz
+    gunzip -f $OUTPUT/*.txt.gz
 
 ; make load scripts (TXT to CSV to SQL), including schemas and create table statements 
-; depends on having files in rcra/data_dictionary directory
+; depends on having flat file specification files in rcra/data_dictionary directory
 import/rcra/load_scripts/ <- import/rcra/make_import_scripts.sh, import/rcra/data_dictionary/ [-timecheck]
     mkdir -p $OUTPUT
     $INPUT $INPUT1 $OUTPUT
 
 ; create tables 
-$[PSQL_DIR]/rcra_schema <- import/rcra/create_schema_rcra.sql, import/rcra/load_scripts [method:psql -timecheck]
-$[PSQL_DIR]/rcra_tables <- import/rcra/load_scripts/create_table_rcra.sql, import/rcra/load_scripts, $[PSQL_DIR]/rcra_schema [method:psql -timecheck]  
+$[PSQL_DIR]/rcra/schema <- import/rcra/create_schema_rcra.sql, import/rcra/load_scripts [method:psql -timecheck]
+$[PSQL_DIR]/rcra/tables <- import/rcra/load_scripts/create_table_rcra.sql, import/rcra/load_scripts, $[PSQL_DIR]/rcra/schema [method:psql -timecheck]  
 
 ; for each file type use schemas to create CSVs 
 !$[DATA_DIR]/import/rcra/rcra <- import/rcra/load_scripts/, !$[DATA_DIR]/import/rcra/ [-timecheck]
@@ -22,11 +22,11 @@ $[PSQL_DIR]/rcra_tables <- import/rcra/load_scripts/create_table_rcra.sql, impor
     done
 
 ; import CSVs in to PostgreSQL data base
-$[PSQL_DIR]/rcra/rcra <- !$[DATA_DIR]/import/rcra/rcra, $[PSQL_DIR]/rcra_tables, $[PSQL_DIR]/rcra_schema [method:load_data -timecheck]
+$[PSQL_DIR]/rcra/rcra <- !$[DATA_DIR]/import/rcra/rcra, $[PSQL_DIR]/rcra/tables, $[PSQL_DIR]/rcra/schema [method:load_data -timecheck]
 
 ; get RCRA facilities CSV
 URL="https://echo.epa.gov/files/echodownloads/rcra_downloads.zip"
 !$[DATA_DIR]/import/rcra/rcra_downloads.zip, !$[DATA_DIR]/import/rcra_downloads/ <- [-timecheck method:wget_unzip]
 
-$[PSQL_DIR]/rcra_facilities <- import/rcra/import_rcra_facilities.sh, $[DATA_DIR]/import/rcra_downloads/RCRA_FACILITIES.csv
+$[PSQL_DIR]/rcra/rcra_facilities <- import/rcra/import_rcra_facilities.sh, $[DATA_DIR]/import/rcra_downloads/RCRA_FACILITIES.csv
     $INPUT $INPUT1 && touch $OUTPUT
