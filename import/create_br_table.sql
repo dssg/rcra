@@ -1,3 +1,4 @@
+CREATE SCHEMA IF NOT EXISTS br;
 
 DROP TABLE if EXISTS br.brs_all;
 
