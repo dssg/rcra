@@ -1,7 +1,7 @@
 
-DROP TABLE if EXISTS import.brs_all;
+DROP TABLE if EXISTS br.brs_all;
 
-CREATE TABLE import.brs_all (
+CREATE TABLE br.brs_all (
 	handler_id VARCHAR, 
 	activity_location VARCHAR, 
 	source_type VARCHAR, 
