@@ -4,11 +4,11 @@ CREATE TABLE output.icis_air as (
 
        with facilities as (
        	    select b.pgm_sys_id as rcra_id,
-	    	   a.pgm_sys_id as icis_id,
+	    	   a.pgm_sys_id as icis_id
 		   
 		   from air.air_facilities a
 		   left join frs.program_links b using (registry_id)
-		   where b.pgm_sys_acrnm = 'RCRAINFO';),
+		   where b.pgm_sys_acrnm = 'RCRAINFO'),
 
 	fces_pces as (
 		  select pgm_sys_id as icis_id,
