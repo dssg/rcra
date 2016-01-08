@@ -57,7 +57,7 @@ class EpaData(Step):
         }
 
         sql = """
-            select * from output.facility_years{doy} where date between '{date_min}' and '{date_max}' limit 1000 
+            select * from output.facility_years{doy} where date between '{date_min}' and '{date_max}' 
         """
         logging.info('Reading investigations')
         df = pd.read_sql(sql.format(**sql_vars), engine, parse_dates=['date'])
@@ -98,32 +98,29 @@ class EpaData(Step):
 
         df = df.astype(np.float32)
         
-        self.output = {'df': df, 'aux':aux}
+        self.result = {'X': df, 'aux':aux}
 
-class EpaDataStore(Step):
+class EpaHDFStore(Step):
     def __init__(self, **kwargs):
         Step.__init__(self, **kwargs)
 
     def run(self):
-        self.output = {}
-        return
+        result = self.inputs[0].result
+        store = pd.HDFStore(os.path.join(self.get_dump_dirname(), 'result.h5'))
+
+        logging.info('Writing X %s' % str(result['X'].shape))
+        store.put('X', result['X'], mode='w', format='t', data_columns=['date', 'evaluation', 'region'])
+
+        logging.info('Writing aux %s' % str(result['aux'].shape))
+        store.put('aux', result['aux'], mode='w')
+
+        self.result = store
 
     def dump(self):
-        data = self.inputs[0].output
-
-        filename = os.path.join(self.get_dump_dirname(), 'df.h5')
-        logging.info('Writing %s: %s' % (filename, data['df'].shape))
-        data['df'].to_hdf(filename, 'df', mode='w', format='t', data_columns=['date', 'evaluation', 'region'])
-
-        filename = os.path.join(self.get_dump_dirname(), 'aux.h5')
-        logging.info('Writing %s: %s' % (filename, data['aux'].shape))
-        data['aux'].to_hdf(filename, 'df', mode='w')
+         return
 
     def load(self):
-        return
-        #filename = os.path.join(self.get_dump_dirname(), 'df.h5')
-        #logging.info('Reading %s' % filename)
-        #self.df = pd.read_hdf(filename, 'df')
+        self.result =  pd.HDFStore(os.path.join(self.get_dump_dirname(), 'result.h5'))
 
 def _investigations_lists(df, drop):
     columns = df.columns
