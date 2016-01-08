@@ -1,6 +1,7 @@
 from drain.data import ModelData
 from drain.util import index_as_series
 from drain import data, aggregate, util
+from drain.drain import Step
 
 from epa.output.investigations_aggregated import InvestigationsAggregator
 from epa.output.handlers_aggregated import HandlersAggregator
@@ -11,7 +12,7 @@ import logging
 import pandas as pd
 import numpy as np
 
-class EpaData(ModelData):
+class EpaData(Step):
     psql_dir = os.environ['PSQL_DIR'] if 'PSQL_DIR' in os.environ else ''
     data_dir = os.environ['DATA_DIR'] if 'DATA_DIR' in os.environ else ''
     DEPENDENCIES = [os.path.join(psql_dir, d) for d in ['output/investigations', 'output/handlers', 'output/region_states' ]]
@@ -26,7 +27,10 @@ class EpaData(ModelData):
                'active_today', 'naics_codes', 'max_start_date', 'handler_id',
                'min_start_date', 'max_receive_date', 'min_receive_date'}
 
-    def __init__(self, month, day, year_min=DEFAULT_YEAR_MIN, year_max=DEFAULT_YEAR_MAX, outcome_years=1, investigations_drop_lists=True):
+    def __init__(self, month, day, year_min=DEFAULT_YEAR_MIN, year_max=DEFAULT_YEAR_MAX, outcome_years=1, investigations_drop_lists=True, **kwargs):
+        Step.__init__(self, month=month, day=day, year_min=year_min, year_max=year_max, 
+                      outcome_years=outcome_years, investigations_drop_lists=investigations_drop_lists, **kwargs)
+
         if outcome_years != 1:
             raise NotImplementedError('Currently only outcome_years=1 is implemented')
 
@@ -53,7 +57,7 @@ class EpaData(ModelData):
         }
 
         sql = """
-            select * from output.facility_years{doy} where date between '{date_min}' and '{date_max}'
+            select * from output.facility_years{doy} where date between '{date_min}' and '{date_max}' limit 1000 
         """
         logging.info('Reading investigations')
         df = pd.read_sql(sql.format(**sql_vars), engine, parse_dates=['date'])
@@ -72,9 +76,9 @@ class EpaData(ModelData):
 
         df['rcra_id'] = df.rcra_id.apply(lambda s: s.encode('ascii'))
 
-        self.aux = df[['rcra_id', 'date', 
+        aux = df[['rcra_id', 'date', 
                          'formal_enforcement', 'formal_enforcement_epa', 'formal_enforcement_state',
-                         'min_formal_enforcement_date', 'min_formal_enforcement_epa_date', 'min_formal_enforcement_state_date',
+                         'min_formal_enforcement_date', 'min_formal_enforcement_date_epa', 'min_formal_enforcement_date_state',
                          'active_today', 'region', 'state', 'naics_codes',
                          'evaluation', 'evaluation_epa', 'evaluation_state',
                          'violation_state', 'violation_epa', 'violation',
@@ -90,25 +94,36 @@ class EpaData(ModelData):
 
 
         df.set_index(['rcra_id', 'date'], inplace=True)
-        self.aux.set_index(['rcra_id', 'date'], inplace=True)
+        aux.set_index(['rcra_id', 'date'], inplace=True)
 
         df = df.astype(np.float32)
         
-        self.df = df
+        self.output = {'df': df, 'aux':aux}
 
-    def dump(self, directory):
-        filename = os.path.join(directory, 'df.h5')
-        logging.info('Writing %s: %s' % (filename, self.df.shape))
-        self.df.to_hdf(filename, 'df', mode='w', format='t', data_columns=['date', 'evaluation', 'region'])
+class EpaDataStore(Step):
+    def __init__(self, **kwargs):
+        Step.__init__(self, **kwargs)
 
-        filename = os.path.join(directory, 'aux.h5')
-        logging.info('Writing %s: %s' % (filename, self.aux.shape))
-        self.aux.to_hdf(filename, 'df', mode='w')
+    def run(self):
+        self.output = {}
+        return
 
-    def load(self, directory):
-        filename = os.path.join(directory, 'df.h5')
-        logging.info('Reading %s' % filename)
-        self.df = pd.read_hdf(filename, 'df')
+    def dump(self):
+        data = self.inputs[0].output
+
+        filename = os.path.join(self.get_dump_dirname(), 'df.h5')
+        logging.info('Writing %s: %s' % (filename, data['df'].shape))
+        data['df'].to_hdf(filename, 'df', mode='w', format='t', data_columns=['date', 'evaluation', 'region'])
+
+        filename = os.path.join(self.get_dump_dirname(), 'aux.h5')
+        logging.info('Writing %s: %s' % (filename, data['aux'].shape))
+        data['aux'].to_hdf(filename, 'df', mode='w')
+
+    def load(self):
+        return
+        #filename = os.path.join(self.get_dump_dirname(), 'df.h5')
+        #logging.info('Reading %s' % filename)
+        #self.df = pd.read_hdf(filename, 'df')
 
 def _investigations_lists(df, drop):
     columns = df.columns
