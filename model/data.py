@@ -34,13 +34,6 @@ class EpaData(Step):
         if outcome_years != 1:
             raise NotImplementedError('Currently only outcome_years=1 is implemented')
 
-        self.year_min = year_min
-        self.year_max = year_max
-        self.month = month
-        self.day = day
-        self.outcome_years = outcome_years
-        self.investigations_drop_lists = investigations_drop_lists
- 
         ag_dir = os.path.join(self.data_dir, 'output/aggregated/')
         self.aggregators = {
             'investigations': InvestigationsAggregator(ag_dir),
