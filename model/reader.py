@@ -1,24 +1,26 @@
-from drain import data, util, model
-from epa.model.data import EpaData
+from drain import data, util
+from drain.drain import Step
 
 import os
 import logging
 import pandas as pd
 
-class EpaReader(object):
-    def __init__(self, year, month, day, train_years, evaluation, region=None):
-        self.month = month
-        self.day = day
+class EpaHDFReader(Step):
+    #def __init__(self, year, month, day, train_years, evaluation, region=None):
+    def __init__(self, year, train_years, evaluation, region=None, **kwargs):
+        Step.__init__(self, year=year, train_years=train_years, evaluation=evaluation, region=region, **kwargs)
+#        self.month = month
+#        self.day = day
         self.year = year
         self.train_years = train_years
         self.evaluation = evaluation
         self.region = region
 
-        self.inputs = [EpaData(month=month, day=day)]
-        self.input_params = [{'data': {'name':'epa.model.data.EpaData', 'month':month, 'day':day}}]
-
     def run(self):
-        doy =  '%02d-%02d' % (self.month, self.day)
+        store = self.inputs[0].result
+        data = self.inputs[0].inputs[0]
+
+        doy =  '%02d-%02d' % (data.month, data.day)
         where_test = "date == '{year}-{doy}'".format(year=self.year, doy=doy)
         where_train = "date >= '{year_min}-{doy}' and date < '{year}-{doy}'".format(
                 year_min=self.year-self.train_years, year=self.year, doy=doy)
@@ -28,14 +30,12 @@ class EpaReader(object):
         if self.region is not None:
             where = "(region == {region}) & ({where})",format(region=self.region, where=where)
         
-        dirname = os.path.join(model.params_dir(self.input_params[0]), 'output')
+        logging.info('Reading X')
+        X = store.select('X', where=where)
+        X.drop(['evaluation', 'region'], axis=1, inplace=True)
 
-        df = pd.read_hdf(os.path.join(dirname, 'df.h5'), 'df' , where=where)
-        df.drop(['evaluation', 'region'], axis=1, inplace=True)
-
-        aux = pd.read_hdf(os.path.join(dirname, 'aux.h5'), 'df')
+        logging.info('Reading aux')
+        aux = store['aux']
         aux = aux.query(where) 
-        aux.set_index(['rcra_id', 'date'], inplace=True)
 
-        self.df = df
-        self.aux = aux
+        self.result = {'X':X, 'aux': aux}
