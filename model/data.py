@@ -1,7 +1,7 @@
 from drain.data import ModelData
 from drain.util import index_as_series
 from drain import data, aggregate, util
-from drain.drain import Step
+from drain.step import Step
 
 from epa.output.investigations_aggregated import InvestigationsAggregator
 from epa.output.handlers_aggregated import HandlersAggregator

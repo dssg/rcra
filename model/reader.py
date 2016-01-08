@@ -1,5 +1,5 @@
 from drain import data, util
-from drain.drain import Step
+from drain.step import Step
 
 import os
 import logging

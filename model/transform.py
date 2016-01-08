@@ -3,7 +3,7 @@ from epa.model.reader import EpaHDFReader
 
 from drain.util import index_as_series
 from drain import data, aggregate, util
-from drain.drain import Step
+from drain.step import Step
 
 import os
 from datetime import date,datetime
