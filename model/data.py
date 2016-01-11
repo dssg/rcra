@@ -1,4 +1,3 @@
-from drain.data import ModelData
 from drain.util import index_as_series
 from drain import data, aggregate, util
 from drain.step import Step
@@ -16,8 +15,6 @@ class EpaData(Step):
     psql_dir = os.environ['PSQL_DIR'] if 'PSQL_DIR' in os.environ else ''
     data_dir = os.environ['DATA_DIR'] if 'DATA_DIR' in os.environ else ''
     DEPENDENCIES = [os.path.join(psql_dir, d) for d in ['output/investigations', 'output/handlers', 'output/region_states' ]]
-    DEFAULT_YEAR_MIN = 2004
-    DEFAULT_YEAR_MAX = 2014
 
     EXCLUDE = {'formal_enforcement_epa', 'formal_enforcement_state', 'formal_enforcement',
                'min_formal_enforcement_date_epa', 'min_formal_enforcement_date_state', 'min_formal_enforcement_date',
@@ -27,7 +24,7 @@ class EpaData(Step):
                'active_today', 'naics_codes', 'max_start_date', 'handler_id',
                'min_start_date', 'max_receive_date', 'min_receive_date'}
 
-    def __init__(self, month, day, year_min=DEFAULT_YEAR_MIN, year_max=DEFAULT_YEAR_MAX, outcome_years=1, investigations_drop_lists=True, **kwargs):
+    def __init__(self, month, day, year_min=2004, year_max=2014, outcome_years=1, investigations_drop_lists=True, **kwargs):
         Step.__init__(self, month=month, day=day, year_min=year_min, year_max=year_max, 
                       outcome_years=outcome_years, investigations_drop_lists=investigations_drop_lists, **kwargs)
 
@@ -91,29 +88,28 @@ class EpaData(Step):
 
         df = df.astype(np.float32)
         
-        self.result = {'X': df, 'aux':aux}
+        return {'X': df, 'aux':aux}
 
 class EpaHDFStore(Step):
     def __init__(self, **kwargs):
         Step.__init__(self, **kwargs)
 
-    def run(self):
-        result = self.inputs[0].result
+    def run(self, X, aux, **kwargs):
         store = pd.HDFStore(os.path.join(self.get_dump_dirname(), 'result.h5'))
 
-        logging.info('Writing X %s' % str(result['X'].shape))
-        store.put('X', result['X'], mode='w', format='t', data_columns=['date', 'evaluation', 'region'])
+        logging.info('Writing X %s' % str(X.shape))
+        store.put('X', X, mode='w', format='t', data_columns=['date', 'evaluation', 'region'])
 
-        logging.info('Writing aux %s' % str(result['aux'].shape))
-        store.put('aux', result['aux'], mode='w')
+        logging.info('Writing aux %s' % str(aux.shape))
+        store.put('aux', aux, mode='w')
 
-        self.result = store
+        return {'store' : store}
 
     def dump(self):
-         return
+        return
 
     def load(self):
-        self.result =  pd.HDFStore(os.path.join(self.get_dump_dirname(), 'result.h5'))
+        self.set_result({'store': pd.HDFStore(os.path.join(self.get_dump_dirname(), 'result.h5'))})
 
 def _investigations_lists(df, drop):
     columns = df.columns

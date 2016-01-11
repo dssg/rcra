@@ -1,10 +1,14 @@
-#!serial  
-#  - !step:epa.model.data.EpaData {month : 1, day : 1, year_min : 2013, year_max : 2013}
-#  - !step:epa.model.data.EpaHDFStore {target : True}
-#  - !step:epa.model.reader.EpaHDFReader {year : 2013, train_years : 0, evaluation : False}
-#  - !step:epa.model.transform.EpaTransform {}
-
 !serial
- - !step:epa.model.transform.EpaTransform {month : 1, day : 1, year : 2013, train_years : 1}
- - !search
-    - !estimator:sklearn.ensemble.RandomForestClassifier {n_estimators : !list [10,20, 100], target : True}
+  - !product
+    - !search
+      - !step:epa.model.transform.EpaTransform
+        month : 1
+        day : 1
+        year : 2013
+        train_years : !range [1,5]
+    - !search
+      - !construct:sklearn.ensemble.RandomForestClassifier
+        n_estimators : !list [500,1000]
+        n_jobs : -1
+  - !step:drain.model.FitPredict
+      target : True

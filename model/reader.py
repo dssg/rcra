@@ -10,8 +10,7 @@ class EpaHDFReader(Step):
     def __init__(self, year, train_years, evaluation, region=None, **kwargs):
         Step.__init__(self, year=year, train_years=train_years, evaluation=evaluation, region=region, **kwargs)
 
-    def run(self):
-        store = self.inputs[0].result
+    def run(self, store, **kwargs):
         data = self.inputs[0].inputs[0]
 
         doy =  '%02d-%02d' % (data.month, data.day)
@@ -32,4 +31,4 @@ class EpaHDFReader(Step):
         aux = store['aux']
         aux = aux.query(where) 
 
-        self.result = {'X':X, 'aux': aux}
+        return {'X':X, 'aux': aux}

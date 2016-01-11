@@ -42,9 +42,7 @@ class EpaTransform(Step):
         self.hdf = EpaHDFStore(target=True, inputs=[self.data])
         self.inputs = [EpaHDFReader(year=year, train_years=train_years, evaluation=self.evaluation, region=region, inputs=[self.hdf])]
 
-    def run(self):
-        X = self.inputs[0].result['X']
-        aux = self.inputs[0].result['aux']
+    def run(self, X, aux, **kwargs):
         aggregators = self.data.aggregators
 
         logging.info('Splitting train and test sets')
@@ -67,7 +65,6 @@ class EpaTransform(Step):
         # reshape to train | test
         aux.drop(aux.index[~(train | test)], inplace=True)
         X,train,test = data.train_test_subset(X, train, test)
-        cv = (train, test)
 
         # set violation in training set
         # censor formal enforcements based on corresponding min date
@@ -87,4 +84,4 @@ class EpaTransform(Step):
                 logging.info('Normalizing')
                 X = data.normalize(X, train=train) 
 
-        self.result = {'X': X, 'y': y, 'aux': aux, 'cv': cv}
+        return {'X': X, 'y': y, 'aux': aux, 'train': train, 'test':test}
