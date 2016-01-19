@@ -32,7 +32,7 @@ class EpaTransform(Step):
         include = set(include)
 
         Step.__init__(self, month=month, day=day, year=year, train_years=train_years,
-                outcome=outcome, training_outcome=training_outcome, 
+                outcome=outcome, training_outcome=training_outcome, training_handler_max_age=training_handler_max_age,
                 investigations=investigations, handlers=handlers, investigations_expand_counts=investigations_expand_counts,
                 exclude=exclude, include=include, impute=impute, normalize=normalize, **kwargs)
 
