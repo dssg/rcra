@@ -6,7 +6,7 @@ output_dir = sys.argv[2]
 create_table = sys.argv[3]
 
 def column_to_snake(column_name):
-    
+   
     """
     converts a string that has spaces into snake_case, truncates names, and removes digits
     to make strings acceptable PostgreSQL column names
@@ -43,9 +43,20 @@ with open(create_table, 'a') as f:
 
         db_string = ""    
 
-        for k in df['column']:
-           db_string = db_string + k + " VARCHAR" + ",\n"
-   
+##        for k in df['column']:
+##           db_string = db_string + k + " VARCHAR" + ",\n"
+
+
+        for k,v in zip(df['column'], df['type']):
+            if v.lower().find('alphanumeric') == 0:
+                db_string = db_string + k + " VARCHAR" + ",\n"
+            elif v.lower().find('date') == 0:
+                db_string = db_string + k + " DATE" + ",\n"
+            elif v.lower().find('integer') == 0:
+                db_string = db_string + k + " BIGINT" + ",\n"
+            elif v.lower().find('num') == 0:
+                db_string = db_string + k + " FLOAT" + ",\n"   
+        
         f.write("DROP TABLE IF EXISTS rcra." + table + "; \n") 
         f.write("CREATE TABLE rcra." + table + "( \n" + db_string[:-2] + "\n);\n\n")
      
