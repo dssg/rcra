@@ -16,4 +16,7 @@ def handlers():
     return HandlersAggregation(spacedeltas, dates, target=True, parallel=True)
 
 def investigations():
-    return InvestigationsAggregation(spacedeltas, [date(1985,1,1)], parallel=True, target=True)
+    return InvestigationsAggregation(spacedeltas, dates, parallel=True, target=True)
+
+def all():
+    return [handlers(), investigations()]
