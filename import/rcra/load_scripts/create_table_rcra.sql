@@ -3,7 +3,7 @@
 DROP TABLE IF EXISTS rcra.aarea; 
 CREATE TABLE rcra.aarea( 
 epa_handler_id VARCHAR,
-area_sequence_number VARCHAR,
+area_sequence_number BIGINT,
 facility_wide_indicator VARCHAR,
 regulated_unit_indicator VARCHAR,
 area_name VARCHAR,
@@ -22,15 +22,15 @@ state_responsible_person VARCHAR
 DROP TABLE IF EXISTS rcra.aevent; 
 CREATE TABLE rcra.aevent( 
 epa_handler_id VARCHAR,
-event_sequence_number VARCHAR,
+event_sequence_number BIGINT,
 event_responsible_agency VARCHAR,
 event_activity_location VARCHAR,
 corrective_action_event_owner VARCHAR,
 corrective_action_event_code VARCHAR,
-original_schedule_date_of_event VARCHAR,
-new_schedule_date_of_event VARCHAR,
-actual_date_of_event VARCHAR,
-best_date VARCHAR,
+original_schedule_date_of_event DATE,
+new_schedule_date_of_event DATE,
+actual_date_of_event DATE,
+best_date DATE,
 responsible_person_owner VARCHAR,
 responsible_person VARCHAR,
 suborganization_owner VARCHAR,
@@ -46,9 +46,9 @@ activity_location VARCHAR,
 responsible_agency VARCHAR,
 authority_owner VARCHAR,
 authority_type VARCHAR,
-effective_date VARCHAR,
-issuance_date VARCHAR,
-end_date VARCHAR,
+effective_date DATE,
+issuance_date DATE,
+end_date DATE,
 repository VARCHAR,
 responsible_person_owner VARCHAR,
 responsible_person VARCHAR,
@@ -61,11 +61,11 @@ suborganization VARCHAR
 DROP TABLE IF EXISTS rcra.aln_area_event; 
 CREATE TABLE rcra.aln_area_event( 
 area_epa_handler_id VARCHAR,
-area_sequence_number VARCHAR,
+area_sequence_number BIGINT,
 event_epa_handler_id VARCHAR,
 event_code_owner VARCHAR,
 event_code VARCHAR,
-event_sequence_number VARCHAR,
+event_sequence_number BIGINT,
 event_responsible_agency VARCHAR,
 event_activity_location VARCHAR
 );
@@ -77,13 +77,13 @@ CREATE TABLE rcra.aln_event_authority(
 event_epa_handler_id VARCHAR,
 event_code_owner VARCHAR,
 event_code VARCHAR,
-event_sequence_number VARCHAR,
+event_sequence_number BIGINT,
 event_responsible_agency VARCHAR,
 event_activity_location VARCHAR,
 authority_epa_handler_id VARCHAR,
 authority_type_owner VARCHAR,
 authority_type VARCHAR,
-authority_effective_date VARCHAR,
+authority_effective_date DATE,
 authority_responsible_agency VARCHAR,
 authority_activity_location VARCHAR
 );
@@ -115,7 +115,7 @@ CREATE TABLE rcra.aln_authority_citation(
 epa_handler_id VARCHAR,
 authority_type_owner VARCHAR,
 authority_type VARCHAR,
-authority_effective_date VARCHAR,
+authority_effective_date DATE,
 authority_responsible_agency VARCHAR,
 authority_activity_location VARCHAR,
 statutory_citation_owner VARCHAR,
@@ -137,9 +137,9 @@ statutory_citation_description VARCHAR
 DROP TABLE IF EXISTS rcra.aln_area_unit; 
 CREATE TABLE rcra.aln_area_unit( 
 area_handler_id VARCHAR,
-area_handler_sequence VARCHAR,
+area_handler_sequence BIGINT,
 unit_handler_id VARCHAR,
-unit_handler_sequence VARCHAR
+unit_handler_sequence BIGINT
 );
 
 --- cmecomp3
@@ -149,7 +149,7 @@ CREATE TABLE rcra.cmecomp3(
 handler_id VARCHAR,
 evaluation_activity_location VARCHAR,
 evaluation_identifier VARCHAR,
-evaluation_start_date VARCHAR,
+evaluation_start_date DATE,
 evaluation_agency VARCHAR,
 found_violation_flag VARCHAR,
 citizen_complaint_flag VARCHAR,
@@ -167,53 +167,53 @@ handler_name VARCHAR,
 region VARCHAR,
 state VARCHAR,
 land_type VARCHAR,
-request_sequence_number VARCHAR,
-date_of_request VARCHAR,
-date_response_received VARCHAR,
+request_sequence_number BIGINT,
+date_of_request DATE,
+date_response_received DATE,
 request_agency VARCHAR,
 request_activity_location VARCHAR,
 violation_activity_location VARCHAR,
-violation_sequence_number VARCHAR,
+violation_sequence_number BIGINT,
 violation_determined_by_agency VARCHAR,
 violation_type VARCHAR,
 violation_short_description VARCHAR,
 former_citation VARCHAR,
-violation_determined_date VARCHAR,
-actual_return_to_compliance_date VARCHAR,
+violation_determined_date DATE,
+actual_return_to_compliance_date DATE,
 return_to_compliance_qualifier VARCHAR,
 violation_responsible_agency VARCHAR,
-scheduled_compliance_date VARCHAR,
+scheduled_compliance_date DATE,
 enforcement_activity_location VARCHAR,
 enforcement_identifier VARCHAR,
-enforcement_action_date VARCHAR,
+enforcement_action_date DATE,
 enforcement_agency VARCHAR,
 docket_number VARCHAR,
 attorney VARCHAR,
 corrective_action_component_flag VARCHAR,
-appeal_initiated_date VARCHAR,
-appeal_resolved_date VARCHAR,
-disposition_status_date VARCHAR,
+appeal_initiated_date DATE,
+appeal_resolved_date DATE,
+disposition_status_date DATE,
 disposition_status VARCHAR,
 disposition_status_description VARCHAR,
-cafo_sequence_number VARCHAR,
+cafo_sequence_number BIGINT,
 respondent_name VARCHAR,
 lead_agency VARCHAR,
 enforcement_type VARCHAR,
 enforcement_type_description VARCHAR,
 enforcement_responsible_person VARCHAR,
 enforcement_suborganization VARCHAR,
-sep_sequence_number VARCHAR,
-expenditure_amount VARCHAR,
-sep_scheduled_completion_date VARCHAR,
-sep_actual_completion_date VARCHAR,
-sep_defaulted_date VARCHAR,
+sep_sequence_number BIGINT,
+expenditure_amount FLOAT,
+sep_scheduled_completion_date DATE,
+sep_actual_completion_date DATE,
+sep_defaulted_date DATE,
 sep_type VARCHAR,
 sep_type_description VARCHAR,
-proposed_penalty_amount VARCHAR,
-final_monetary_amount VARCHAR,
-paid_amount VARCHAR,
-final_count VARCHAR,
-final_amount VARCHAR
+proposed_penalty_amount FLOAT,
+final_monetary_amount FLOAT,
+paid_amount FLOAT,
+final_count BIGINT,
+final_amount FLOAT
 );
 
 --- ccitation
@@ -222,9 +222,9 @@ DROP TABLE IF EXISTS rcra.ccitation;
 CREATE TABLE rcra.ccitation( 
 handler_id VARCHAR,
 violation_activity_location VARCHAR,
-violation_sequence_number VARCHAR,
+violation_sequence_number BIGINT,
 violation_determined_by_agency VARCHAR,
-citation_sequence_number VARCHAR,
+citation_sequence_number BIGINT,
 violation_owner VARCHAR,
 violation_type VARCHAR,
 citation_owner VARCHAR,
@@ -251,15 +251,15 @@ epa_handler_id VARCHAR,
 cost_estimate_activity_location VARCHAR,
 financial_assurance_type VARCHAR,
 cost_estimate_responsible_agency_ VARCHAR,
-cost_coverage_sequence_number_ VARCHAR,
+cost_coverage_sequence_number_ BIGINT,
 cost_estimate_responsible_person_owner VARCHAR,
 cost_estimate_responsible_person VARCHAR,
-cost_estimate_amount VARCHAR,
-cost_estimate_date VARCHAR,
+cost_estimate_amount FLOAT,
+cost_estimate_date DATE,
 cost_estimate_reason VARCHAR,
 ca_area_or_permit_unit_notes VARCHAR,
 user_id_of_last_change VARCHAR,
-date_of_last_change VARCHAR,
+date_of_last_change DATE,
 notes VARCHAR
 );
 
@@ -271,14 +271,14 @@ cost_estimate_handler_id VARCHAR,
 cost_estimate_activity_location VARCHAR,
 financial_assurance_type VARCHAR,
 cost_estimate_responsible_agency_ VARCHAR,
-cost_coverage_sequence_number_ VARCHAR,
+cost_coverage_sequence_number_ BIGINT,
 mechanism_handler_id VARCHAR,
 mechanism_activity_location VARCHAR,
 mechanism_agency VARCHAR,
-mechanism_sequence_number_ VARCHAR,
-mechanism_detail_sequence_number_ VARCHAR,
+mechanism_sequence_number_ BIGINT,
+mechanism_detail_sequence_number_ BIGINT,
 user_id_of_last_change VARCHAR,
-date_of_last_change VARCHAR
+date_of_last_change DATE
 );
 
 --- fmechanism_detail
@@ -288,14 +288,14 @@ CREATE TABLE rcra.fmechanism_detail(
 epa_handler_id VARCHAR,
 mechanism_activity_location VARCHAR,
 mechanism_agency VARCHAR,
-mechanism_sequence_number_ VARCHAR,
-mechanism_detail_sequence_number_ VARCHAR,
+mechanism_sequence_number_ BIGINT,
+mechanism_detail_sequence_number_ BIGINT,
 mechanism_identification VARCHAR,
-face_value_amount VARCHAR,
-effective_date VARCHAR,
-expiration_date VARCHAR,
+face_value_amount FLOAT,
+effective_date DATE,
+expiration_date DATE,
 user_id_of_last_change VARCHAR,
-date_of_last_change VARCHAR,
+date_of_last_change DATE,
 notes VARCHAR
 );
 
@@ -306,14 +306,14 @@ CREATE TABLE rcra.fmechanism(
 epa_handler_id VARCHAR,
 mechanism_activity_location VARCHAR,
 mechanism_agency VARCHAR,
-mechanism_sequence_number_ VARCHAR,
+mechanism_sequence_number_ BIGINT,
 mechanism_type_owner VARCHAR,
 mechanism_type VARCHAR,
 provider VARCHAR,
 provider_contact_name_ VARCHAR,
 provider_contact_phone_number VARCHAR,
 user_id_of_last_change VARCHAR,
-date_of_last_change VARCHAR,
+date_of_last_change DATE,
 notes VARCHAR
 );
 
@@ -335,9 +335,9 @@ CREATE TABLE rcra.hcertification(
 epa_handler_id VARCHAR,
 activity_location VARCHAR,
 source_type VARCHAR,
-handler_sequence_number VARCHAR,
-certification_sequence_number VARCHAR,
-certification_signed_date VARCHAR,
+handler_sequence_number BIGINT,
+certification_sequence_number BIGINT,
+certification_signed_date DATE,
 certification_title VARCHAR,
 certification_first_name VARCHAR,
 certification_middle_initial VARCHAR,
@@ -351,11 +351,11 @@ CREATE TABLE rcra.hhandler(
 epa_handler_id VARCHAR,
 activity_location VARCHAR,
 source_type VARCHAR,
-handler_sequence_number VARCHAR,
-receive_date VARCHAR,
+handler_sequence_number BIGINT,
+receive_date DATE,
 current_site_name VARCHAR,
 non_notifier VARCHAR,
-acknowledge_flag_date VARCHAR,
+acknowledge_flag_date DATE,
 acknowledge_flag VARCHAR,
 accessibility VARCHAR,
 location_street_number VARCHAR,
@@ -417,7 +417,7 @@ under_40_cfr_part_262_subpart_k_as_a_teaching_hospital VARCHAR,
 under_40_cfr_part_262_subpart_k_as_a_non_profit_research_ins VARCHAR,
 withdrawal_from_40_cfr_part_262_subpart_k VARCHAR,
 include_in_national_report VARCHAR,
-reporting_cycle_year VARCHAR,
+reporting_cycle_year BIGINT,
 cdx_transaction_id VARCHAR
 );
 
@@ -428,8 +428,8 @@ CREATE TABLE rcra.hnaics(
 epa_handler_id VARCHAR,
 activity_location VARCHAR,
 source_type VARCHAR,
-sequence_number VARCHAR,
-naics_sequence_number VARCHAR,
+sequence_number BIGINT,
+naics_sequence_number BIGINT,
 naics_code_owner VARCHAR,
 naics_code VARCHAR
 );
@@ -441,12 +441,12 @@ CREATE TABLE rcra.hhsm_activity(
 epa_handler_id VARCHAR,
 activity_location VARCHAR,
 source_type VARCHAR,
-sequence_number VARCHAR,
-hsm_sequence_number VARCHAR,
+sequence_number BIGINT,
+hsm_sequence_number BIGINT,
 facility_code_owner VARCHAR,
 facility_code VARCHAR,
-estimate_short_tons VARCHAR,
-actual_short_tons VARCHAR,
+estimate_short_tons BIGINT,
+actual_short_tons BIGINT,
 land_based_unit VARCHAR
 );
 
@@ -457,9 +457,9 @@ CREATE TABLE rcra.hhsm_basic(
 epa_handler_id VARCHAR,
 activity_location VARCHAR,
 source_type VARCHAR,
-sequence_number VARCHAR,
+sequence_number BIGINT,
 reason_for_notification VARCHAR,
-hsm_effective_date VARCHAR,
+hsm_effective_date DATE,
 hsm_fa VARCHAR
 );
 
@@ -470,8 +470,8 @@ CREATE TABLE rcra.hhsm_waste_code(
 epa_handler_id VARCHAR,
 activity_location VARCHAR,
 source_type VARCHAR,
-sequence_number VARCHAR,
-hsm_sequence_number VARCHAR,
+sequence_number BIGINT,
+hsm_sequence_number BIGINT,
 waste_code_owner VARCHAR,
 waste_code VARCHAR
 );
@@ -483,7 +483,7 @@ CREATE TABLE rcra.hother_permit(
 epa_handler_id VARCHAR,
 activity_location VARCHAR,
 source_type VARCHAR,
-handler_sequence_number VARCHAR,
+handler_sequence_number BIGINT,
 other_permit_number VARCHAR,
 other_permit_type_owner VARCHAR,
 other_permit_type VARCHAR,
@@ -497,13 +497,13 @@ CREATE TABLE rcra.howner_operator(
 epa_handler_id VARCHAR,
 activity_location VARCHAR,
 source_type VARCHAR,
-handler_sequence_number VARCHAR,
-owner_operator_sequence_number VARCHAR,
+handler_sequence_number BIGINT,
+owner_operator_sequence_number BIGINT,
 owner_operator_indicator VARCHAR,
 owner_operator_name VARCHAR,
 owner_operator_type VARCHAR,
-date_became_current VARCHAR,
-date_ended_current VARCHAR,
+date_became_current DATE,
+date_ended_current DATE,
 owner_operator_street_1 VARCHAR,
 owner_operator_street_2 VARCHAR,
 owner_operator_city VARCHAR,
@@ -533,7 +533,7 @@ CREATE TABLE rcra.hpart_a(
 epa_handler_id VARCHAR,
 activity_location VARCHAR,
 source_type VARCHAR,
-handler_sequence_number VARCHAR,
+handler_sequence_number BIGINT,
 permit_contact_first_name VARCHAR,
 permit_contact_middle_initial VARCHAR,
 permit_contact_last_name VARCHAR,
@@ -548,7 +548,7 @@ permit_contact_phone VARCHAR,
 permit_contact_phone_extension VARCHAR,
 permit_contact_email_address VARCHAR,
 permit_contact_title VARCHAR,
-tsd_date VARCHAR
+tsd_date DATE
 );
 
 --- hreport_univ
@@ -558,11 +558,11 @@ CREATE TABLE rcra.hreport_univ(
 epa_handler_id VARCHAR,
 activity_location VARCHAR,
 source_type VARCHAR,
-handler_sequence_number VARCHAR,
+handler_sequence_number BIGINT,
 current_site_name VARCHAR,
 non_notifier VARCHAR,
-receive_date VARCHAR,
-reporting_cycle_year VARCHAR,
+receive_date DATE,
+reporting_cycle_year BIGINT,
 accessibility VARCHAR,
 region VARCHAR,
 state VARCHAR,
@@ -601,10 +601,10 @@ contact_email_address VARCHAR,
 contact_title VARCHAR,
 owner_name VARCHAR,
 owner_type VARCHAR,
-owner_sequence_number VARCHAR,
+owner_sequence_number BIGINT,
 operator_name VARCHAR,
 operator_type VARCHAR,
-operator_sequence_number VARCHAR,
+operator_sequence_number BIGINT,
 naics_code_1 VARCHAR,
 naics_code_2 VARCHAR,
 naics_code_3 VARCHAR,
@@ -663,7 +663,7 @@ unaddressed_snc VARCHAR,
 addressed_snc VARCHAR,
 snc_with_compliance_schedule VARCHAR,
 financial_assurance_required VARCHAR,
-handler_date_of_last_change VARCHAR
+handler_date_of_last_change DATE
 );
 
 --- hstate_activity
@@ -673,7 +673,7 @@ CREATE TABLE rcra.hstate_activity(
 epa_handler_id VARCHAR,
 activity_location VARCHAR,
 source_type VARCHAR,
-handler_sequence_number VARCHAR,
+handler_sequence_number BIGINT,
 state_activity_type_owner VARCHAR,
 state_activity_type VARCHAR
 );
@@ -685,7 +685,7 @@ CREATE TABLE rcra.huniversal_waste(
 epa_handler_id VARCHAR,
 activity_location VARCHAR,
 source_type VARCHAR,
-handler_sequence_number VARCHAR,
+handler_sequence_number BIGINT,
 universal_waste_type_owner VARCHAR,
 universal_waste_type VARCHAR,
 accumulated VARCHAR,
@@ -782,7 +782,7 @@ CREATE TABLE rcra.hwaste_code(
 epa_handler_id VARCHAR,
 activity_location VARCHAR,
 source_type VARCHAR,
-handler_sequence_number VARCHAR,
+handler_sequence_number BIGINT,
 hazardous_waste_code_owner VARCHAR,
 hazardous_waste_code VARCHAR
 );
@@ -921,7 +921,7 @@ br_waste_code_active_status VARCHAR
 DROP TABLE IF EXISTS rcra.pseries; 
 CREATE TABLE rcra.pseries( 
 epa_handler_id VARCHAR,
-series_sequence_number VARCHAR,
+series_sequence_number BIGINT,
 series_name VARCHAR,
 responsible_owner VARCHAR,
 responsible_person VARCHAR
@@ -932,16 +932,16 @@ responsible_person VARCHAR
 DROP TABLE IF EXISTS rcra.pevent; 
 CREATE TABLE rcra.pevent( 
 epa_handler_id VARCHAR,
-series_sequence_number VARCHAR,
-event_sequence_number VARCHAR,
+series_sequence_number BIGINT,
+event_sequence_number BIGINT,
 responsible_agency VARCHAR,
 activity_location VARCHAR,
 permit_event_owner VARCHAR,
 permit_event_code VARCHAR,
-actual_date_of_event VARCHAR,
-original_schedule_date_of_event VARCHAR,
-new_schedule_date_of_event VARCHAR,
-best_date VARCHAR,
+actual_date_of_event DATE,
+original_schedule_date_of_event DATE,
+new_schedule_date_of_event DATE,
+best_date DATE,
 suborganization_owner VARCHAR,
 suborganization VARCHAR,
 responsible_person_owner VARCHAR,
@@ -953,7 +953,7 @@ responsible_person VARCHAR
 DROP TABLE IF EXISTS rcra.punit; 
 CREATE TABLE rcra.punit( 
 epa_handler_id VARCHAR,
-process_unit_sequence_number VARCHAR,
+process_unit_sequence_number BIGINT,
 process_unit_name VARCHAR
 );
 
@@ -962,11 +962,11 @@ process_unit_name VARCHAR
 DROP TABLE IF EXISTS rcra.punit_detail; 
 CREATE TABLE rcra.punit_detail( 
 epa_handler_id VARCHAR,
-process_unit_sequence_number VARCHAR,
-process_unit_detail_sequence_number VARCHAR,
-process_status_effective_date VARCHAR,
-process_capacity VARCHAR,
-number_of_units VARCHAR,
+process_unit_sequence_number BIGINT,
+process_unit_detail_sequence_number BIGINT,
+process_status_effective_date DATE,
+process_capacity FLOAT,
+number_of_units BIGINT,
 capacity_type VARCHAR,
 legal_operating_status_owner VARCHAR,
 legal_operating_status VARCHAR,
@@ -983,15 +983,15 @@ standardized_permit_indicator VARCHAR
 DROP TABLE IF EXISTS rcra.pln_event_unit_detail; 
 CREATE TABLE rcra.pln_event_unit_detail( 
 event_epa_handler_id VARCHAR,
-series_sequence_number VARCHAR,
+series_sequence_number BIGINT,
 permit_event_owner VARCHAR,
-event_sequence_number VARCHAR,
+event_sequence_number BIGINT,
 event_responsible_agency VARCHAR,
 activity_location VARCHAR,
 permit_event_code VARCHAR,
 unit_detail_epa_handler_id VARCHAR,
-unit_sequence_number VARCHAR,
-unit_detail_sequence_number VARCHAR
+unit_sequence_number BIGINT,
+unit_detail_sequence_number BIGINT
 );
 
 --- plu_permit_event_code
@@ -1033,8 +1033,8 @@ unit_of_measure_short_description VARCHAR
 DROP TABLE IF EXISTS rcra.pln_unit_detail_waste; 
 CREATE TABLE rcra.pln_unit_detail_waste( 
 handler_id VARCHAR,
-unit_sequence VARCHAR,
-unit_detail_sequence VARCHAR,
+unit_sequence BIGINT,
+unit_detail_sequence BIGINT,
 waste_code VARCHAR,
 waste_code_owner VARCHAR
 );
@@ -1074,7 +1074,7 @@ CREATE TABLE rcra.br_reporting(
 handler_id VARCHAR,
 activity_location VARCHAR,
 source_type VARCHAR,
-sequence_number VARCHAR,
+sequence_number BIGINT,
 hazardous_waste_page_number VARCHAR,
 hazardous_waste_sub_page_number VARCHAR,
 br_form VARCHAR,
@@ -1108,10 +1108,10 @@ form_code VARCHAR,
 management_method VARCHAR,
 federal_waste_flag VARCHAR,
 wastewater_characteristic_indicator VARCHAR,
-generation_tons VARCHAR,
-managed_tons VARCHAR,
-shipped_tons VARCHAR,
-received_tons VARCHAR,
+generation_tons FLOAT,
+managed_tons FLOAT,
+shipped_tons FLOAT,
+received_tons FLOAT,
 receiver_id VARCHAR,
 receiver_state VARCHAR,
 receiver_state_name VARCHAR,
@@ -1131,8 +1131,8 @@ CREATE TABLE rcra.bgm_waste_code(
 handler_id VARCHAR,
 activity_location VARCHAR,
 source_type VARCHAR,
-sequence_number VARCHAR,
-hazardous_waste_page_number VARCHAR,
+sequence_number BIGINT,
+hazardous_waste_page_number BIGINT,
 waste_code_owner VARCHAR,
 waste_code VARCHAR
 );
@@ -1144,9 +1144,9 @@ CREATE TABLE rcra.bwr_waste_code(
 handler_id VARCHAR,
 activity_location VARCHAR,
 source_type VARCHAR,
-sequence_number VARCHAR,
-hazardous_waste_page_number VARCHAR,
-hazardous_waste_sub_page_number VARCHAR,
+sequence_number BIGINT,
+hazardous_waste_page_number BIGINT,
+hazardous_waste_sub_page_number BIGINT,
 waste_code_owner VARCHAR,
 waste_code VARCHAR
 );
@@ -1157,16 +1157,16 @@ DROP TABLE IF EXISTS rcra.gis;
 CREATE TABLE rcra.gis( 
 handler_id VARCHAR,
 gis_owner VARCHAR,
-gis_sequence_number VARCHAR,
-unit_sequence_number VARCHAR,
-area_sequence_number VARCHAR,
-area_acreage VARCHAR,
+gis_sequence_number BIGINT,
+unit_sequence_number BIGINT,
+area_sequence_number BIGINT,
+area_acreage FLOAT,
 area_source_owner VARCHAR,
 area_source_code VARCHAR,
-area_source_date VARCHAR,
-data_collection_date VARCHAR,
-horizontal_acc_measure VARCHAR,
-source_map_scale_number VARCHAR,
+area_source_date DATE,
+data_collection_date DATE,
+horizontal_acc_measure BIGINT,
+source_map_scale_number BIGINT,
 coordinate_data_owner VARCHAR,
 coordinate_data_code VARCHAR,
 geographic_reference_point_owner VARCHAR,
@@ -1187,10 +1187,10 @@ DROP TABLE IF EXISTS rcra.gis_lat_long;
 CREATE TABLE rcra.gis_lat_long( 
 handler_id VARCHAR,
 gis_owner VARCHAR,
-gis_sequence_number VARCHAR,
-gis_latitude_longitude_sequence_number VARCHAR,
-latitude_measure VARCHAR,
-longitude_measure VARCHAR
+gis_sequence_number BIGINT,
+gis_latitude_longitude_sequence_number BIGINT,
+latitude_measure FLOAT,
+longitude_measure FLOAT
 );
 
 --- lu_area_source

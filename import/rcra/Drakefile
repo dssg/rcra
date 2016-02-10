@@ -1,5 +1,5 @@
 ; download and unzip flatfiles from RCRA Info 
-!$[DATA_DIR]/import/rcra/ <- [-timecheck]   
+$[DATA_DIR]/import/rcra/ <- [-timecheck]   
     mkdir -p $OUTPUT
     wget -N -P $OUTPUT ftp://ftp.epa.gov/rcrainfodata/rcra_flatfiles/\*.gz
     gunzip -f $OUTPUT/*.txt.gz
@@ -11,22 +11,22 @@ import/rcra/load_scripts/ <- import/rcra/make_import_scripts.sh, import/rcra/dat
     $INPUT $INPUT1 $OUTPUT
 
 ; create tables 
-$[PSQL_DIR]/rcra/schema <- import/rcra/create_schema_rcra.sql, import/rcra/load_scripts [method:psql -timecheck]
-$[PSQL_DIR]/rcra/tables <- import/rcra/load_scripts/create_table_rcra.sql, import/rcra/load_scripts, $[PSQL_DIR]/rcra/schema [method:psql -timecheck]  
+$[PSQL_DIR]/rcra/ <- [method:psql_schema -timecheck]
+$[PSQL_DIR]/rcra/tables <- import/rcra/load_scripts/create_table_rcra.sql, import/rcra/load_scripts [method:psql -timecheck]  
 
 ; for each file type use schemas to create CSVs 
-!$[DATA_DIR]/import/rcra/rcra <- import/rcra/load_scripts/, !$[DATA_DIR]/import/rcra/ [-timecheck]
+$[DATA_DIR]/import/rcra/rcra <- import/rcra/load_scripts/, $[DATA_DIR]/import/rcra/ [-timecheck]
     mkdir -p $OUTPUT
     for filetype in "A" "C" "F" "GIS" "H" "P" "BR"; do
         $INPUT/create_rcra_"$filetype"_csv.sh $INPUT1 $INPUT0 $OUTPUT
     done
 
 ; import CSVs in to PostgreSQL data base
-$[PSQL_DIR]/rcra/rcra <- !$[DATA_DIR]/import/rcra/rcra, $[PSQL_DIR]/rcra/tables, $[PSQL_DIR]/rcra/schema [method:load_data -timecheck]
+$[PSQL_DIR]/rcra/rcra <- $[DATA_DIR]/import/rcra/rcra, $[PSQL_DIR]/rcra/tables [method:load_data -timecheck]
 
 ; get RCRA facilities CSV
 URL="https://echo.epa.gov/files/echodownloads/rcra_downloads.zip"
-!$[DATA_DIR]/import/rcra/rcra_downloads.zip, !$[DATA_DIR]/import/rcra_downloads/ <- [-timecheck method:wget_unzip]
+$[DATA_DIR]/import/rcra/rcra_downloads.zip, $[DATA_DIR]/import/rcra_downloads/ <- [-timecheck method:wget_unzip]
 
 $[PSQL_DIR]/rcra/rcra_facilities <- import/rcra/import_rcra_facilities.sh, $[DATA_DIR]/import/rcra_downloads/RCRA_FACILITIES.csv
     $INPUT $INPUT1 && touch $OUTPUT
