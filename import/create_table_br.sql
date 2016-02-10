@@ -1,8 +1,8 @@
-CREATE SCHEMA IF NOT EXISTS br_and_rmp;
+CREATE SCHEMA IF NOT EXISTS br;
 
-DROP TABLE if EXISTS br_and_rmp.brs_all;
+DROP TABLE if EXISTS br.brs_all;
 
-CREATE TABLE br_and_rmp.brs_all (
+CREATE TABLE br.brs_all (
 	handler_id VARCHAR, 
 	activity_location VARCHAR, 
 	source_type VARCHAR, 
@@ -61,33 +61,6 @@ CREATE TABLE br_and_rmp.brs_all (
 	priority_chemical VARCHAR, 
 	management_category VARCHAR
 );
-
-DROP TABLE IF EXISTS br_and_rmp.rmp_inspections;
-
-CREATE TABLE br_and_rmp.rmp_inspections (
-	activity_id BIGINT NOT NULL, 
-	activity_name VARCHAR(100) NOT NULL, 
-	activity_type_desc VARCHAR(21) NOT NULL, 
-	activity_status_desc VARCHAR(8), 
-	actual_end_date DATE, 
-	state_epa_flag VARCHAR(1) NOT NULL, 
-	law_sections VARCHAR(95) NOT NULL, 
-	comp_monitor_category_desc VARCHAR(35) NOT NULL, 
-	comp_monitor_type_desc VARCHAR(62) NOT NULL, 
-	observed_deficiency_flag BOOLEAN, 
-	communicate_deficiency_flag BOOLEAN, 
-	facility_action_flag BOOLEAN, 
-	general_comp_assistance_flag BOOLEAN, 
-	specific_comp_assistance_flag BOOLEAN, 
-	deficiency_desc VARCHAR(715), 
-	facility_uin BIGINT, 
-	primary_name VARCHAR(80) NOT NULL, 
-	location_address VARCHAR(50), 
-	city_name VARCHAR(25), 
-	state_code VARCHAR(2) NOT NULL, 
-	epa_region_code VARCHAR(4)
-);
-
 
 
 

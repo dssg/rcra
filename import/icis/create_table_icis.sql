@@ -60,14 +60,14 @@ DROP TABLE IF EXISTS npdes.npdes_cs_violations;
 CREATE TABLE npdes.npdes_cs_violations (
 	npdes_id VARCHAR(9) NOT NULL, 
 	npdes_violation_id BIGINT NOT NULL, 
-	violation_type_code VARCHAR(1) NOT NULL, 
-	comp_schedule_event_id BIGINT NOT NULL, 
-	comp_schedule_nmbr INTEGER NOT NULL, 
-	violation_code VARCHAR(3) NOT NULL, 
-	violation_desc VARCHAR(42) NOT NULL, 
-	schedule_event_code VARCHAR(5) NOT NULL, 
-	schedule_event_desc VARCHAR(71) NOT NULL, 
-	schedule_date DATE NOT NULL, 
+	violation_type_code VARCHAR(1),
+	comp_schedule_event_id BIGINT,
+	comp_schedule_nmbr INTEGER,
+	violation_code VARCHAR(3),
+	violation_desc VARCHAR(42),
+	schedule_event_code VARCHAR(5), 
+	schedule_event_desc VARCHAR(71),
+	schedule_date DATE,
 	actual_date DATE, 
 	rnc_detection_code VARCHAR(4), 
 	rnc_detection_desc VARCHAR(34), 
@@ -81,12 +81,12 @@ DROP TABLE IF EXISTS npdes.npdes_formal_enforcement_actions;
 
 CREATE TABLE npdes.npdes_formal_enforcement_actions (
 	npdes_id VARCHAR(9) NOT NULL, 
-	enf_identifier VARCHAR(20) NOT NULL, 
+	enf_identifier VARCHAR(20),
 	activity_id BIGINT NOT NULL, 
-	activity_type_code VARCHAR(3) NOT NULL, 
-	enf_type_code VARCHAR(7) NOT NULL, 
-	enf_type_desc VARCHAR(91) NOT NULL, 
-	agency VARCHAR(5) NOT NULL, 
+	activity_type_code VARCHAR(3),
+	enf_type_code VARCHAR(7),
+	enf_type_desc VARCHAR(91),
+	agency VARCHAR(5),
 	settlement_entered_date DATE, 
 	fed_penalty_assessed_amt FLOAT, 
 	state_local_penalty_amt FLOAT
@@ -110,12 +110,12 @@ DROP TABLE IF EXISTS npdes.npdes_inspections;
 
 CREATE TABLE npdes.npdes_inspections (
 	registry_id VARCHAR(12) NOT NULL, 
-	npdes_id VARCHAR(9) NOT NULL, 
-	activity_id BIGINT NOT NULL, 
-	activity_type_code VARCHAR(3) NOT NULL, 
-	comp_monitor_type_code VARCHAR(3) NOT NULL, 
-	comp_monitor_type_desc VARCHAR NOT NULL, 
-	state_epa_flag VARCHAR(1) NOT NULL, 
+	npdes_id VARCHAR(9),
+	activity_id BIGINT,
+	activity_type_code VARCHAR(3),
+	comp_monitor_type_code VARCHAR(3),
+	comp_monitor_type_desc VARCHAR,
+	state_epa_flag VARCHAR(1),
 	actual_begin_date DATE, 
 	actual_end_date DATE, 
 	activity_outcome_code INTEGER, 
@@ -189,9 +189,9 @@ DROP TABLE IF EXISTS npdes.npdes_sics;
 
 CREATE TABLE npdes.npdes_sics (
 	npdes_id VARCHAR(9) NOT NULL, 
-	sic_code VARCHAR(4) NOT NULL, 
-	sic_desc VARCHAR(50) NOT NULL, 
-	primary_indicator_flag BOOLEAN NOT NULL
+	sic_code VARCHAR(4),
+	sic_desc VARCHAR(50),
+	primary_indicator_flag BOOLEAN 
 );
 
 --- ------------ ICIS FE&C (case_downloads.zip)
@@ -243,14 +243,14 @@ DROP TABLE IF EXISTS fec.fec_enforcement_type;
 CREATE TABLE fec.fec_enforcement_type (
 	activity_id VARCHAR NOT NULL, 
 	case_number VARCHAR NOT NULL, 
-	enf_type_code VARCHAR NOT NULL, 
-	enf_type_desc VARCHAR NOT NULL
+	enf_type_code VARCHAR,
+	enf_type_desc VARCHAR 
 );
 
 DROP TABLE IF EXISTS fec.fec_relief_sought;
 
 CREATE TABLE fec.fec_relief_sought (
-	activity_id BIGINT, 
+	activity_id VARCHAR, 
 	case_number VARCHAR, 
 	relief_code VARCHAR, 
 	relief_desc VARCHAR
@@ -319,7 +319,7 @@ DROP TABLE IF EXISTS fec.fec_pollutants;
 
 
 CREATE TABLE fec.fec_pollutants (
-	activity_id BIGINT NOT NULL, 
+	activity_id VARCHAR NOT NULL, 
 	case_number VARCHAR, 
 	pollutant_code INTEGER, 
 	pollutant_desc VARCHAR, 
@@ -349,12 +349,12 @@ DROP TABLE IF EXISTS fec.fec_enforcement_conclusion_pollutants;
 CREATE TABLE fec.fec_enforcement_conclusion_pollutants (
 	activity_id VARCHAR NOT NULL, 
 	case_number VARCHAR NOT NULL, 
-	enf_conclusion_id VARCHAR NOT NULL, 
+	enf_conclusion_id VARCHAR,
 	comp_action_id VARCHAR, 
-	environmental_impact_id BIGINT NOT NULL, 
+	environmental_impact_id BIGINT,
 	sep_id VARCHAR, 
-	pollutant_code INTEGER NOT NULL, 
-	pollutant_name VARCHAR NOT NULL, 
+	pollutant_code INTEGER,
+	pollutant_name VARCHAR,
 	average_annual_value FLOAT, 
 	pollutant_unit_code VARCHAR, 
 	media_code VARCHAR, 
@@ -367,12 +367,12 @@ DROP TABLE IF EXISTS fec.fec_enforcement_conclusion_complying_actions;
 CREATE TABLE fec.fec_enforcement_conclusion_complying_actions (
 	activity_id VARCHAR NOT NULL, 
 	case_number VARCHAR NOT NULL, 
-	enf_conclusion_id VARCHAR NOT NULL, 
-	comp_action_id VARCHAR NOT NULL, 
+	enf_conclusion_id VARCHAR,
+	comp_action_id VARCHAR,
 	comp_action_description VARCHAR, 
-	comp_action_type_code VARCHAR(3) NOT NULL, 
-	comp_action_type_desc VARCHAR NOT NULL, 
-	comp_action_category_type_desc VARCHAR NOT NULL
+	comp_action_type_code VARCHAR(3),
+	comp_action_type_desc VARCHAR,
+	comp_action_category_type_desc VARCHAR 
 );
 
 DROP TABLE IF EXISTS fec.fec_enforcement_conclusion_facilities;
@@ -394,10 +394,10 @@ DROP TABLE IF EXISTS fec.fec_enforcement_conclusion_sep;
 CREATE TABLE fec.fec_enforcement_conclusion_sep (
 	activity_id VARCHAR NOT NULL, 
 	case_number VARCHAR NOT NULL, 
-	enf_conclusion_id VARCHAR NOT NULL, 
-	sep_category_code VARCHAR NOT NULL, 
-	sep_category_desc VARCHAR NOT NULL, 
-	sep_id BIGINT NOT NULL, 
+	enf_conclusion_id VARCHAR,
+	sep_category_code VARCHAR,
+	sep_category_desc VARCHAR,
+	sep_id BIGINT,
 	sep_text VARCHAR, 
 	sep_amt FLOAT
 );
@@ -407,11 +407,11 @@ DROP TABLE IF EXISTS fec.fec_enforcement_conclusion_dollars;
 CREATE TABLE fec.fec_enforcement_conclusion_dollars (
 	activity_id VARCHAR NOT NULL, 
 	case_number VARCHAR NOT NULL, 
-	enf_conclusion_id VARCHAR NOT NULL, 
+	enf_conclusion_id VARCHAR,
 	state_local_penalty_amt FLOAT, 
-	cost_recovery_amt FLOAT NOT NULL, 
-	fed_penalty FLOAT NOT NULL, 
-	compliance_action_cost FLOAT NOT NULL, 
+	cost_recovery_amt FLOAT,
+	fed_penalty FLOAT,
+	compliance_action_cost FLOAT,
 	sep_cost FLOAT
 );
 
@@ -465,20 +465,20 @@ DROP TABLE IF EXISTS air.air_programs;
 
 CREATE TABLE air.air_programs (
 	pgm_sys_id VARCHAR(18) NOT NULL, 
-	program_code VARCHAR NOT NULL, 
-	program_desc VARCHAR NOT NULL, 
-	air_operating_status_code VARCHAR(3) NOT NULL, 
-	air_operating_status_desc VARCHAR(18) NOT NULL
+	program_code VARCHAR,
+	program_desc VARCHAR,
+	air_operating_status_code VARCHAR(3),
+	air_operating_status_desc VARCHAR(18)
 );
 
 DROP TABLE IF EXISTS air.air_program_subparts;
 
 CREATE TABLE air.air_program_subparts (
 	pgm_sys_id VARCHAR(18) NOT NULL, 
-	program_code VARCHAR NOT NULL, 
-	program_desc VARCHAR NOT NULL, 
-	air_program_subpart_code VARCHAR NOT NULL, 
-	air_program_subpart_desc VARCHAR NOT NULL
+	program_code VARCHAR,
+	program_desc VARCHAR,
+	air_program_subpart_code VARCHAR,
+	air_program_subpart_desc VARCHAR
 );
 
 DROP TABLE IF EXISTS air.air_titlev_certs;
@@ -486,9 +486,9 @@ DROP TABLE IF EXISTS air.air_titlev_certs;
 CREATE TABLE air.air_titlev_certs (
 	pgm_sys_id VARCHAR(18) NOT NULL, 
 	activity_id BIGINT NOT NULL, 
-	comp_monitor_type_code VARCHAR(3) NOT NULL, 
-	comp_monitor_type_desc VARCHAR(21) NOT NULL, 
-	state_epa_flag VARCHAR(1) NOT NULL, 
+	comp_monitor_type_code VARCHAR(3),
+	comp_monitor_type_desc VARCHAR(21),
+	state_epa_flag VARCHAR(1),
 	actual_end_date DATE, 
 	facility_rpt_deviation_flag BOOLEAN 
 );
@@ -498,13 +498,13 @@ DROP TABLE IF EXISTS air.air_fces_pces;
 CREATE TABLE air.air_fces_pces (
 	pgm_sys_id VARCHAR(18) NOT NULL, 
 	activity_id BIGINT NOT NULL, 
-	state_epa_flag VARCHAR(1) NOT NULL, 
-	activity_type_code VARCHAR(3) NOT NULL, 
-	activity_type_desc VARCHAR(21) NOT NULL, 
-	comp_monitor_type_code VARCHAR(3) NOT NULL, 
-	comp_monitor_type_desc VARCHAR(40) NOT NULL, 
-	actual_end_date DATE NOT NULL, 
-	program_codes VARCHAR NOT NULL
+	state_epa_flag VARCHAR(1),
+	activity_type_code VARCHAR(3),
+	activity_type_desc VARCHAR(21),
+	comp_monitor_type_code VARCHAR(3),
+	comp_monitor_type_desc VARCHAR(40),
+	actual_end_date DATE,
+	program_codes VARCHAR
 );
 
 DROP TABLE IF EXISTS air.air_formal_actions;
@@ -512,14 +512,14 @@ DROP TABLE IF EXISTS air.air_formal_actions;
 CREATE TABLE air.air_formal_actions (
 	pgm_sys_id VARCHAR(18) NOT NULL, 
 	activity_id BIGINT NOT NULL, 
-	enf_identifier VARCHAR(25) NOT NULL, 
-	activity_type_code VARCHAR(3) NOT NULL, 
-	activity_type_desc VARCHAR(23) NOT NULL, 
-	state_epa_flag VARCHAR(1) NOT NULL, 
-	enf_type_code VARCHAR(7) NOT NULL, 
-	enf_type_desc VARCHAR(70) NOT NULL, 
+	enf_identifier VARCHAR(25),
+	activity_type_code VARCHAR(3),
+	activity_type_desc VARCHAR(23),
+	state_epa_flag VARCHAR(1),
+	enf_type_code VARCHAR(7),
+	enf_type_desc VARCHAR(70),
 	settlement_entered_date DATE, 
-	penalty_amount FLOAT NOT NULL
+	penalty_amount FLOAT
 );
 
 DROP TABLE IF EXISTS air.air_hpv_history;
@@ -527,15 +527,15 @@ DROP TABLE IF EXISTS air.air_hpv_history;
 CREATE TABLE air.air_hpv_history (
 	pgm_sys_id VARCHAR(18) NOT NULL, 
 	activity_id BIGINT NOT NULL, 
-	agency_type_desc VARCHAR(8) NOT NULL,
+	agency_type_desc VARCHAR(8),
 	state_code VARCHAR(2), 
 	air_lcon_code VARCHAR(3),
-	comp_determination_uid VARCHAR(25) NOT NULL,
-	enf_response_policy_code VARCHAR(3) NOT NULL, 
-	program_codes VARCHAR NOT NULL, 
-	program_descs VARCHAR NOT NULL, 
-	pollutant_codes VARCHAR(181) NOT NULL, 
-	pollutant_descs VARCHAR(320) NOT NULL, 
+	comp_determination_uid VARCHAR(25),
+	enf_response_policy_code VARCHAR(3),
+	program_codes VARCHAR,
+	program_descs VARCHAR,
+	pollutant_codes VARCHAR(181),
+	pollutant_descs VARCHAR(320),
 	earliest_frv_determ_date DATE, 
 	hpv_dayzero_date DATE, 
 	hpv_resolved_date DATE
@@ -546,14 +546,14 @@ DROP TABLE IF EXISTS air.air_informal_actions;
 CREATE TABLE air.air_informal_actions (
 	pgm_sys_id VARCHAR(18) NOT NULL, 
 	activity_id BIGINT NOT NULL, 
-	enf_identifier VARCHAR(25) NOT NULL, 
-	activity_type_code VARCHAR(3) NOT NULL, 
-	activity_type_desc VARCHAR(25) NOT NULL, 
-	state_epa_flag VARCHAR(1) NOT NULL, 
-	enf_type_code VARCHAR(5) NOT NULL, 
-	enf_type_desc VARCHAR(35) NOT NULL, 
+	enf_identifier VARCHAR(25),
+	activity_type_code VARCHAR(3),
+	activity_type_desc VARCHAR(25),
+	state_epa_flag VARCHAR(1),
+	enf_type_code VARCHAR(5),
+	enf_type_desc VARCHAR(35),
 	achieved_date DATE, 
-	penalty_amount INTEGER NOT NULL
+	penalty_amount INTEGER
 );
 
 DROP TABLE IF EXISTS air.air_pollutants;
@@ -561,11 +561,11 @@ DROP TABLE IF EXISTS air.air_pollutants;
 CREATE TABLE air.air_pollutants (
 	pgm_sys_id VARCHAR(18) NOT NULL, 
 	pollutant_code BIGINT NOT NULL, 
-	pollutant_desc VARCHAR(70) NOT NULL, 
+	pollutant_desc VARCHAR(70),
 	srs_id VARCHAR(9), 
 	chemical_abstract_service_nmbr BIGINT, 
-	air_pollutant_class_code VARCHAR(3) NOT NULL, 
-	air_pollutant_class_desc VARCHAR(32) NOT NULL
+	air_pollutant_class_code VARCHAR(3),
+	air_pollutant_class_desc VARCHAR(32)
 );
 
 DROP TABLE IF EXISTS air.air_stack_tests;
@@ -573,9 +573,9 @@ DROP TABLE IF EXISTS air.air_stack_tests;
 CREATE TABLE air.air_stack_tests (
 	pgm_sys_id VARCHAR(18) NOT NULL, 
 	activity_id BIGINT NOT NULL, 
-	comp_monitor_type_code VARCHAR(3) NOT NULL, 
-	comp_monitor_type_desc VARCHAR(10) NOT NULL, 
-	state_epa_flag VARCHAR(1) NOT NULL, 
+	comp_monitor_type_code VARCHAR(3),
+	comp_monitor_type_desc VARCHAR(10),
+	state_epa_flag VARCHAR(1),
 	actual_end_date DATE, 
 	pollutant_codes VARCHAR(70),
 	pollutant_descs VARCHAR(2),

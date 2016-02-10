@@ -1,4 +1,4 @@
-#!/bin/bash -xv
+#!/bin/bash
 
 dir_path=$1
 output_dir=$2 
@@ -12,11 +12,9 @@ dictionaries[H]="Flat_File_Specification_Handler_Module.xlsx"
 dictionaries[P]="Flat_File_Specification_P_Permit_Closure_and_Post-Closure_Module.xlsx"
 dictionaries[BR]="Flat_File_Specification_Waste_Activity_Monitoring_Module.xlsx"
 
+truncate -s0 $output_dir"/"create_table_rcra.sql
+
 for prefix in "${!dictionaries[@]}"
 do
-<<<<<<< HEAD
-    python import/rcra/xlsx2import.py $dir_path"/"${dictionaries[$prefix]} $prefix $output_dir
-=======
-    python xlsx2import.py $dir_path"/"${dictionaries[$prefix]} $output_dir
->>>>>>> c89eadb0a5f87df0055272599c4f5fdd0c80ecd3
+    python import/rcra/xlsx2import.py $dir_path"/"${dictionaries[$prefix]} $output_dir "create_table_rcra.sql"
 done 

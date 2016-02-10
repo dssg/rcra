@@ -1,4 +1,4 @@
-#!/bin/bash -xv
+#!/bin/bash 
 
 RCRA_DIR=$1
 DICT_DIR=$2
