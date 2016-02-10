@@ -1,4 +1,4 @@
-$[PSQL_DIR]/indexes <- import/create_indexes.sql [method:psql]
+$[PSQL_DIR]/indexes <- import/create_indexes.sql, $[PSQL_DIR]/rcra/rcra [method:psql]
 
 URL="https://echo.epa.gov/files/echodownloads/frs_downloads.zip"
 !$[DATA_DIR]/import/frs/frs_downloads.zip, !$[DATA_DIR]/import/frs/ <- [method:wget_unzip -timecheck]

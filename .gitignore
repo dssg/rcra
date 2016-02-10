@@ -3,6 +3,7 @@
 *.log
 *~
 default_profile
+psql
 *.pyc
 model/output
 notebooks
