@@ -1,7 +1,7 @@
-from epa.model.data import EpaData, EpaHDFStore
+from epa.model.data import EpaData
 from epa.model.reader import EpaHDFReader
 
-from drain.util import index_as_series
+from drain.data import ToHDF, index_as_series
 from drain import data, aggregate, util
 from drain.step import Step
 
@@ -39,17 +39,19 @@ class EpaTransform(Step):
         self.evaluation = self.training_outcome.startswith('evaluation')
 
         self.data = EpaData(month=month, day=day)
-        self.hdf = EpaHDFStore(target=True, inputs=[self.data])
-        self.inputs = [EpaHDFReader(year=year, train_years=train_years, evaluation=self.evaluation, region=region, inputs=[self.hdf])]
+        store = ToHDF(inputs=[self.data], 
+            put_args={'X':dict(format='t', data_columns=['date', 'evaluation', 'region'])})
+        self.inputs = [EpaHDFReader(year=year, train_years=train_years, evaluation=self.evaluation, region=region, inputs=[store])]
 
     def run(self, X, aux, **kwargs):
         aggregators = self.data.aggregators
 
-        logging.info('Splitting train and test sets')
-        today = date(self.year, self.month, self.day)
-
+        logging.info('Selecting spatiotemporal aggregations')
         X = aggregators['investigations'].select(X, self.investigations)
         X = aggregators['handlers'].select(X, self.handlers)
+
+        logging.info('Splitting train and test sets')
+        today = date(self.year, self.month, self.day)
 
         train = index_as_series(aux, 'date') < today
         test = ~train

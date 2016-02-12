@@ -6,7 +6,6 @@ import logging
 import pandas as pd
 
 class EpaHDFReader(Step):
-    #def __init__(self, year, month, day, train_years, evaluation, region=None):
     def __init__(self, year, train_years, evaluation, region=None, **kwargs):
         Step.__init__(self, year=year, train_years=train_years, evaluation=evaluation, region=region, **kwargs)
 

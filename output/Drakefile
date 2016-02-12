@@ -1,5 +1,6 @@
 $[PSQL_DIR]/output/ <- [method:psql_schema -timecheck]
 
+$[PSQL_DIR]/output/cmecomp3 <- output/cmecomp3.sql, $[PSQL_DIR]/rcra/rcra [method:psql]
 $[PSQL_DIR]/output/investigations <- output/investigations.sql, $[PSQL_DIR]/rcra/rcra [method:psql]
 
 $[PSQL_DIR]/output/region_states <- output/create_region_states.sql [method:psql]

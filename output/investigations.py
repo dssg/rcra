@@ -4,7 +4,7 @@ import pandas as pd
 import itertools
 
 from drain import util
-from drain.data import date_censor_sql
+from drain.data import date_censor_sql, ToHDF, FromSQL
 from drain.step import Step
 from drain.util import day
 from drain.aggregation import SpacetimeAggregation
@@ -17,8 +17,8 @@ bool_columns = ['citizen_complaint', 'multimedia_inspection', 'sampling', 'not_s
 ]
 
 # these are arrays that get concatenated and then counted and proportioned
-list_columns = ['violation_types', 'violation_classes', 'enforcement_types', 'evaluation_types',
-                'focus_areas', 'land_types', 'rtc_qualifiers', 'sep_types',
+list_columns = ['violation_type', 'violation_class', 'enforcement_type', 'evaluation_type',
+                'focus_area', 'land_type', 'return_to_compliance_qualifier', 'sep_type',
                 #'former_citations' ignore former citations for now...
 ]
 
@@ -31,37 +31,42 @@ class InvestigationsAggregation(SpacetimeAggregation):
             raise ValueError('Currently only able to run one date at a time, try parallel=True')
 
         if not self.parallel:
-            self.inputs = [Investigations(self.dates[0], target=True)]
+            self.inputs = [Investigations(self.dates[0])]
 
     def get_aggregates(self, date, delta):
         aggregates =  [
             Count(),
+            Aggregate('violation', 'any', fname=False),
+            Aggregate('formal_enforcement', 'any', fname=False),
+            Count('violation', prop=True),
+            Count('formal_enforcement', prop=True),
             Count('agency_epa', name='epa', prop=True),
             Count('agency_state', name='state', prop=True),
             Aggregate(lambda i: (date - i.start_date) / day, ['min','max'], 'days_since_evaluation'),
-            Aggregate(lambda i: (date - i.max_violation_determined_date) / day, ['min','max'], 
+            Aggregate(lambda i: (date - i.violation_determined_date) / day, ['min','max'], 
                     'days_since_violation'),
-            Aggregate(lambda i: (date - i.max_formal_enforcement_date) / day, 'min', 
+            Aggregate(lambda i: (date - i.enforcement_action_date) / day, 'min', 
                     'days_since_enforcement'),
-            Aggregate(lambda i: (i.max_violation_determined_date - i.start_date) / day, 'max', 
+            Aggregate(lambda i: (i.violation_determined_date - i.start_date) / day, 'max', 
                     'evaluation_to_violation'),
-            Aggregate(lambda i: (i.max_rtc_date - i.max_violation_determined_date) / day, 
+            Aggregate(lambda i: (i.actual_return_to_compliance_date - 
+                    i.violation_determined_date) / day, 
                     ['max','mean'], 'violation_to_rtc'),
-            Aggregate(lambda i: (i.max_rtc_date - i.max_scheduled_compliance_date) / day, 
+            Aggregate(lambda i: (i.actual_return_to_compliance_date - 
+                    i.scheduled_compliance_date) / day, 
                     ['max', 'mean'], 'overtime'),
-            Aggregate(lambda i: i.max_final_monetary_amount - i.max_paid_amount, 
+            Aggregate(lambda i: i.final_monetary_amount - i.paid_amount, 
                     'max', 'diff_fmp_paid'),
-            Aggregate(lambda i: i.max_final_monetary_amount - i.max_proposed_penalty_amount, 
+            Aggregate(lambda i: i.final_monetary_amount - i.proposed_penalty_amount, 
                     'max', 'diff_fmp_mpm'),
-            Aggregate('max_paid_amount', ['max', 'mean', 'min']),
-            Aggregate('max_final_monetary_amount', 'mean'),
-            Aggregate('max_proposed_penalty_amount', 'mean'),
-            Aggregate('max_expenditure_amount', 'max'),
-            Aggregate(lambda i: (i.max_sep_actual_completion_date - 
-                    i.max_sep_scheduled_completion_date) / day, ['max', 'min'], 
+            Aggregate(['expenditure_amount', 'proposed_penalty_amount', 
+                    'final_monetary_amount', 'paid_amount', 'final_count', 
+                    'final_amount'], ['max', 'mean', 'min', 'sum']),
+            Aggregate(lambda i: (i.sep_actual_completion_date - 
+                    i.sep_scheduled_completion_date) / day, ['max', 'min'], 
                     'time_to_sep_completion'),
-            Aggregate(lambda i: (i.min_sep_defaulted_date - 
-                    i.max_sep_scheduled_completion_date) / day,
+            Aggregate(lambda i: (i.sep_defaulted_date - 
+                    i.sep_scheduled_completion_date) / day,
                     ['max', 'min'], 'time_to_sep_default'),
             Aggregate(list_columns, aggregate_counts, fname=False),
             Count(bool_columns, prop=True)
@@ -81,10 +86,10 @@ columns_to_censor = {
 }
 
 
-date_columns = ['start_date'] + list(itertools.chain(*(['min_%s' % d, 'max_%s' % d] for d in [
-            'formal_enforcement_date', 'violation_determined_date', 'rtc_date', 
+date_columns = ['evaluation_start_date', 'enforcement_action_date', 
+            'violation_determined_date', 'actual_return_to_compliance_date', 
             'scheduled_compliance_date', 'appeal_initiated_date', 'appeal_resolved_date',
-            'sep_actual_completion_date', 'sep_defaulted_date', 'sep_scheduled_completion_date'])))
+            'sep_actual_completion_date', 'sep_defaulted_date', 'sep_scheduled_completion_date']
 
 class Investigations(Step):
     """
@@ -92,20 +97,33 @@ class Investigations(Step):
     """
     def __init__(self, date, **kwargs):
         Step.__init__(self, date=date, **kwargs)
-        self.sql_filename = os.path.join(os.path.dirname(os.path.abspath(__file__)), 
-                'investigations_censored.sql')
-        psql_dir = os.environ['PSQL_DIR']
-        self.dependencies = [os.path.join(psql_dir, 'rcra/rcra'), 
-                os.path.join(psql_dir, 'output/region_states'), self.sql_filename]
-    
-    def run(self):
-        #db = util.create_db()
-        engine = util.create_engine()
-        with open(self.sql_filename, 'r') as sql_file:
-            censored = {}
-            for d in columns_to_censor:
-                censored.update({c: date_censor_sql(d, self.date, c) for c in columns_to_censor[d]})
 
-            sql = sql_file.read().format(date=self.date, **censored)
-            return pd.read_sql(sql, engine, parse_dates=date_columns)
-            return db.read_sql(sql, parse_dates=date_columns)
+        self.inputs = [ToHDF(
+            put_args={'cmecomp3':dict(format='t', data_columns=['evaluation_start_date'])}, 
+            inputs_mapping=['cmecomp3'], objects_to_ascii=True,
+            inputs=[FromSQL(to_str=['citizen_complaint_flag'], query="""
+select *,
+        violation_type is not null as violation,
+        evaluation_agency in ('E','X','C','N') as agency_epa,
+        evaluation_agency not in ('E','X','C','N') as agency_state,
+        enforcement_type::int between 300 and 799 as formal_enforcement,
+        enforcement_agency = 'E' as enforcement_epa,
+        enforcement_agency = 'S' as enforcement_state,
+        violation_determined_by_agency = 'E' as violation_epa,
+        violation_determined_by_agency = 'S' as violation_state,
+        corrective_action_component_flag = 'Y' as corrective_action_component,
+        citizen_complaint_flag = 'Y' as citizen_complaint,
+        multimedia_inspection_flag = 'Y' as multimedia_inspection,
+        sampling_flag = 'Y' as sampling,
+        not_subtitle_c_flag = 'Y' as not_subtitle_c,
+        CASE WHEN violation_type like '%%.%%' 
+                THEN substring(violation_type for 3) ELSE null END as violation_class
+from rcra.cmecomp3 where handler_id is not null
+and (violation_determined_date is null or evaluation_start_date <= violation_determined_date)
+""", parse_dates=date_columns, tables='rcra.rcra')]) # because we don't do psql stubs right
+        ]
+    
+    def run(self, cmecomp3):
+        df = cmecomp3.select('cmecomp3', where="evaluation_start_date < '%s'" % self.date)
+        df.rename(columns={'evaluation_start_date':'start_date', 'handler_id':'rcra_id'}, inplace=True)
+        return df
