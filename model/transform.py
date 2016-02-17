@@ -21,6 +21,8 @@ class EpaTransform(Step):
             training_handler_max_age = 365,
             investigations={},
             handlers={},
+            icis={},
+            rmp={},
             investigations_expand_counts=False,
             exclude=[], include=[],
             impute=True, normalize=True, **kwargs):
@@ -31,9 +33,13 @@ class EpaTransform(Step):
         exclude = set(exclude)
         include = set(include)
 
-        Step.__init__(self, month=month, day=day, year=year, train_years=train_years,
-                outcome=outcome, training_outcome=training_outcome, training_handler_max_age=training_handler_max_age,
-                investigations=investigations, handlers=handlers, investigations_expand_counts=investigations_expand_counts,
+        Step.__init__(self, month=month, day=day, year=year, 
+                train_years=train_years, region=region,
+                outcome=outcome, training_outcome=training_outcome, 
+                training_handler_max_age=training_handler_max_age,
+                investigations=investigations, handlers=handlers, 
+                icis=icis, rmp=rmp,
+                investigations_expand_counts=investigations_expand_counts,
                 exclude=exclude, include=include, impute=impute, normalize=normalize, **kwargs)
 
         self.evaluation = self.training_outcome.startswith('evaluation')
@@ -44,11 +50,17 @@ class EpaTransform(Step):
         self.inputs = [EpaHDFReader(year=year, train_years=train_years, evaluation=self.evaluation, region=region, inputs=[store])]
 
     def run(self, X, aux, **kwargs):
-        aggregators = self.data.aggregators
+        if self.region is not None:
+            X.drop(X.index[aux.region != self.region], inplace=True)
+            aux.drop(aux.index[aux.region != self.region], inplace=True)
 
         logging.info('Selecting spatiotemporal aggregations')
-        X = aggregators['investigations'].select(X, self.investigations)
-        X = aggregators['handlers'].select(X, self.handlers)
+        aggregators = self.data.aggregators
+
+#        X = aggregators['investigations'].select(X, self.investigations)
+#        X = aggregators['handlers'].select(X, self.handlers)
+#        X = aggregators['icis'].select(X, self.icis)
+#        X = aggregators['rmp'].select(X, self.icis)
 
         logging.info('Splitting train and test sets')
         today = date(self.year, self.month, self.day)

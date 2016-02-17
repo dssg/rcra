@@ -18,7 +18,7 @@ select rcra_id,
         min(formal_enforcement_date) as min_formal_enforcement_date
         
 from output.investigations
-        where start_date >= '{min_year}{doy}' and start_date < '{max_year}{doy}'
+        where start_date >= '{min_year}{doy}' and start_date <= '{max_year}{doy}'
         group by 1,2
 );
 

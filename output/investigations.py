@@ -1,95 +1,102 @@
 # get_investigations below returns cesnored investigations for a given date used in investigations_aggregated
 import os
 import pandas as pd
+import numpy as np
 import itertools
 
-from drain import util
+from drain import util, data, aggregate
 from drain.data import date_censor_sql, ToHDF, FromSQL
 from drain.step import Step
-from drain.util import day
-from drain.aggregation import SpacetimeAggregation
-from drain.aggregate import Aggregate, Count, aggregate_counts
-
-# these are booleans that get summed
-bool_columns = ['citizen_complaint', 'multimedia_inspection', 'sampling', 'not_subtitle_c',
-                'corrective_action_component', 'violation_state', 'violation_epa',
-                'enforcement_state', 'enforcement_epa'
-]
+from drain.aggregation import SpacetimeAggregation, SimpleAggregation
+from drain.aggregate import Aggregate, Count, aggregate_counts, days
 
 # these are arrays that get concatenated and then counted and proportioned
-list_columns = ['violation_type', 'violation_class', 'enforcement_type', 'evaluation_type',
+list_columns = ['violation_type', 'enforcement_type', 'evaluation_type',
                 'focus_area', 'land_type', 'return_to_compliance_qualifier', 'sep_type',
                 #'former_citations' ignore former citations for now...
 ]
 
+outcomes = ['violation', 'violation_epa', 'violation_state', 
+            'formal_enforcement', 'enforcement_state', 
+            'enforcement_epa', 'formal_enforcement_state', 
+            'formal_enforcement_epa']
+
+amounts = ['final_monetary_amount', 'paid_amount', 'proposed_penalty_amount', 
+            'expenditure_amount', 'final_count', 'final_amount']
+
+flags = ['corrective_action_component', 'citizen_complaint', 
+        'multimedia_inspection', 'sampling', 'not_subtitle_c']
+
 class InvestigationsAggregation(SpacetimeAggregation):
     def __init__(self, spacedeltas, dates, **kwargs):
-        SpacetimeAggregation.__init__(self, spacedeltas=spacedeltas, dates=dates, 
-                prefix='investigations', date_column='start_date', **kwargs)
+        SpacetimeAggregation.__init__(self, spacedeltas=spacedeltas, 
+                dates=dates, prefix='investigations',
+                date_column='start_date', **kwargs)
 
         if len(self.dates) != 1 and not self.parallel:
             raise ValueError('Currently only able to run one date at a time, try parallel=True')
 
         if not self.parallel:
-            self.inputs = [Investigations(self.dates[0])]
+            self.inputs = [Investigations(self.dates[0], target=True)]
 
     def get_aggregates(self, date, delta):
-        aggregates =  [
+        return  [
             Count(),
-            Aggregate('violation', 'any', fname=False),
-            Aggregate('formal_enforcement', 'any', fname=False),
-            Count('violation', prop=True),
-            Count('formal_enforcement', prop=True),
-            Count('agency_epa', name='epa', prop=True),
-            Count('agency_state', name='state', prop=True),
-            Aggregate(lambda i: (date - i.start_date) / day, ['min','max'], 'days_since_evaluation'),
-            Aggregate(lambda i: (date - i.violation_determined_date) / day, ['min','max'], 
-                    'days_since_violation'),
-            Aggregate(lambda i: (date - i.enforcement_action_date) / day, 'min', 
-                    'days_since_enforcement'),
-            Aggregate(lambda i: (i.violation_determined_date - i.start_date) / day, 'max', 
-                    'evaluation_to_violation'),
-            Aggregate(lambda i: (i.actual_return_to_compliance_date - 
-                    i.violation_determined_date) / day, 
-                    ['max','mean'], 'violation_to_rtc'),
-            Aggregate(lambda i: (i.actual_return_to_compliance_date - 
-                    i.scheduled_compliance_date) / day, 
-                    ['max', 'mean'], 'overtime'),
-            Aggregate(lambda i: i.final_monetary_amount - i.paid_amount, 
-                    'max', 'diff_fmp_paid'),
-            Aggregate(lambda i: i.final_monetary_amount - i.proposed_penalty_amount, 
-                    'max', 'diff_fmp_mpm'),
-            Aggregate(['expenditure_amount', 'proposed_penalty_amount', 
-                    'final_monetary_amount', 'paid_amount', 'final_count', 
-                    'final_amount'], ['max', 'mean', 'min', 'sum']),
-            Aggregate(lambda i: (i.sep_actual_completion_date - 
-                    i.sep_scheduled_completion_date) / day, ['max', 'min'], 
-                    'time_to_sep_completion'),
-            Aggregate(lambda i: (i.sep_defaulted_date - 
-                    i.sep_scheduled_completion_date) / day,
-                    ['max', 'min'], 'time_to_sep_default'),
-            Aggregate(list_columns, aggregate_counts, fname=False),
-            Count(bool_columns, prop=True)
-        ]
-        
-        return aggregates
+            # agencies
+            Aggregate(['agency_epa', 'agency_state'], 'any', fname=False),
+            Count(['agency_epa', 'agency_state'], prop=True),
 
-columns_to_censor = {
-    'enforcement_action_date': ['enforcement_type', 'enforcement_action_date', 
-            'enforcement_agency'],
-    'actual_return_to_compliance_date' : ['actual_return_to_compliance_date', 
+            # outcomes
+            Aggregate(outcomes + flags, 'any', fname=False),
+            Count(outcomes + flags, prop=True),
+
+            Aggregate([days('min_' + c, date) for c in date_columns], 'min', 
+                name=[c + '_days' for c in date_columns]),
+            Aggregate([days('max_' + c, date) for c in date_columns], 'max', 
+                name=[c + '_days' for c in date_columns]),
+            Aggregate(days('min_violation_determined_date', 'start_date'), ['min', 'mean', 'max'], 
+                    'evaluation_to_violation'),
+            Aggregate(days('min_violation_determined_date', 'max_actual_return_to_compliance_date'),
+                    ['min', 'mean', 'max'], 'violation_to_rtc'),
+            Aggregate(days('min_scheduled_compliance_date', 'max_actual_return_to_compliance_date'),
+                    ['min', 'mean', 'max'], 'overtime'),
+            Aggregate(lambda i: i.final_monetary_amount - i.paid_amount, 
+                    ['min', 'mean', 'max'], 'diff_fmp_paid'),
+            Aggregate(lambda i: i.final_monetary_amount - i.proposed_penalty_amount, 
+                    ['min', 'mean', 'max'], 'diff_fmp_mpm'),
+            Aggregate(amounts , ['max', 'mean', 'min', 'sum']),
+            Aggregate(days('min_sep_scheduled_completion_date', 'max_sep_actual_completion_date'), 
+                    ['max', 'min'], 'sep_completion_overtime'),
+            Aggregate(days('min_sep_defaulted_date', 'max_sep_scheduled_completion_date'),
+                    ['max', 'min'], 'sep_default_to_completion'),
+            #Aggregate(list_columns, aggregate_counts, fname=False)
+        ]
+
+censor_dates = {
+    'violation_determined_date': ['violation_determined_by_agency', 
+            'violation_type', 'violation_short_description', 
+            'violation_responsible_agency', 
+            'violation_activity_location', 'violation_sequence_number'],
+    'enforcement_action_date': ['enforcement_type', 
+            'enforcement_agency', 'enforcement_activity_location', 
+            'enforcement_identifier', 'enforcement_agency', 
+            'proposed_penalty_amount', 'final_monetary_amount',
+            'paid_amount', 'final_count', 'final_amount', 
+            'expenditure_amount', 'sep_scheduled_compliance_date', 
+            'sep_scheduled_completion_date'],
+    'actual_return_to_compliance_date' : [
             'return_to_compliance_qualifier'],
-    'appeal_initiated_date' : ['appeal_initiated_date'],
-    'appeal_resolved_date' : ['appeal_resolved_date'],
-    'sep_actual_completion_date' : ['sep_actual_completion_date'],
-    'sep_defaulted_date' : ['sep_defaulted_date'],
+    'appeal_initiated_date' : [],
+    'appeal_resolved_date' : [],
+    'sep_actual_completion_date' : [],
+    'sep_defaulted_date' : [],
 }
 
+date_columns = censor_dates.keys() + \
+        ['scheduled_compliance_date', 'sep_scheduled_completion_date']
 
-date_columns = ['evaluation_start_date', 'enforcement_action_date', 
-            'violation_determined_date', 'actual_return_to_compliance_date', 
-            'scheduled_compliance_date', 'appeal_initiated_date', 'appeal_resolved_date',
-            'sep_actual_completion_date', 'sep_defaulted_date', 'sep_scheduled_completion_date']
+parse_dates = ['min_' + c for c in date_columns] + \
+               ['max_' + c for c in date_columns] + ['start_date']
 
 class Investigations(Step):
     """
@@ -97,33 +104,22 @@ class Investigations(Step):
     """
     def __init__(self, date, **kwargs):
         Step.__init__(self, date=date, **kwargs)
-
-        self.inputs = [ToHDF(
-            put_args={'cmecomp3':dict(format='t', data_columns=['evaluation_start_date'])}, 
-            inputs_mapping=['cmecomp3'], objects_to_ascii=True,
-            inputs=[FromSQL(to_str=['citizen_complaint_flag'], query="""
-select *,
-        violation_type is not null as violation,
-        evaluation_agency in ('E','X','C','N') as agency_epa,
-        evaluation_agency not in ('E','X','C','N') as agency_state,
-        enforcement_type::int between 300 and 799 as formal_enforcement,
-        enforcement_agency = 'E' as enforcement_epa,
-        enforcement_agency = 'S' as enforcement_state,
-        violation_determined_by_agency = 'E' as violation_epa,
-        violation_determined_by_agency = 'S' as violation_state,
-        corrective_action_component_flag = 'Y' as corrective_action_component,
-        citizen_complaint_flag = 'Y' as citizen_complaint,
-        multimedia_inspection_flag = 'Y' as multimedia_inspection,
-        sampling_flag = 'Y' as sampling,
-        not_subtitle_c_flag = 'Y' as not_subtitle_c,
-        CASE WHEN violation_type like '%%.%%' 
-                THEN substring(violation_type for 3) ELSE null END as violation_class
-from rcra.cmecomp3 where handler_id is not null
-and (violation_determined_date is null or evaluation_start_date <= violation_determined_date)
-""", parse_dates=date_columns, tables='rcra.rcra')]) # because we don't do psql stubs right
-        ]
+        self.sql_filename = os.path.join(os.path.dirname(os.path.abspath(__file__)), 
+                'investigations_censored.sql')
+        psql_dir = os.environ['PSQL_DIR']
+        self.dependencies = [os.path.join(psql_dir, 'rcra/rcra'), 
+                os.path.join(psql_dir, 'output/region_states'), self.sql_filename]
     
-    def run(self, cmecomp3):
-        df = cmecomp3.select('cmecomp3', where="evaluation_start_date < '%s'" % self.date)
-        df.rename(columns={'evaluation_start_date':'start_date', 'handler_id':'rcra_id'}, inplace=True)
-        return df
+    def run(self):
+        #db = util.create_db()
+        engine = util.create_engine()
+        with open(self.sql_filename, 'r') as sql_file:
+            censored = {}
+            for d in censor_dates:
+                censored[d] = date_censor_sql(d, self.date, d)
+                censored.update({c: date_censor_sql(d, self.date, c) for c in censor_dates[d]})
+
+            sql = sql_file.read()
+            sql = sql.format(date=self.date, **censored)
+            return pd.read_sql(sql, engine, parse_dates=parse_dates)
+            #return db.read_sql(sql, parse_dates=date_columns)

@@ -19,8 +19,9 @@ class EpaHDFReader(Step):
         if not self.evaluation:
             where_train = "({where_train}) & (evaluation > 0)".format(where_train=where_train)
         where = "({where_train}) | ({where_test})".format(where_train=where_train, where_test=where_test)
-        if self.region is not None:
-            where = "(region == {region}) & ({where})",format(region=self.region, where=where)
+        #if self.region is not None:
+        #    where = "(region == {region}) & ({where})".format(region=self.region, where=where)
+        #import pdb; pdb.set_trace()
         
         logging.info('Reading X')
         X = store.select('X', where=where)
