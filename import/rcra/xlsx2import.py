@@ -43,9 +43,6 @@ with open(create_table, 'a') as f:
 
         db_string = ""    
 
-##        for k in df['column']:
-##           db_string = db_string + k + " VARCHAR" + ",\n"
-
 
         for k,v in zip(df['column'], df['type']):
             if v.lower().find('alphanumeric') == 0:
