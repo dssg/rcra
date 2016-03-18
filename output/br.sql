@@ -2,18 +2,23 @@ DROP TABLE IF EXISTS output.br;
 
 CREATE TABLE output.br as (
        select handler_id as rcra_id,
-       	      report_cycle as reporting_year,
+       	      report_cycle::int as reporting_year,
+              make_date(report_cycle::int+2, 1, 1) as date, -- assume 2013 br is available 2015-01-01
 
-       bool_or(substring(source_code for 2) = 'G0') as source_ongoing_waste,
-       bool_or(substring(source_code for 2) = 'G1') as source_intermittent_waste,
-       bool_or(substring(source_code for 2) = 'G2') as source_pollution_control_waste,
-       bool_or(substring(source_code for 2) = 'G3') as source_spills_accidental_waste,
-       bool_or(substring(source_code for 2) = 'G4') as source_remediation_waste,
-       
-       bool_or(form_code in ('W001', 'W002', 'W004', 'W005', 'W301', 
-       		    'W309', 'W310', 'W320', 'W512', 'W801')) 
-       		 as form_mixed_media,
-		 
+        bool_or(management_location = 'ONSITE') as management_location_onsite,
+        bool_or(management_location = 'OFFSITE') as management_location_offsite,
+        bool_or(management_location = 'NONE') as management_location_none,
+
+        bool_or(substring(source_code for 2) = 'G0') as source_ongoing_waste,
+        bool_or(substring(source_code for 2) = 'G1') as source_intermittent_waste,
+        bool_or(substring(source_code for 2) = 'G2') as source_pollution_control_waste,
+        bool_or(substring(source_code for 2) = 'G3') as source_spills_accidental_waste,
+        bool_or(substring(source_code for 2) = 'G4') as source_remediation_waste,
+
+        bool_or(form_code in ('W001', 'W002', 'W004', 'W005', 'W301', 
+                    'W309', 'W310', 'W320', 'W512', 'W801')) 
+                 as form_mixed_media,
+                 
 	bool_or(form_code in ('W101', 'W103', 'W105', 'W107', 'W110', 'W113',
 		     	'W117', 'W119')) 
 		as form_inorganic_liquids,
@@ -50,10 +55,10 @@ CREATE TABLE output.br as (
 	bool_or(federal_waste = 'Y') as federal_waste,
 	bool_or(wastewater = 'Y') as wastewater,
 	
-	sum(generation_tons) as total_generated_tons,
-	sum(managed_tons) as total_managed_tons,
-	sum(shipped_tons) as total_shipped_tons,
-	sum(received_tons) as total_received_tons
+	sum(generation_tons::decimal) as total_generated_tons,
+	sum(managed_tons::decimal) as total_managed_tons,
+	sum(shipped_tons::decimal) as total_shipped_tons,
+	sum(received_tons::decimal) as total_received_tons
 
 	from br.brs_all
-	group by rcra_id, reporting_year);
+	group by 1,2);

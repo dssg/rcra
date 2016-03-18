@@ -13,6 +13,17 @@ metrics = [
     {'metric':'auc'},
 ]
 
+violation_args = dict(
+        outcome_expr='violation_epa > 0',  # need > 0 since violation_epa can be null
+        train_query='evaluation_epa', 
+        evaluation=False
+)
+
+evaluation_args = dict(
+    outcome_expr='evaluation_epa > 0', 
+    train_query='active_today or evaluation or (handler_age < 365)', 
+    evaluation=True
+)
 
 forest = {'__class_name__':['sklearn.ensemble.RandomForestClassifier'], 
         'n_estimators':[500],
@@ -42,8 +53,7 @@ svm_search = [{'__class_name__':['sklearn.svm.LinearSVC'],
         'C':[.01,.1,1], 'penalty':['l1'], 'dual':[False]}]
 
 def violation():
-    return models(transform_search= {'outcome':['violation_epa'], 'train_years': [2],
-            }, estimator_search=forest)
+    return models(transform_search= dict(train_years=2, **violation_args), estimator_search=forest)
 
 def violation_best():
     return models(transform_search= {'train_years':[2], 'outcome':['violation_epa']}, 
@@ -82,23 +92,30 @@ def violation_all():
     return violation_logit() + violation_forest() + violation_svm() + violation_train_years() + violation_region()
 
 def evaluation():
-    return models(transform_search={'outcome':['evaluation_epa'], 'train_years':[4]
-    }, estimator_search = forest)
+    return models(transform_search=dict(train_years=4, **evaluation_args), estimator_search=forest)
 
 def calibrated_evaluation():
     return calibrated_models(transform_search={'outcome':['evaluation_epa'], 'train_years':[4], 'year':[2012],
     }, estimator_search = forest)
 
 def evaluation_and_violation():
-    e = models(transform_search={'outcome':['evaluation_epa'], 'year':[2012], 'train_years':[4]
-    }, estimator_search = forest)[0]
-    v = models(transform_search= {'outcome':['violation_epa'], 'year':[2012], 'train_years': [2],
-            }, estimator_search=forest)[0]
-    ve = model.PredictProduct(inputs= [e,v], inputs_mapping=['inspection', 'violation'], target=True)
-    ve.get_input('transform').__name__ = 'transform2'
-    ve.get_input('estimator').__name__ = 'estimator2'
-    ve.get_input('y').__name__ = 'y2'
-    return [ve]
+    es = evaluation()
+    vs = violation()
+
+    evs = []
+    for e in es:
+        e_year = e.inputs[1].year
+        e.get_input('transform').__name__ = 'e_transform'
+        e.get_input('estimator').__name__ = 'e_estimator'
+        e.get_input('y').__name__ = 'e_y'
+        for v in vs:
+            v_year = v.inputs[1].year
+            if e_year == v_year:
+                ev = model.PredictProduct(inputs= [e,v], 
+                    inputs_mapping=['evaluation', 'violation'], 
+                    target=True)
+                evs.append(ev)
+    return evs
 
 def calibrated_violation():
     return calibrated_models(transform_search= {'outcome':['violation_epa'], 'year':[2012], 'train_years': [2],
@@ -126,7 +143,7 @@ def models(transform_search={}, estimator_search={}):
     steps = []
     transform_search = util.merge_dicts(dict(
         train_years = [3],
-        year=range(2012,2014+1) + [2016]
+        year=range(2011,2014+1) + [2016]
     ), transform_search)
 
     for transform_args, estimator_args in product(

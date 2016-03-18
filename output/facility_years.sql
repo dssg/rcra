@@ -1,44 +1,61 @@
-create temp table investigations as (
+-- summarize investigations into years
+-- important columns from output.investigations
+
+create temp table investigation_years as (
 select rcra_id,
-       ((extract(year from start_date)::text || '{doy}')::date - ((extract(year from start_date)::text || '{doy}')::date > start_date)::int * interval '1 year')::date as date,
+        date_floor(start_date, {month}, {day}) as date,
         true as evaluation,
         coalesce(bool_or(agency_epa), False) as evaluation_epa,
         coalesce(bool_or(not agency_epa), False) as evaluation_state,
 
-        bool_or(CASE WHEN agency_epa THEN violation ELSE null END) as violation_epa, -- was there a violation in an epa inspection? null if no epa inspections
-        bool_or(CASE WHEN agency_epa THEN null ELSE violation END) as violation_state, -- was there a violation in state inspection? null if no state inspections
+        bool_or(CASE WHEN agency_epa THEN violation ELSE null END) as violation_epa, -- was there a vio
+        bool_or(CASE WHEN agency_epa THEN null ELSE violation END) as violation_state, -- was there a v
         bool_or(violation) as violation,
+
+        bool_or(CASE WHEN agency_epa THEN enforcement ELSE null END) as enforcement_epa,
+        bool_or(CASE WHEN agency_epa THEN null ELSE enforcement END) as enforcement_state,
+        bool_or(enforcement) as enforcement,
 
         bool_or(CASE WHEN agency_epa THEN formal_enforcement ELSE null END) as formal_enforcement_epa,
         bool_or(CASE WHEN agency_epa THEN null ELSE formal_enforcement END) as formal_enforcement_state,
-        bool_or(formal_enforcement) as formal_enforcement,
+        bool_or(formal_enforcement) as formal_enforcement
 
-        min(CASE WHEN agency_epa THEN formal_enforcement_date ELSE null END) as min_formal_enforcement_date_epa,
-        min(CASE WHEN agency_epa THEN null ELSE formal_enforcement_date END) as min_formal_enforcement_date_state,
-        min(formal_enforcement_date) as min_formal_enforcement_date
-        
-from output.investigations
-        where start_date >= '{min_year}{doy}' and start_date <= '{max_year}{doy}'
-        group by 1,2
+from output.investigations i
+where start_date >= '{min_year}-{month}-{day}' and start_date <= '{max_year}-{month}-{day}'
+    and (min_violation_determined_date >= start_date or not violation)
+group by 1,2
 );
 
-create unique index on investigations (rcra_id, date);
+create unique index on investigation_years (rcra_id, date);
 
+
+-- this table has a row for every facility year if:
+-- 1) facility's handler has been received
+-- 2) facility was not investigated that year
 create temp table active_not_investigated as (
-    select f.rcra_id, (year::text || '{doy}')::date as date,
+    select f.rcra_id, make_date(year, {month}, {day}) as date,
         false as evaluation, false as evaluation_epa, false as evaluation_state,
         null::bool violation, null::bool violation_epa, null::bool violation_state,
-        null::bool formal_enforcement, null::bool formal_enforcement_epa, null::bool formal_enforcement_state,
-        null::date min_formal_enforcement_date, null::date min_formal_enforcement_date_epa, null::date min_formal_enforcement_date_state
+        null::bool enforcement, null::bool enforcement_epa, null::bool enforcement_state,
+        null::bool formal_enforcement, null::bool formal_enforcement_epa, null::bool formal_enforcement_statea,
+        br.rcra_id is not null as br
+
     from output.facilities f
     join generate_series({min_year}, {max_year}) as year on 1=1
-    left join investigations i on f.rcra_id = i.rcra_id and i.date = (year::text || '-01-01')::date
-    where min_receive_date <  (year::text || '{doy}')::date -- handler received
+    left join investigation_years i on f.rcra_id = i.rcra_id and i.date = make_date(year, {month}, {day}) 
+    left join output.br 
+        on f.rcra_id = br.rcra_id and year - 3 +year % 2 = br.reporting_year
+    where min_receive_date < make_date(year, {month}, {day}) -- handler received
     and i.rcra_id is null -- not investigated
 );
 
+
+-- facility years is union of investigated and uninvestigated
 create temp table facility_years as (
-    select * from investigations
+    select i.*, br.rcra_id is not null as br
+    from investigation_years i
+    left join output.br 
+        on i.rcra_id = br.rcra_id and extract(year from i.date)- 3 +extract(year from i.date)::int % 2 = br.reporting_year
     UNION ALL
     select * from active_not_investigated
 );
@@ -55,6 +72,9 @@ create unique index on facility_years (rcra_id, date);
 --    group by 1,2
 --),
 
+
+-- handler_id is the id of the handler form in output.handlers
+-- this step finds for each facility_year the most recent handler form's id
 ALTER TABLE facility_years add column handler_id int;
 
 UPDATE facility_years fy
@@ -68,19 +88,20 @@ FROM
 WHERE
     h.rcra_id = fy.rcra_id and h.date = fy.date;
 
-drop table if exists output.facility_years{table_suffix};
-create table output.facility_years{table_suffix} as (
-select *,
-    h.rcra_id is not null as handler_received,
-    date - receive_date as handler_age
 
-from facility_years i
+-- join up to create the final facility years table
+drop table if exists output.facility_years{month}{day};
+create table output.facility_years{month}{day} as (
+select f.*
+
+from facility_years f 
 --left join future using (rcra_id, date)
 left join output.facilities using (rcra_id)
 left join output.handlers h using (rcra_id, handler_id)
--- evaluated or (handler received and (active or handler received within past year)
-where evaluation or (h.rcra_id is not null 
-    and (active_today or (date::timestamp - h.receive_date::timestamp) <= interval '2 years')) 
+where evaluation or (   -- evaluated
+    facilities.active_today or     -- active today  
+    (date::timestamp - h.receive_date::timestamp) <= interval '2 years' or  -- handler received recently
+    f.br)               -- in last br reporting cycle
 );
 
-create index on output.facility_years{table_suffix} (date);
+create index on output.facility_years{month}{day} (date);

@@ -5,16 +5,22 @@ import numpy as np
 import itertools
 
 from drain import util, data, aggregate
-from drain.data import date_censor_sql, ToHDF, FromSQL
+from drain.data import date_censor_sql, ToHDF, FromSQL, Revise
 from drain.step import Step
 from drain.aggregation import SpacetimeAggregation, SimpleAggregation
 from drain.aggregate import Aggregate, Count, aggregate_counts, days
 
+from epa.output import investigations_sql
+
 # these are arrays that get concatenated and then counted and proportioned
-list_columns = ['violation_type', 'enforcement_type', 'evaluation_type',
-                'focus_area', 'land_type', 'return_to_compliance_qualifier', 'sep_type',
+#list_columns = ['violation_type', 'enforcement_type', 'evaluation_type',
+#                'focus_area', 'land_type', 'return_to_compliance_qualifier', 'sep_type',
                 #'former_citations' ignore former citations for now...
-]
+#]
+
+date_columns = investigations_sql.date_columns
+parse_dates = ['min_' + c for c in date_columns] + \
+               ['max_' + c for c in date_columns] + ['start_date']
 
 outcomes = ['violation', 'violation_epa', 'violation_state', 
             'formal_enforcement', 'enforcement_state', 
@@ -37,10 +43,19 @@ class InvestigationsAggregation(SpacetimeAggregation):
             raise ValueError('Currently only able to run one date at a time, try parallel=True')
 
         if not self.parallel:
-            self.inputs = [Investigations(self.dates[0], target=True)]
+            sql = investigations_sql.get_sql(self.dates[0])
+            self.inputs = [Revise(sql=sql, 
+                    id_column = ['rcra_id', 'start_date'],
+                    source_id_column = ['handler_id', 'evaluation_start_date'],
+                    max_date_column = 'max_date',
+                    min_date_column = 'start_date',
+                    date_column = 'evaluation_start_date',
+                    date = self.dates[0],
+                    from_sql_args={'parse_dates':parse_dates, 'target':True})
+            ]
 
     def get_aggregates(self, date, delta):
-        return  [
+        aggregates =  [
             Count(),
             # agencies
             Aggregate(['agency_epa', 'agency_state'], 'any', fname=False),
@@ -50,10 +65,10 @@ class InvestigationsAggregation(SpacetimeAggregation):
             Aggregate(outcomes + flags, 'any', fname=False),
             Count(outcomes + flags, prop=True),
 
-            Aggregate([days('min_' + c, date) for c in date_columns], 'min', 
-                name=[c + '_days' for c in date_columns]),
+            Aggregate(days('start_date', date), 'max', name='start_date_days'),
             Aggregate([days('max_' + c, date) for c in date_columns], 'max', 
                 name=[c + '_days' for c in date_columns]),
+
             Aggregate(days('min_violation_determined_date', 'start_date'), ['min', 'mean', 'max'], 
                     'evaluation_to_violation'),
             Aggregate(days('min_violation_determined_date', 'max_actual_return_to_compliance_date'),
@@ -72,54 +87,11 @@ class InvestigationsAggregation(SpacetimeAggregation):
             #Aggregate(list_columns, aggregate_counts, fname=False)
         ]
 
-censor_dates = {
-    'violation_determined_date': ['violation_determined_by_agency', 
-            'violation_type', 'violation_short_description', 
-            'violation_responsible_agency', 
-            'violation_activity_location', 'violation_sequence_number'],
-    'enforcement_action_date': ['enforcement_type', 
-            'enforcement_agency', 'enforcement_activity_location', 
-            'enforcement_identifier', 'enforcement_agency', 
-            'proposed_penalty_amount', 'final_monetary_amount',
-            'paid_amount', 'final_count', 'final_amount', 
-            'expenditure_amount', 'sep_scheduled_compliance_date', 
-            'sep_scheduled_completion_date'],
-    'actual_return_to_compliance_date' : [
-            'return_to_compliance_qualifier'],
-    'appeal_initiated_date' : [],
-    'appeal_resolved_date' : [],
-    'sep_actual_completion_date' : [],
-    'sep_defaulted_date' : [],
-}
-
-date_columns = censor_dates.keys() + \
-        ['scheduled_compliance_date', 'sep_scheduled_completion_date']
-
-parse_dates = ['min_' + c for c in date_columns] + \
-               ['max_' + c for c in date_columns] + ['start_date']
-
-class Investigations(Step):
-    """
-    Reads cmecomp3 evaluations into censored investigations
-    """
-    def __init__(self, date, **kwargs):
-        Step.__init__(self, date=date, **kwargs)
-        self.sql_filename = os.path.join(os.path.dirname(os.path.abspath(__file__)), 
-                'investigations_censored.sql')
-        psql_dir = os.environ['PSQL_DIR']
-        self.dependencies = [os.path.join(psql_dir, 'rcra/rcra'), 
-                os.path.join(psql_dir, 'output/region_states'), self.sql_filename]
-    
-    def run(self):
-        #db = util.create_db()
-        engine = util.create_engine()
-        with open(self.sql_filename, 'r') as sql_file:
-            censored = {}
-            for d in censor_dates:
-                censored[d] = date_censor_sql(d, self.date, d)
-                censored.update({c: date_censor_sql(d, self.date, c) for c in censor_dates[d]})
-
-            sql = sql_file.read()
-            sql = sql.format(date=self.date, **censored)
-            return pd.read_sql(sql, engine, parse_dates=parse_dates)
-            #return db.read_sql(sql, parse_dates=date_columns)
+        if delta == 'all':
+            aggregates.extend([
+                Aggregate([days('min_' + c, date) for c in date_columns], 'min', 
+                    name=[c + '_days' for c in date_columns]),
+                Aggregate(days('start_date', date), 'min', name='start_date_days'),
+            ])
+           
+        return aggregates 

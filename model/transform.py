@@ -14,11 +14,11 @@ import numpy as np
 class EpaTransform(Step):
 
     def __init__(self, month, day,
-            year, train_years, region=None,
-            outcome='violation_epa', # when None training_outcome=testin_outcome
-            training_outcome = None,
-            # the max handler age to be included (in addition to active_today) in all testing and evaluation training
-            training_handler_max_age = 365,
+            year, train_years, 
+            outcome_expr,
+            train_query,
+            evaluation, # whether the outcome is an evaluation, hence include unevaluated facilities
+            region=None,
             investigations={},
             handlers={},
             icis={},
@@ -27,22 +27,18 @@ class EpaTransform(Step):
             exclude=[], include=[],
             impute=True, normalize=True, **kwargs):
 
-        if training_outcome is None:
-            training_outcome = outcome
-
         exclude = set(exclude)
         include = set(include)
 
         Step.__init__(self, month=month, day=day, year=year, 
                 train_years=train_years, region=region,
-                outcome=outcome, training_outcome=training_outcome, 
-                training_handler_max_age=training_handler_max_age,
+                outcome_expr=outcome_expr,
+                train_query = train_query,
+                evaluation = evaluation,
                 investigations=investigations, handlers=handlers, 
                 icis=icis, rmp=rmp,
                 investigations_expand_counts=investigations_expand_counts,
                 exclude=exclude, include=include, impute=impute, normalize=normalize, **kwargs)
-
-        self.evaluation = self.training_outcome.startswith('evaluation')
 
         self.data = EpaData(month=month, day=day)
         store = ToHDF(inputs=[self.data], 
@@ -68,26 +64,13 @@ class EpaTransform(Step):
         train = index_as_series(aux, 'date') < today
         test = ~train
 
-        if not self.evaluation:
-	    # training set for violation(|_epa|_state) is evaluation(|_epa|_state)
-            train = train & aux[self.training_outcome].notnull()
-        else:
-            # training set for evaluation is (active today or evaluated or handler under 1 year old)
-            train = train & ( aux.active_today | aux.evaluation | (aux.handler_age < self.training_handler_max_age))
-        # note test set is independent of outcome
+        train &= train.index.isin(aux.query(self.train_query).index)
 
         # reshape to train | test
         aux.drop(aux.index[~(train | test)], inplace=True)
         X,train,test = data.train_test_subset(X, train, test)
 
-        # set violation in training set
-        # censor formal enforcements based on corresponding min date
-        if self.training_outcome.startswith('formal_enforcement'):
-            y = aux[self.training_outcome].where(test | (aux['min_%s_date' % self.training_outcome] < today), False)
-        else:
-            y = aux[self.training_outcome].copy()
-
-        y.loc[test] = aux.loc[test, self.outcome]
+        y = aux.eval(self.outcome_expr)
 
         X = data.select_features(X, exclude=self.exclude, include=self.include)
         

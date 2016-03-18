@@ -1,10 +1,11 @@
 from epa.output.handlers import HandlersAggregation
-from epa.output.investigations import Investigations, InvestigationsAggregation
+from epa.output.investigations import InvestigationsAggregation
 from epa.output.icis import IcisFecAggregation
 from epa.output.rmp import RmpAggregation
 
 from drain import util
 from datetime import date
+from repoze.lru import lru_cache
 
 # TODO: zip level agg
 indexes = {'facility': 'rcra_id', 'state':'state'}
@@ -29,5 +30,14 @@ def rmp(dates=dates):
 def investigations(dates=dates):
     return InvestigationsAggregation(spacedeltas, dates=dates, parallel=True, target=True)
 
-def all():
-    return [handlers(), investigations(), icis(), rmp()]
+@lru_cache(maxsize=10)
+def all_dict(dates=dates):
+    return {
+        'handlers':handlers(dates), 
+        'investigations':investigations(dates),
+        'icis': icis(dates), 
+        'rmp': rmp(dates)
+    }
+
+def all(dates=dates):
+    return all_dict(dates).values()

@@ -19,13 +19,14 @@ class EpaHDFReader(Step):
         if not self.evaluation:
             where_train = "({where_train}) & (evaluation > 0)".format(where_train=where_train)
         where = "({where_train}) | ({where_test})".format(where_train=where_train, where_test=where_test)
+        # HDF bug makes this not work. because region isn't in the index? neither is evaluation though
         #if self.region is not None:
         #    where = "(region == {region}) & ({where})".format(region=self.region, where=where)
         #import pdb; pdb.set_trace()
         
         logging.info('Reading X')
         X = store.select('X', where=where)
-        X.drop(['evaluation', 'region'], axis=1, inplace=True)
+        X.drop(['evaluation'], axis=1, inplace=True)
 
         logging.info('Reading aux')
         aux = store['aux']
