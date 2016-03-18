@@ -56,12 +56,9 @@ def violation():
     return models(transform_search= dict(train_years=2, **violation_args), estimator_search=forest)
 
 def violation_best():
-    return models(transform_search= {'train_years':[2], 'outcome':['violation_epa']}, 
-                estimator_search=forest) + \
-            models(transform_search= {'outcome':['violation_epa']}, 
-                estimator_search=svm) + \
-            models(transform_search= {'outcome':['violation_epa']}, 
-                estimator_search=logit)
+    return models(transform_search= dict(train_years=2, **violation_args), estimator_search=forest) + \
+            models(transform_search= violation_args, estimator_search=svm) + \
+            models(transform_search=violation_args, estimator_search=logit)
 
 def violation_train_years():
     return models(transform_search= {'outcome':['violation_epa'],
