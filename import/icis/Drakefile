@@ -11,10 +11,6 @@ URL="https://echo.epa.gov/files/echodownloads/npdes_eff_downloads.zip"
 URL="https://echo.epa.gov/files/echodownloads/case_downloads.zip"
 !$[DATA_DIR]/import/icis/case_downloads.zip, !$[DATA_DIR]/import/icis/case_downloads/ <- [method:wget_unzip -timecheck]
 
-; clean up file names 
-!$[DATA_DIR]/import/icis/ <- import/icis/clean_icis_data.sh [-timecheck]
-    $INPUT $OUTPUT
-
 ; create icis schema and tables 
 $[PSQL_DIR]/icis/icis <- import/icis/create_table_icis.sql [method:psql -timecheck]
 
