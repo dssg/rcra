@@ -1,13 +1,20 @@
-DATA_DIR="/mnt/data3/epa/"
-PSQL_DIR="/mnt/data3/epa/psql"
 
-; create tables
-!$[PSQL_DIR]/manifest <- import/manifest/create_table_manifest.sql [method:psql -timecheck] 
-
-; get data, clean and copy to db 
-!$[DATA_DIR]/import/manifest/ <- !$[PSQL_DIR]/manifest [-timecheck]
+; get new york manifest data
+!$[DATA_DIR]/import/manifest/ <- [-timecheck]
     for i in 0{6..8} {9..16}; do 
         wget -N -P $OUTPUT http://www.dec.ny.gov/data/der/esmart/mani${i}.csv
-        sed 's/""//g' < "$OUTPUT"/"mani${i}.csv" | psql -v ON_ERROR_STOP=1 -c '\'"COPY manifest.new_york FROM STDIN WITH CSV HEADER;"
+        mv $OUTPUT/mani${i}.csv $OUTPUT/mani_${i}.tmp
+        sed 's/""//g' < "$OUTPUT"/"mani${i}.tmp" >"$OUTPUT"/"mani${i}.csv" &&
+        rm $OUTPUT/mani_${i}.tmp
     done
 
+; clean ny manifest data and copy to db 
+!$[PSQL_DIR]/manifest <- !$[DATA_DIR]/import/manifest/ [-timecheck] 
+    psql -v ON_ERROR_STOP=1 -f import/manifest/create_table_manifest.sql 
+    for i in 0{6..8} {9..16}; do 
+        mv $OUTPUT/mani${i}.csv $OUTPUT/mani_${i}.tmp
+        sed 's/""//g' < "$OUTPUT"/"mani${i}.tmp" >"$OUTPUT"/"mani${i}.csv" &&
+        rm $OUTPUT/mani_${i}.tmp
+        cat $OUTPUT/mani${i}.csv | psql -v ON_ERROR_STOP=1 -c '\'"COPY manifest.new_york FROM STDIN WITH CSV HEADER;"
+    done
+    touch $OUTPUT
