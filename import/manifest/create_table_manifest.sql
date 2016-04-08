@@ -3,8 +3,8 @@ CREATE SCHEMA IF NOT EXISTS manifest;
 DROP TABLE IF EXISTS manifest.new_york;
 CREATE TABLE manifest.new_york(
 	"manifest_tracking_num" varchar(12),
-	"page_num" integer,
-	"line_item_num" integer,
+	"page_num" float,
+	"line_item_num" float,
 	"gen_rcra_id" varchar(12),
 	"gen_sign_date" date,
 	"tsdf_rcra_id" varchar(12),
@@ -23,7 +23,7 @@ CREATE TABLE manifest.new_york(
 	"manifest_ref_num" varchar(12), 
 	"alt_facility_rcra_id" varchar(32), 
 	"alt_facility_sign_date" varchar(32), 
-	"num_of_containers" integer ,
+	"num_of_containers" float,
 	"container_type_code" varchar(2),
 	"waste_qty" float,
 	"unit_of_measure" varchar(1),
