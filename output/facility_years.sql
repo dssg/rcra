@@ -18,7 +18,11 @@ select rcra_id,
 
         bool_or(CASE WHEN agency_epa THEN formal_enforcement ELSE null END) as formal_enforcement_epa,
         bool_or(CASE WHEN agency_epa THEN null ELSE formal_enforcement END) as formal_enforcement_state,
-        bool_or(formal_enforcement) as formal_enforcement
+        bool_or(formal_enforcement) as formal_enforcement,
+
+        anyarray_uniq(anyarray_agg(CASE WHEN agency_epa THEN violation_types ELSE ARRAY[]::varchar[] END)) as violation_types_epa,
+        anyarray_uniq(anyarray_agg(CASE WHEN agency_epa THEN ARRAY[]::varchar[] ELSE violation_types END)) as violation_types_state,
+        anyarray_uniq(anyarray_agg(violation_types)) as violation_types
 
 from output.investigations i
 where start_date >= '{min_year}-{month}-{day}' and start_date <= '{max_year}-{month}-{day}'
