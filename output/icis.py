@@ -27,6 +27,3 @@ class IcisFecAggregation(SpacetimeAggregation):
         ]
 
         return aggregates
-
-    def fillna_value(self, df, left, **concat_args):
-        return pd.Series(0, index=df.columns)
