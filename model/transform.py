@@ -65,18 +65,20 @@ class EpaTransform(Step):
         test = ~train
 
         train &= train.index.isin(aux.query(self.train_query).index)
+        #train &= eval(self.train_query)
 
         # reshape to train | test
         aux.drop(aux.index[~(train | test)], inplace=True)
         X,train,test = data.train_test_subset(X, train, test)
 
         y = aux.eval(self.outcome_expr)
+        #y = eval(self.outcome_expr)
 
         X = data.select_features(X, exclude=self.exclude, include=self.include)
         
         if self.impute:
             logging.info('Imputing')
-            X.fillna(0, inplace=True)
+            X = data.impute(X, train=train)
             if self.normalize:
                 logging.info('Normalizing')
                 X = data.normalize(X, train=train) 

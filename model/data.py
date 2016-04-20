@@ -11,9 +11,6 @@ import pandas as pd
 import numpy as np
 
 class EpaData(Step):
-    X_COLUMNS = ['evaluation', 'handler_received', 'handler_age', 'br']
-    EXCLUDE = ['receive_date']
-
     def __init__(self, month, day, year_min=2007, year_max=2016, 
             outcome_years=1, investigations_drop_lists=True, **kwargs):
 
@@ -42,25 +39,42 @@ where date between '{date_min}' and '{date_max}'""".format(**sql_vars),
         self.handlers = FromSQL(table='output.handlers', 
                 parse_dates=['receive_date'], target=True)
 
-        facility_years = Merge(on=['rcra_id', 'handler_id'], how='left',
-                inputs = [facility_years, self.handlers])
-
-        facility_years = Merge(on='rcra_id', how='left', 
+        X = Merge(on='rcra_id', how='left', 
                 inputs=[facility_years, FromSQL(table='output.facilities', 
                         parse_dates=['min_start_date', 'max_start_date', 
                                      'min_receive_date', 'max_receive_date'], target=True)])
 
-        self.inputs = [facility_years] + self.aggregators.values()
+        X = Merge(on=['rcra_id', 'handler_id'], how='left',
+                inputs = [X, self.handlers])
 
-    def run(self, X, *args):
+        br = FromSQL(table='output.br', target=True)
+
+        self.inputs = [X, br] + self.aggregators.values()
+
+    def run(self, X, br, *args):
         logging.info('Adding features')
         X['handler_received'] = X.handler_id.notnull()
         X['handler_age'] = (X.date - X.receive_date)/util.day
 
-        x_columns = self.handlers.get_result().columns\
-            .difference(['rcra_id', 'receive_date', 'handler_id'])\
-            .union(self.X_COLUMNS)
-        aux_columns = X.columns.difference(['rcra_id', 'date'])
+        handler_columns = self.handlers.get_result().columns
+        # keep handler except a few plus a few
+
+        # aux is facility_years join facilities plus handler_received and handler_age
+        # (plus last_investigation, which is added below)
+        aux_columns = X.columns.difference(['rcra_id', 'date'])\
+                .difference(handler_columns)\
+                .union(['naics_codes', 'receive_date'])
+
+        # drop facility and facility_years except a few columns
+        x_drop_columns = aux_columns.union(['receive_date', 'handler_id'])\
+                .difference(['evaluation', 'handler_received', 'handler_age', 'br', 'region', 'state'])
+
+        logging.info('Joining BR')
+        year = X.date.dt.year
+        X['br_reporting_year'] = year - 3 + (year % 2)
+        data.prefix_columns(br, 'br_', ignore=['rcra_id'])
+        X = X.merge(br, on=['rcra_id', 'br_reporting_year'], how='left')
+        X.drop(['br_date', 'br_reporting_year'], axis=1, inplace=True)
 
         logging.info('Joining spatiotemporal aggregations')
         for name,aggregator in self.aggregators.iteritems():
@@ -71,7 +85,8 @@ where date between '{date_min}' and '{date_max}'""".format(**sql_vars),
         X['rcra_id'] = X.rcra_id.astype(str) # use ascii for HDF index
         X.set_index(['rcra_id', 'date'], inplace=True)
         aux = X[aux_columns]
-        X.drop(aux_columns.difference(x_columns), axis=1, inplace=True)
+
+        X.drop(x_drop_columns, axis=1, inplace=True)
 
         # get X_COLUMNS plus all of the most recent handler minus rcra_id
 

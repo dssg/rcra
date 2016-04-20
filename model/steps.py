@@ -3,25 +3,17 @@ from epa.model.transform import EpaTransform
 import logging
 from itertools import product
 
-metrics = [
-    {'metric':'baseline'},
-    {'metric':'count'},
-    {'metric':'precision', 'dropna':True, 'k':100},
-    {'metric':'precision', 'dropna':True, 'k':200},
-    {'metric':'precision', 'dropna':True, 'k':500},
-    {'metric':'precision', 'dropna':True, 'k':1000},
-    {'metric':'auc'},
-]
-
 violation_args = dict(
-        outcome_expr='violation_epa > 0',  # need > 0 since violation_epa can be null
-        train_query='evaluation_epa', 
-        evaluation=False
+    outcome_expr='aux.violation_epa > 0',  # need > 0 since violation_epa can be null
+    train_query='aux.evaluation_epa', 
+    evaluation=False
 )
 
 evaluation_args = dict(
-    outcome_expr='evaluation_epa > 0', 
-    train_query='active_today or evaluation or (handler_age < 365)', 
+    outcome_expr='aux.evaluation_epa > 0', 
+    train_query=['aux.active_today or aux.evaluation or (aux.handler_age < 365) or aux.br',
+            #'(active_today or evaluation or (handler_age < 365)) and br'
+            ], 
     evaluation=True
 )
 
@@ -55,35 +47,31 @@ svm_search = [{'__class_name__':['sklearn.svm.LinearSVC'],
 def violation():
     return models(transform_search= dict(train_years=2, **violation_args), estimator_search=forest)
 
+def violation_fast():
+    return models(transform_search= dict(train_years=1, year=2016, **violation_args), estimator_search=forest)
+
 def violation_best():
     return models(transform_search= dict(train_years=2, **violation_args), estimator_search=forest) + \
-            models(transform_search= violation_args, estimator_search=svm) + \
             models(transform_search=violation_args, estimator_search=logit)
+            #models(transform_search= violation_args, estimator_search=svm)
 
 def violation_train_years():
-    return models(transform_search= {'outcome':['violation_epa'],
-            'train_years':range(1,6)
-            }, estimator_search=forest)
+    return models(transform_search=dict(train_years=range(1,6), **violation_args),
+            estimator_search=forest)
 
 def violation_region():
-    return models(transform_search= {'outcome':['violation_epa'],
-            'region':range(1,11),
-            'train_years': [5]
-            }, estimator_search=forest)
+    return models(transform_search=dict(region=range(1,11),train_years=5, **violation_args), 
+            estimator_search=forest)
 
 def violation_logit():
-    return models(transform_search= {'outcome':['violation_epa']},
-            estimator_search = logit_search)
+    return models(transform_search=violation_args, estimator_search = logit_search)
 
 def violation_forest():
-    return models(transform_search= {'outcome':['violation_epa']},
-            estimator_search = forest_search)
+    return models(transform_search=violation_args, estimator_search = forest_search)
 
 def violation_svm():
-    return models(transform_search= {'outcome':['violation_epa']},
-            estimator_search = svm_search[0]) + \
-           models(transform_search= {'outcome':['violation_epa']},
-            estimator_search = svm_search[1])
+    return models(transform_search=violation_args, estimator_search = svm_search[0]) + \
+           models(transform_search=violation_args, estimator_search = svm_search[1])
 
 def violation_all():
     return violation_logit() + violation_forest() + violation_svm() + violation_train_years() + violation_region()
@@ -97,7 +85,7 @@ def calibrated_evaluation():
 
 def evaluation_and_violation():
     es = evaluation()
-    vs = violation()
+    vs = violation_best()
 
     evs = []
     for e in es:
@@ -129,12 +117,9 @@ def calibrated_evaluation_and_violation():
 
 
 def evaluation_best():
-    return models(transform_search= {'outcome':['evaluation_epa']}, 
-                estimator_search=forest) + \
-            models(transform_search= {'outcome':['evaluation_epa']}, 
-                estimator_search=svm) + \
-            models(transform_search= {'outcome':['evaluation_epa']}, 
-                estimator_search=logit)
+    return models(transform_search=evaluation_args, estimator_search=forest) + \
+            models(transform_search=evaluation_args, estimator_search=svm) + \
+            models(transform_search=evaluation_args, estimator_search=logit)
 
 def models(transform_search={}, estimator_search={}):
     steps = []
@@ -148,16 +133,7 @@ def models(transform_search={}, estimator_search={}):
             util.dict_product(estimator_search)):
         logging.info('%s, %s' % (transform_args, estimator_args))
 
-        transform = EpaTransform(month=1, day=1, 
-                handlers = {'facility': ['1y', 'all'], 
-                #        'state':['1y','2y','5y']
-                },
-                icis = {'facility': ['5y', 'all']},
-                rmp = {'facility': ['5y', 'all']},
-                investigations = {'facility': ['1y', '5y', 'all'], 
-         #               'state':['1y','2y','5y']
-                },
-                name='transform', **transform_args)
+        transform = EpaTransform(month=1, day=1, name='transform', **transform_args)
 
         estimator = step.Construct(name='estimator', **estimator_args)
 
@@ -179,12 +155,7 @@ def calibrated_models(transform_search={}, estimator_search={}):
             util.dict_product(estimator_search)):
         logging.info('%s, %s' % (transform_args, estimator_args))
 
-        transform = EpaTransform(month=1, day=1, 
-                handlers = {'facility': ['1y', 'all']},
-                icis = {'facility': ['5y', 'all']},
-                rmp = {'facility': ['5y', 'all']},
-                investigations = {'facility': ['1y', '5y', 'all']},#, 'state':['1y']},
-                name='transform', **transform_args)
+        transform = EpaTransform(month=1, day=1, name='transform', **transform_args)
         
         estimator = step.Construct(name='estimator', **estimator_args)
         calibrator =  step.Construct('sklearn.calibration.CalibratedClassifierCV', cv=10,
