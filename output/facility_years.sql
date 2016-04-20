@@ -42,6 +42,7 @@ create temp table active_not_investigated as (
         null::bool violation, null::bool violation_epa, null::bool violation_state,
         null::bool enforcement, null::bool enforcement_epa, null::bool enforcement_state,
         null::bool formal_enforcement, null::bool formal_enforcement_epa, null::bool formal_enforcement_statea,
+        ARRAY[]::varchar[] violation_types_epa, ARRAY[]::varchar[] violation_types_state, ARRAY[]::varchar[] violation_types,
         br.rcra_id is not null as br
 
     from output.facilities f
