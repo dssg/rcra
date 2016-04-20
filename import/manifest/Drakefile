@@ -1,0 +1,21 @@
+; get new york manifest data
+!$[DATA_DIR]/import/manifest/ <- [-timecheck]
+    for i in 0{6..8} {9..16}; do 
+        wget -N -P $OUTPUT http://www.dec.ny.gov/data/der/esmart/mani${i}.csv
+    done
+
+; clean ny manifest data 
+!$[DATA_DIR]/import/manifest/clean <- !$[DATA_DIR]/import/manifest/ [-timecheck] 
+    mkdir -p $OUTPUT
+    for i in 0{6..8} {9..16}; do 
+        mv $INPUT/mani${i}.csv $INPUT/mani_${i}.tmp
+        sed 's/""//g' < "$INPUT"/"mani_${i}.tmp" >"$OUTPUT"/"mani_${i}.csv" &&
+        rm $INPUT/mani_${i}.tmp
+    done
+
+; copy ny manifest data to db
+!$[PSQL_DIR]/manifest <- !$[DATA_DIR]/import/manifest/clean
+    psql -v ON_ERROR_STOP=1 -f import/manifest/create_table_manifest.sql
+    for i in 0{6..8} {9..16}; do
+        cat $INPUT/mani_${i}.csv | psql -v ON_ERROR_STOP=1 -c '\'"COPY manifest.new_york FROM STDIN WITH CSV HEADER;"
+    done

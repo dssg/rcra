@@ -3,6 +3,7 @@ PSQL_DIR="/mnt/data3/epa/psql"
 PROFILE:=/home/epotash/epa/default_profile
 %include $[PROFILE]
 
+
 ; $ZIP_DEST, $EXTRACT_DEST <- [-timecheck]
 wget_unzip()
     mkdir -p $(dirname $OUTPUT0)
@@ -33,5 +34,5 @@ load_data()
 %include $[BASE]/import/tri/Drakefile
 %include $[BASE]/import/rcra/Drakefile
 %include $[BASE]/import/Drakefile
-
+%include $[BASE]/import/manifest/Drakefile
 %include $[BASE]/output/Drakefile
