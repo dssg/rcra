@@ -4,14 +4,35 @@ import logging
 from itertools import product
 
 violation_args = dict(
-    outcome_expr='aux.violation_epa > 0',  # need > 0 since violation_epa can be null
+    outcome_expr='aux.violation_epa',
     train_query='aux.evaluation_epa', 
     evaluation=False
 )
 
+region_4_violation_types = [
+        '262.A',
+        # 264.*
+        '264.A', '264.AA', '264.B', '264.BB', '264.C', '264.CC', '264.D', '264.DD', '264.E', '264.EE', '264.F', '264.G', '264.H', '264.I', '264.J', '264.K', '264.L', '264.M', '264.N', '264.O', '264.S', '264.W', '264.X', 
+        # 268.*
+        '268.A', '268.B', '268.C', '268.D', '268.E', 
+        # 270.*
+        '270.A', '270.B', '270.C', '270.D', '270.F', '270.G', '270.H', '270.I', 
+        '265.J', '265.BB', '265.CC'
+]
+
+# use where() so that it's null when not evaluated by epa
+region_4_outcome_expr = "aux.violation_types_epa.apply(lambda v, vt=set([%s]): not vt.isdisjoint(v)).where(aux.evaluation_epa)" % \
+        str.join(',', ["'%s'" % v for v in region_4_violation_types])
+
+region_4_args = dict(
+    outcome_expr=region_4_outcome_expr,
+    train_query='aux.evaluation_epa',
+    region=4,
+    evaluation=False)
+
 evaluation_args = dict(
-    outcome_expr='aux.evaluation_epa > 0', 
-    train_query=['aux.active_today or aux.evaluation or (aux.handler_age < 365) or aux.br',
+    outcome_expr='aux.evaluation_epa', 
+    train_query=['aux.active_today | aux.evaluation | (aux.handler_age < 365) | aux.br',
             #'(active_today or evaluation or (handler_age < 365)) and br'
             ], 
     evaluation=True
@@ -46,6 +67,9 @@ svm_search = [{'__class_name__':['sklearn.svm.LinearSVC'],
 
 def violation():
     return models(transform_search= dict(train_years=2, **violation_args), estimator_search=forest)
+
+def violation_region_4():
+    return models(transform_search= dict(train_years=5, **region_4_args), estimator_search=forest)
 
 def violation_fast():
     return models(transform_search= dict(train_years=1, year=2016, **violation_args), estimator_search=forest)
@@ -84,9 +108,12 @@ def calibrated_evaluation():
     }, estimator_search = forest)
 
 def evaluation_and_violation():
-    es = evaluation()
-    vs = violation_best()
+    return evaluation_and_violation_models(evaluation(), violation_best())
 
+def evaluation_and_violation_region_4():
+    return evaluation_and_violation_models(evaluation(), violation_region_4())
+
+def evaluation_and_violation_models(es, vs):
     evs = []
     for e in es:
         e_year = e.inputs[1].year

@@ -64,15 +64,13 @@ class EpaTransform(Step):
         train = index_as_series(aux, 'date') < today
         test = ~train
 
-        train &= train.index.isin(aux.query(self.train_query).index)
-        #train &= eval(self.train_query)
+        train &= eval(self.train_query)
 
         # reshape to train | test
         aux.drop(aux.index[~(train | test)], inplace=True)
         X,train,test = data.train_test_subset(X, train, test)
 
-        y = aux.eval(self.outcome_expr)
-        #y = eval(self.outcome_expr)
+        y = eval(self.outcome_expr)
 
         X = data.select_features(X, exclude=self.exclude, include=self.include)
         
