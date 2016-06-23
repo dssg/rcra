@@ -1,9 +1,7 @@
 #!/bin/bash
 
-ICIS_DIR=$1
-
-FEC_DIR=$ICIS_DIR/case_downloads
-AIR_DIR=$ICIS_DIR/ICIS-AIR_downloads
+FEC_DIR=$1
+AIR_DIR=$2
 
 for name in "$FEC_DIR"/CASE*
 do
