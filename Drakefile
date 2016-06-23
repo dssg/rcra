@@ -1,6 +1,4 @@
-PSQL_DIR="/mnt/data3/epa/psql"
-
-PROFILE:=/home/epotash/epa/default_profile
+PROFILE:=default_profile
 %include $[PROFILE]
 
 
