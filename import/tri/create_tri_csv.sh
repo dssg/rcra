@@ -16,16 +16,12 @@ mv $TRI_DIR/tri_${i}.txt $TRI_DIR/tri_${i}.tmp
 cut -f 1-$[$ncols-2] <$TRI_DIR/tri_${i}.tmp >$TRI_DIR/tri_${i}.txt &&
 rm $TRI_DIR/tri_${i}.tmp  
 
-# convert to csv
-#in2csv -t -f csv -e iso-8859-1 $TRI_DIR/tri_${i}.txt > $TRI_DIR/tri_${i}.csv
-#sed -s 's/\t/,/g' $TRI_DIR/tri_${i}.txt > $TRI_DIR/tri_${i}.csv
-
-echo "creating table"
 # copy into database
 psql -v ON_ERROR_STOP=1 -f import/tri/create_table_${i}.sql  
 
-if [${i} -eq 1] 
-    then sed -i '1661525s/BOYLE                /BOYLE  /;1661525s/COM          $/COM                   /g' $TRI_DIR/tri_${i}.txt
+if [ "$i" = 1 ]; then
+    echo "preprocessing tri_1.txt"
+    sed -i '1661520,1661530s/BOYLE\t\t/BOYLE\t/;1661520,1661530s/COM\t\t$/COM\t\t\t/g' $TRI_DIR/tri_${i}.txt
 fi
 
 echo "importing"
