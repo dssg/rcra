@@ -15,9 +15,9 @@ naics as (
     from rcra.hnaics group by epa_handler_id
 ),
 
-investigations as (
-    select rcra_id, min(start_date) as min_start_date, max(start_date) as max_start_date
-    from output.investigations
+evaluations as (
+    select handler_id as rcra_id, min(evaluation_start_date) as min_start_date, max(evaluation_start_date) as max_start_date
+    from rcra.cmecomp3
     group by 1
 ),
 
@@ -35,7 +35,7 @@ select rcra_id,
 from f
 left join active_facilities using (rcra_id)
 left join naics using (rcra_id)
-left join investigations using (rcra_id)
+left join evaluations using (rcra_id)
 left join output.region_states on substring(rcra_id for 2) = state
 left join handlers using (rcra_id)
 where rcra_id is not null
