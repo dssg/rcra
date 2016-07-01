@@ -29,4 +29,4 @@ URL="https://echo.epa.gov/files/echodownloads/rcra_downloads.zip"
 $[DATA_DIR]/import/rcra/rcra_downloads.zip, $[DATA_DIR]/import/rcra_downloads/, $[DATA_DIR]/import/rcra_downloads/RCRA_FACILITIES.csv <- [-timecheck method:wget_unzip]
 
 $[PSQL_DIR]/rcra/rcra_facilities <- import/rcra/import_rcra_facilities.sh, $[DATA_DIR]/import/rcra_downloads/RCRA_FACILITIES.csv
-    $INPUT $INPUT1 && touch $OUTPUT
+    $INPUT $INPUT1 && echo > $OUTPUT
