@@ -9,12 +9,12 @@ wget_unzip()
     unzip -o "$OUTPUT0" -d $OUTPUT1
 
 psql()
-    psql -v ON_ERROR_STOP=1 -f $INPUT && touch $OUTPUT
+    psql -v ON_ERROR_STOP=1 -f $INPUT && echo > $OUTPUT
 
 ; create a schema (does not drop)
 psql_schema()
     schema=$(basename $OUTPUT)
-    psql -v ON_ERROR_STOP=1 -c "CREATE SCHEMA IF NOT EXISTS $schema" && mkdir -p $OUTPUT && touch $OUTPUT/schema
+    psql -v ON_ERROR_STOP=1 -c "CREATE SCHEMA IF NOT EXISTS $schema" && mkdir -p $OUTPUT && echo > $OUTPUT/schema
 
 ; take all CSVs from import folder $INPUT and puts into schema with title $OUTPUT
 load_data()  
@@ -26,7 +26,7 @@ load_data()
         table_name=$(echo $file_csv | sed 's/-/_/g;s/\.[[:alpha:]]*$//') 
         tr -d '(\r|\000)' < "$INPUT"/"$file_csv" | psql -v ON_ERROR_STOP=1 -c '\'"COPY $schema.${table_name,,} FROM STDIN WITH CSV HEADER;"
     done
-    touch $OUTPUT
+    echo > $OUTPUT
 
 %include $[BASE]/import/icis/Drakefile
 %include $[BASE]/import/tri/Drakefile
