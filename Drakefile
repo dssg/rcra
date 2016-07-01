@@ -23,7 +23,8 @@ load_data()
     do
         echo $filename
         file_csv=$(basename "$filename")
-        table_name=${file_csv%.*}
+	
+        table_name=$(echo $file_csv | sed 's/-/_/g;s/\.[[:alpha:]]*$//') 
         tr -d '(\r|\000)' < "$INPUT"/"$file_csv" | psql -v ON_ERROR_STOP=1 -c '\'"COPY $schema.${table_name,,} FROM STDIN WITH CSV HEADER;"
     done
     touch $OUTPUT
