@@ -11,8 +11,8 @@ import/rcra/load_scripts/ <- import/rcra/make_import_scripts.sh, import/rcra/dat
     $INPUT $INPUT1 $OUTPUT
 
 ; create tables 
-$[PSQL_DIR]/rcra/ <- [method:psql_schema -timecheck]
-$[PSQL_DIR]/rcra/tables <- import/rcra/load_scripts/create_table_rcra.sql, import/rcra/load_scripts [method:psql -timecheck]  
+$[SQL_DIR]/rcra/ <- [method:psql_schema -timecheck]
+$[SQL_DIR]/rcra/tables <- import/rcra/load_scripts/create_table_rcra.sql, import/rcra/load_scripts [method:psql -timecheck]  
 
 ; for each file type use schemas to create CSVs 
 $[DATA_DIR]/import/rcra/rcra <- import/rcra/load_scripts/, $[DATA_DIR]/import/rcra/ [-timecheck]
@@ -22,11 +22,11 @@ $[DATA_DIR]/import/rcra/rcra <- import/rcra/load_scripts/, $[DATA_DIR]/import/rc
     done
 
 ; import CSVs in to PostgreSQL data base
-$[PSQL_DIR]/rcra/rcra <- $[DATA_DIR]/import/rcra/rcra, $[PSQL_DIR]/rcra/tables [method:load_data -timecheck]
+$[SQL_DIR]/rcra/rcra <- $[DATA_DIR]/import/rcra/rcra, $[SQL_DIR]/rcra/tables [method:load_data -timecheck]
 
 ; get RCRA facilities CSV
 URL="https://echo.epa.gov/files/echodownloads/rcra_downloads.zip"
 $[DATA_DIR]/import/rcra/rcra_downloads.zip, $[DATA_DIR]/import/rcra_downloads/, $[DATA_DIR]/import/rcra_downloads/RCRA_FACILITIES.csv <- [-timecheck method:wget_unzip]
 
-$[PSQL_DIR]/rcra/rcra_facilities <- import/rcra/import_rcra_facilities.sh, $[DATA_DIR]/import/rcra_downloads/RCRA_FACILITIES.csv
+$[SQL_DIR]/rcra/rcra_facilities <- import/rcra/import_rcra_facilities.sh, $[DATA_DIR]/import/rcra_downloads/RCRA_FACILITIES.csv
     $INPUT $INPUT1 && echo > $OUTPUT
