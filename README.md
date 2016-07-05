@@ -11,7 +11,6 @@ PGPASSWORD=
 
 SQL_DIR=
 DATA_DIR=
-PSQL_DIR=
 The DIRs above have  
 
 default_profile has already been included in the .gitignore
