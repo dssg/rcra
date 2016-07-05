@@ -11,8 +11,8 @@ PGPASSWORD=
 
 SQL_DIR=
 DATA_DIR=
-The DIRs above have  
-```
+ ```
+The DIRs above have been created inside the mnt directory on the aws box.
 default_profile has already been included in the .gitignore
 
 
