@@ -5,98 +5,93 @@ Date: 9th June 2016
 */
 
 -- Manifest data for years 1980 to 1989
-select * 
-into raw.mani80_89
-from (
-
-select * from raw.man8081
-union
-select * from raw.mani82
-union
-select * from raw.mani83
-union
-select * from raw.mani84
-union
-select * from raw.mani85
-union
-select * from raw.mani86
-union
-select * from raw.mani87
-union
-select * from raw.mani88
-union
-select * from raw.mani89
-) as a
+DROP TABLE IF EXISTS raw.mani80_89;
+create table raw.mani80_89 as 
+	select * from (
+		select * from raw.man8081
+		union
+		select * from raw.mani82
+		union
+		select * from raw.mani83
+		union
+		select * from raw.mani84
+		union
+		select * from raw.mani85
+		union
+		select * from raw.mani86
+		union
+		select * from raw.mani87
+		union
+		select * from raw.mani88
+		union
+		select * from raw.mani89
+	) as a;
 
 
 -- Manifest data for years 1990 to 2005
-select * 
-into raw.mani90_05
-from (
-select * from raw.mani90
-union
-select * from raw.mani91
-union
-select * from raw.mani92
-union
-select * from raw.mani93
-union 
-select * from raw.mani94
-union
-select * from raw.mani95
-union
-select * from raw.mani96
-union 
-select * from raw.mani97
-union
-select * from raw.mani98
-union
-select * from raw.mani99
-union 
-select * from raw.mani00
-union
-select * from raw.mani01
-union
-select * from raw.mani02
-union
-select * from raw.mani03
-union
-select * from raw.mani04
-union
-select * from raw.mani05
-
-) as a
+DROP TABLE IF EXISTS raw.mani90_05;
+create table raw.mani90_05 as 
+	select * from (
+		select * from raw.mani90
+		union
+		select * from raw.mani91
+		union
+		select * from raw.mani92
+		union
+		select * from raw.mani93
+		union 
+		select * from raw.mani94
+		union
+		select * from raw.mani95
+		union
+		select * from raw.mani96
+		union 
+		select * from raw.mani97
+		union
+		select * from raw.mani98
+		union
+		select * from raw.mani99
+		union 
+		select * from raw.mani00
+		union
+		select * from raw.mani01
+		union
+		select * from raw.mani02
+		union
+		select * from raw.mani03
+		union
+		select * from raw.mani04
+		union
+		select * from raw.mani05
+	) as a;
 
 
 --Manifest data 2006 to 2016
-
-select *
-into raw.mani06_16
-from  (
-select * from raw.mani06
-union
-select * from raw.mani07
-union
-select * from raw.mani08
-union
-select * from raw.mani9
-union
-select * from raw.mani10
-union
-select * from raw.mani11
-union
-select * from raw.mani12
-union
-select * from raw.mani13
-union
-select * from raw.mani14
-union
-select * from raw.mani15
-union
-select * from raw.mani16
-
-
-) as a
+DROP TABLE IF EXISTS raw.mani90_05;
+create table raw.mani06_16 as
+	select * from  (
+		select * from raw.mani06
+		union
+		select * from raw.mani07
+		union
+		select * from raw.mani08
+		union
+		select * from raw.mani9
+		union
+		select * from raw.mani10
+		union
+		select * from raw.mani11
+		union
+		select * from raw.mani12
+		union
+		select * from raw.mani13
+		union
+		select * from raw.mani14
+		union
+		select * from raw.mani15
+		union
+		select * from raw.mani16
+	) as a;
 
 
 

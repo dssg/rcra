@@ -56,6 +56,7 @@ eval $(cat psql_profile.config)
 # create tables and populate
 for f in man8081 mani82 mani83 mani84 mani85 mani86 mani87 mani88 mani89 
 do
+	psql -c "DROP TABLE IF EXISTS raw.$f;"
 	psql -c "CREATE TABLE raw.$f (
 		manifest_number VARCHAR(10) NOT NULL, 
 		manifest_status VARCHAR(1) NOT NULL, 
@@ -119,6 +120,7 @@ done
 
 for f in mani90 mani91 mani92 mani93 mani94 mani95 mani96 mani97 mani98 mani99 mani00 mani01 mani02 mani03 mani04 mani05
 do
+        psql -c "DROP TABLE IF EXISTS raw.$f;"
 	psql -c "CREATE TABLE raw.$f (
 		manifest_number VARCHAR(10) NOT NULL, 
 		sequence_number VARCHAR(2) NOT NULL, 
@@ -182,7 +184,7 @@ done
 
 for f in mani06 mani07 mani08 mani9 mani10 mani11 mani12 mani13 mani14 mani15 mani16 
 do
-
+	psql -c "DROP TABLE IF EXISTS raw.$f;"
 	psql -c "CREATE TABLE raw.$f (
 		manifest_tracking_num VARCHAR(12) NOT NULL, 
 		page_num VARCHAR(6), 
@@ -222,6 +224,7 @@ do
 	cat $OUTPUT_DPATH/$f.csv | psql -c "\copy raw.$f from stdin with csv header;"
 done
 
+psql -c "DROP TABLE IF EXISTS raw.locaddr;"
 psql -c "CREATE TABLE raw.locaddr (
 	rcra_id VARCHAR(12) NOT NULL, 
 	district_name VARCHAR(76) NOT NULL, 
