@@ -1,7 +1,9 @@
 #!/bin/bash
 
 # set path to waste manifests here
-DPATH='/mnt/data/nysdec/downloaded_manifests'
+DPATH=$1
+OUTPUT_DPATH=$2
+
 
 # BEFORE ANYTHING: some of the state ID's already contain commas.
 # convert these to colons so as not to fuck with the CSV stuff below
@@ -15,30 +17,37 @@ done
 # converted fixed-width to CSV based on the format csv files
 for f in man8081 mani82 mani83 mani84 mani85 mani86 mani87 mani88 mani89
 do
-	gawk '$1=$1' FIELDWIDTHS='10 1 9 9 6 6 6 6 6 6 12 12 12 12 4 5 1 3 2 1 3 4 5 1 3 2 1 3 4 5 1 3 2 1 3 4 5 1 3 2 1 3 4 5 1 3 2 1 3 4 5 1 3 2 1 3' OFS=, $DPATH/$f$clean.txt > $DPATH/$f.csv
+	gawk '$1=$1' FIELDWIDTHS='10 1 9 9 6 6 6 6 6 6 12 12 12 12 4 5 1 3 2 1 3 4 5 1 3 2 1 3 4 5 1 3 2 1 3 4 5 1 3 2 1 3 4 5 1 3 2 1 3 4 5 1 3 2 1 3' OFS=, $DPATH/$f$clean.txt > $DPATH/$f_intermed.csv
 done
 
 for f in mani90 mani91 mani92 mani93 mani94 mani95 mani96 mani97 mani98 mani99 mani00 mani01 mani02 mani03 mani04 mani05
 do
-	gawk '$1=$1' FIELDWIDTHS='10 2 12 10 12 10 12 9 10 12 9 10 3 2 5 1 5 1 4 4 4 4 4 3 2 5 1 5 1 4 4 4 4 4 3 2 5 1 5 1 4 4 4 4 4 3 2 5 1 5 1 4 4 4 4 4' OFS=, $DPATH/$f$clean.txt > $DPATH/$f.csv
+	gawk '$1=$1' FIELDWIDTHS='10 2 12 10 12 10 12 9 10 12 9 10 3 2 5 1 5 1 4 4 4 4 4 3 2 5 1 5 1 4 4 4 4 4 3 2 5 1 5 1 4 4 4 4 4 3 2 5 1 5 1 4 4 4 4 4' OFS=, $DPATH/$f$clean.txt > $DPATH/$f_intermed.csv
 done
 
 # append headers to the newly-made CSV's
 header='_header'
 for f in man8081 mani82 mani83 mani84 mani85 mani86 mani87 mani88 mani89 
 do
-	cat header8089.txt $DPATH/$f.csv > $DPATH/$f$header.csv
+	cat header8089.txt $DPATH/$f_intermed.csv > $OUTPUT_DPATH/$f$header.csv
 done
 
 for f in mani90 mani91 mani92 mani93 mani94 mani95 mani96 mani97 mani98 mani99 mani00 mani01 mani02 mani03 mani04 mani05
 do
-	cat header9005.txt $DPATH/$f.csv > $DPATH/$f$header.csv
+	cat header9005.txt $DPATH/$f_intermed.csv > $OUTPUT_DPATH/$f$header.csv
+done
+
+#move 06-16 files to OUTPUT_DPATH (for consistency)
+for f in mani06 mani07 mani08 mani9 mani10 mani11 mani12 mani13 mani14 mani15 mani16 
+do
+	cp $DPATH/$f.csv $OUTPUT_DPATH/$f.csv	
+
 done
 
 # some files have non-UTF8 characters--replace these with asterisks
-sed -i 's/\xBA/*/g' $DPATH/mani88_header.csv
-sed -i 's/\xBA/*/g' $DPATH/mani89_header.csv
-sed -i 's/\xE5/*/g' $DPATH/mani97_header.csv
+sed -i 's/\xBA/*/g' $OUTPUT_DPATH/mani88_header.csv
+sed -i 's/\xBA/*/g' $OUTPUT_DPATH/mani89_header.csv
+sed -i 's/\xE5/*/g' $OUTPUT_DPATH/mani97_header.csv
 
 # create 'raw' schema
 eval $(cat psql_profile.config) 
@@ -105,7 +114,7 @@ do
 		handling_method6 VARCHAR(1) NOT NULL, 
 		specific_gravity6 VARCHAR(3) NOT NULL 
 		);"
-	cat $DPATH/$f$header.csv | psql -c "\copy raw.$f from stdin with csv header;"
+	cat $OUTPUT_DPATH/$f$header.csv | psql -c "\copy raw.$f from stdin with csv header;"
 done
 
 for f in mani90 mani91 mani92 mani93 mani94 mani95 mani96 mani97 mani98 mani99 mani00 mani01 mani02 mani03 mani04 mani05
@@ -168,7 +177,7 @@ do
 		waste_code4_4 VARCHAR(4) NOT NULL, 
 		waste_code4_5 VARCHAR(4) NOT NULL 
 		);"
-	cat $DPATH/$f$header.csv | psql -c "\copy raw.$f from stdin with csv header;"
+	cat $OUTPUT_DPATH/$f$header.csv | psql -c "\copy raw.$f from stdin with csv header;"
 done
 
 for f in mani06 mani07 mani08 mani9 mani10 mani11 mani12 mani13 mani14 mani15 mani16 
@@ -210,7 +219,7 @@ do
 		waste_code_5 VARCHAR(4), 
 		waste_code_6 VARCHAR(4)
 		);"
-	cat $DPATH/$f.csv | psql -c "\copy raw.$f from stdin with csv header;"
+	cat $OUTPUT_DPATH/$f.csv | psql -c "\copy raw.$f from stdin with csv header;"
 done
 
 psql -c "CREATE TABLE raw.locaddr (
@@ -229,9 +238,5 @@ cat $DPATH/locaddr.csv | psql -c "\copy raw.locaddr from stdin with csv header;"
 
 # remove the intermediate
 rm $DPATH/*clean.txt
+rm $DPATH/*intermed.csv
 
-for f in man8081 mani82 mani83 mani84 mani85 mani86 mani87 mani88 mani89 mani90 mani91 mani92 mani93 mani94 mani95 mani96 mani97 mani98 mani99 mani00 mani01 mani02 mani03 mani04 mani05
-do
-	rm $DPATH/$f.csv
-	rm $DPATH/$f$header.csv
-done
