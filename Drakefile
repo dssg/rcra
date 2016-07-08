@@ -1,5 +1,6 @@
 PROFILE:=default_profile
 %include $[PROFILE]
+PGOPTS='-v ON_ERROR_STOP=1'
 
 
 ; $ZIP_DEST, $EXTRACT_DEST <- [-timecheck]
