@@ -1,6 +1,6 @@
 $[SQL_DIR]/output/ <- [method:psql_schema -timecheck]
 
-$[DATA_DIR]/investigations.sql <- output/investigations_sql.py, output/investigations.sql, $[SQL_DIR]/rcra/rcra
+$[DATA_DIR]/investigations.sql <- output/investigations_sql.py, output/investigations.sql, $[SQL_DIR]/rcra/rcra, $[SQL_DIR]/indexes
     python $INPUT > $OUTPUT
 
 $[SQL_DIR]/output/investigations <- $[DATA_DIR]/investigations.sql [method:psql]
