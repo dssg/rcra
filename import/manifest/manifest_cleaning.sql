@@ -67,7 +67,7 @@ create table raw.mani90_05 as
 
 
 --Manifest data 2006 to 2016
-DROP TABLE IF EXISTS raw.mani90_05;
+DROP TABLE IF EXISTS raw.mani06_16;
 create table raw.mani06_16 as
 	select * from  (
 		select * from raw.mani06
@@ -104,15 +104,19 @@ ALTER TABLE raw.mani06_16 ALTER COLUMN transporter_1_sign_date TYPE DATE using c
 																					else transporter_1_sign_date::date 
 																					end ;
 ALTER TABLE raw.mani06_16 ALTER COLUMN transporter_2_sign_date TYPE DATE using case when length(transporter_2_sign_date) < 4 
-																					then null 
+																					then null
 	
--- Converting waste_qty to all be in pounds
-alter table raw.mani06_16 add approx_qty double precision
+	  else transporter_2_sign_date::date																				
+	  end ; 
 
-alter table raw.mani06_16 ALTER column waste_qty type double precision using case when length(waste_qty) >0 then waste_qty::double precision
+
+-- Converting waste_qty to all be in pounds
+ALTER TABLE raw.mani06_16 add approx_qty double precision;
+
+ALTER TABLE raw.mani06_16 ALTER column waste_qty type double precision using case when length(waste_qty) >0 then waste_qty::double precision
 																						else null
 																						end;
-alter table raw.mani06_16 ALTER column specific_gravity type double precision using case when length(specific_gravity) > 0 then specific_gravity::double precision
+ALTER TABLE raw.mani06_16 ALTER column specific_gravity type double precision using case when length(specific_gravity) > 0 then specific_gravity::double precision
 																						else null
 																						end;
 
