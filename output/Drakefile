@@ -13,4 +13,4 @@ $[SQL_DIR]/output/br <- output/br.sql, $[SQL_DIR]/br [method:psql]
 
 ; takes 15 minutes to run
 $[SQL_DIR]/output/facility_years0101 <- output/facility_years.py, output/facility_years.sql, $[SQL_DIR]/output/investigations, $[SQL_DIR]/output/facilities, $[SQL_DIR]/output/handlers
-    python $INPUT $INPUT1 2005 2016 01 01 | psql && echo > $OUTPUT
+    python $INPUT $INPUT1 2005 2016 01 01 | psql -v ON_ERROR_STOP=1 && echo > $OUTPUT

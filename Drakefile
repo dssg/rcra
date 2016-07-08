@@ -1,7 +1,5 @@
 PROFILE:=default_profile
 %include $[PROFILE]
-PGOPTIONS='-v ON_ERROR_STOP=1'
-
 
 ; $ZIP_DEST, $EXTRACT_DEST <- [-timecheck]
 wget_unzip()
