@@ -37,4 +37,4 @@ def get_sql(date):
     return sql.format(**format_vars)
 
 if __name__ == '__main__':
-    print get_sql(None)
+    print(get_sql(None))
