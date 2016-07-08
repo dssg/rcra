@@ -1,5 +1,5 @@
 ; get new york manifest data
-!$[DATA_DIR]/import/manifest/ <- [-timecheck]
+!$[DATA_DIR]/import/manifest/ <- import/manifest/manifest_download.py [-timecheck]
     mkdir -p $OUTPUT
     python import/manifest/manifest_download.py $OUTPUT
 
