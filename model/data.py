@@ -31,14 +31,20 @@ class EpaData(Step):
                 'date_min' : date(year_min, month, day), 
                 'date_max' : date(year_max, month, day) }
 
+	# Extracts facility years from postgres by using the step FromSQL
+	# FromSQL is a wrapper for pd.read_sql in pandas
         facility_years = FromSQL(query="""
 select * from output.facility_years{doy} 
 where date between '{date_min}' and '{date_max}'""".format(**sql_vars),
                 parse_dates=['date'], tables=['output.facility_years{doy}'.format(**sql_vars)], target=True)
-        # store reference handlers because we need those columns
+        
+	# Extracts handler_ids from postgres
+	# store reference handlers because we need those columns
         self.handlers = FromSQL(table='output.handlers', 
                 parse_dates=['receive_date'], target=True)
 
+	# Merge is a wrapper for df.merge in pandas 
+	# Left joins facility_years with the entire output.facilities postgres table using rcra_id
         X = Merge(on='rcra_id', how='left', 
                 inputs=[facility_years, FromSQL(table='output.facilities', 
                         parse_dates=['min_start_date', 'max_start_date', 
