@@ -12,10 +12,10 @@ import pandas as pd
 import numpy as np
 
 class EpaTransform(Step):
-	"""Handles transformation of the data from a large table to a format 
-	that can be inputted into the models. The run method outputs a design matrix, a response vector,
- 	aux, a train and a test set.  
-	"""
+    """Handles transformation of the data from a large table to a format 
+    that can be inputted into the models. The run method outputs a design matrix, a response vector,
+    aux, a train and a test set.  
+    """
     def __init__(self, month, day,
             year, train_years, 
             outcome_expr,
@@ -29,7 +29,7 @@ class EpaTransform(Step):
             investigations_expand_counts=False,
             exclude=[], include=[],
             impute=True, normalize=True, **kwargs):
-	# Includes or excludes certain features
+		# Includes or excludes certain features
         exclude = set(exclude)
         include = set(include)
 
