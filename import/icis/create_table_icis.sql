@@ -97,7 +97,8 @@ DROP TABLE IF EXISTS npdes.npdes_informal_enforcement_actions;
 CREATE TABLE npdes.npdes_informal_enforcement_actions (
 	npdes_id VARCHAR, 
 	registry_id VARCHAR, 
-	agency VARCHAR, 
+	agency VARCHAR,
+	activity_id VARCHAR, 
 	activity_type_code VARCHAR, 
 	activity_type_desc VARCHAR, 
 	enf_type_code VARCHAR, 
@@ -192,6 +193,18 @@ CREATE TABLE npdes.npdes_sics (
 	sic_code VARCHAR(4),
 	sic_desc VARCHAR(50),
 	primary_indicator_flag BOOLEAN 
+);
+
+DROP TABLE IF EXISTS npdes.npdes_violation_enforcements;
+
+CREATE TABLE npdes.npdes_violation_enforcements (
+	"NPDES_VIOLATION_ID" BIGINT, 
+	"VIOLATION_CODE" VARCHAR(5), 
+	"VIOLATION_DESC" TEXT, 
+	"ACTIVITY_ID" BIGINT, 
+	"ACTIVITY_TYPE_CODE" VARCHAR(3), 
+	"ACTIVITY_TYPE_DESC" VARCHAR(25), 
+	"ENF_IDENTIFIER" VARCHAR(20)
 );
 
 --- ------------ ICIS FE&C (case_downloads.zip)
@@ -437,9 +450,9 @@ CREATE TABLE fec.fec_related_activities (
 ------ ICIS AIR 
 CREATE SCHEMA IF NOT EXISTS air;
 
-DROP TABLE IF EXISTS air.air_facilities;
+DROP TABLE IF EXISTS air.icis_air_facilities;
 
-CREATE TABLE air.air_facilities (
+CREATE TABLE air.icis_air_facilities (
 	pgm_sys_id VARCHAR, 
 	registry_id BIGINT, 
 	facility_name VARCHAR, 
@@ -461,9 +474,9 @@ CREATE TABLE air.air_facilities (
 	local_control_region_name VARCHAR
 );
 
-DROP TABLE IF EXISTS air.air_programs;
+DROP TABLE IF EXISTS air.icis_air_programs;
 
-CREATE TABLE air.air_programs (
+CREATE TABLE air.icis_air_programs (
 	pgm_sys_id VARCHAR(18) NOT NULL, 
 	program_code VARCHAR,
 	program_desc VARCHAR,
@@ -471,9 +484,9 @@ CREATE TABLE air.air_programs (
 	air_operating_status_desc VARCHAR(18)
 );
 
-DROP TABLE IF EXISTS air.air_program_subparts;
+DROP TABLE IF EXISTS air.icis_air_program_subparts;
 
-CREATE TABLE air.air_program_subparts (
+CREATE TABLE air.icis_air_program_subparts (
 	pgm_sys_id VARCHAR(18) NOT NULL, 
 	program_code VARCHAR,
 	program_desc VARCHAR,
@@ -481,9 +494,9 @@ CREATE TABLE air.air_program_subparts (
 	air_program_subpart_desc VARCHAR
 );
 
-DROP TABLE IF EXISTS air.air_titlev_certs;
+DROP TABLE IF EXISTS air.icis_air_titlev_certs;
 
-CREATE TABLE air.air_titlev_certs (
+CREATE TABLE air.icis_air_titlev_certs (
 	pgm_sys_id VARCHAR(18) NOT NULL, 
 	activity_id BIGINT NOT NULL, 
 	comp_monitor_type_code VARCHAR(3),
@@ -493,9 +506,9 @@ CREATE TABLE air.air_titlev_certs (
 	facility_rpt_deviation_flag BOOLEAN 
 );
 
-DROP TABLE IF EXISTS air.air_fces_pces;
+DROP TABLE IF EXISTS air.icis_air_fces_pces;
 
-CREATE TABLE air.air_fces_pces (
+CREATE TABLE air.icis_air_fces_pces (
 	pgm_sys_id VARCHAR(18) NOT NULL, 
 	activity_id BIGINT NOT NULL, 
 	state_epa_flag VARCHAR(1),
@@ -507,9 +520,9 @@ CREATE TABLE air.air_fces_pces (
 	program_codes VARCHAR
 );
 
-DROP TABLE IF EXISTS air.air_formal_actions;
+DROP TABLE IF EXISTS air.icis_air_formal_actions;
 
-CREATE TABLE air.air_formal_actions (
+CREATE TABLE air.icis_air_formal_actions (
 	pgm_sys_id VARCHAR(18) NOT NULL, 
 	activity_id BIGINT NOT NULL, 
 	enf_identifier VARCHAR(25),
@@ -522,9 +535,9 @@ CREATE TABLE air.air_formal_actions (
 	penalty_amount FLOAT
 );
 
-DROP TABLE IF EXISTS air.air_hpv_history;
+DROP TABLE IF EXISTS air.icis_air_hpv_history;
 
-CREATE TABLE air.air_hpv_history (
+CREATE TABLE air.icis_air_hpv_history (
 	pgm_sys_id VARCHAR(18) NOT NULL, 
 	activity_id BIGINT NOT NULL, 
 	agency_type_desc VARCHAR(8),
@@ -541,9 +554,9 @@ CREATE TABLE air.air_hpv_history (
 	hpv_resolved_date DATE
 );
 
-DROP TABLE IF EXISTS air.air_informal_actions;
+DROP TABLE IF EXISTS air.icis_air_informal_actions;
 
-CREATE TABLE air.air_informal_actions (
+CREATE TABLE air.icis_air_informal_actions (
 	pgm_sys_id VARCHAR(18) NOT NULL, 
 	activity_id BIGINT NOT NULL, 
 	enf_identifier VARCHAR(25),
@@ -552,13 +565,12 @@ CREATE TABLE air.air_informal_actions (
 	state_epa_flag VARCHAR(1),
 	enf_type_code VARCHAR(5),
 	enf_type_desc VARCHAR(35),
-	achieved_date DATE, 
-	penalty_amount INTEGER
+	achieved_date DATE
 );
 
-DROP TABLE IF EXISTS air.air_pollutants;
+DROP TABLE IF EXISTS air.icis_air_pollutants;
 
-CREATE TABLE air.air_pollutants (
+CREATE TABLE air.icis_air_pollutants (
 	pgm_sys_id VARCHAR(18) NOT NULL, 
 	pollutant_code BIGINT NOT NULL, 
 	pollutant_desc VARCHAR(70),
@@ -568,9 +580,9 @@ CREATE TABLE air.air_pollutants (
 	air_pollutant_class_desc VARCHAR(32)
 );
 
-DROP TABLE IF EXISTS air.air_stack_tests;
+DROP TABLE IF EXISTS air.icis_air_stack_tests;
 
-CREATE TABLE air.air_stack_tests (
+CREATE TABLE air.icis_air_stack_tests (
 	pgm_sys_id VARCHAR(18) NOT NULL, 
 	activity_id BIGINT NOT NULL, 
 	comp_monitor_type_code VARCHAR(3),
@@ -583,6 +595,24 @@ CREATE TABLE air.air_stack_tests (
 	air_stack_test_status_desc VARCHAR(10)
 );
 
+DROP TABLE IF EXISTS air.icis_air_violation_history;
+
+CREATE TABLE air.icis_air_violation_history (
+	"PGM_SYS_ID" VARCHAR(18), 
+	"ACTIVITY_ID" BIGINT, 
+	"AGENCY_TYPE_DESC" VARCHAR(8), 
+	"STATE_CODE" VARCHAR(4), 
+	"AIR_LCON_CODE" VARCHAR(4), 
+	"COMP_DETERMINATION_UID" VARCHAR(25), 
+	"ENF_RESPONSE_POLICY_CODE" VARCHAR(3), 
+	"PROGRAM_CODES" VARCHAR(51), 
+	"PROGRAM_DESCS" VARCHAR(338), 
+	"POLLUTANT_CODES" TEXT, 
+	"POLLUTANT_DESCS" TEXT, 
+	"EARLIEST_FRV_DETERM_DATE" DATE, 
+	"HPV_DAYZERO_DATE" DATE, 
+	"HPV_RESOLVED_DATE" DATE
+);
 
 
 
