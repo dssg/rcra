@@ -29,7 +29,7 @@ class EpaTransform(Step):
             investigations_expand_counts=False,
             exclude=[], include=[],
             impute=True, normalize=True, **kwargs):
-		# Includes or excludes certain features
+        # Includes or excludes certain features
         exclude = set(exclude)
         include = set(include)
 
@@ -43,29 +43,26 @@ class EpaTransform(Step):
                 investigations_expand_counts=investigations_expand_counts,
                 exclude=exclude, include=include, impute=impute, normalize=normalize, **kwargs)
 
-	# The EpaData class 
+    # The EpaData class 
         self.data = EpaData(month=month, day=day)
 
-	# The ToHDF class writes dataframes to a HDF store 
+    # The ToHDF class writes dataframes to a HDF store 
         store = ToHDF(inputs=[self.data], 
             put_args={'X':dict(format='t', data_columns=['date', 'evaluation', 'region'])})
         self.inputs = [EpaHDFReader(year=year, train_years=train_years, evaluation=self.evaluation, region=region, inputs=[store])]
 
     def run(self, X, aux, **kwargs):
-	""" Transforms and reshapes the data so that it can be fed into models
-
-	Args:
-		X: A design matrix
-		aux: Contains information about each example (metadata). Has same index as X and y and is used for post analysis
-		information
-		
-	Returns: 
-		A dictionary containing the design matrix (X), the response (y), aux (aux), the train set (train)
-		and the test set (test). The train and test variables are a mask which assign each row of X and y to the 
-		train or test set.
-	"""
-
-	# Drops unnecessary regions if a specific region only is required.
+        """ Transforms and reshapes the data so that it can be fed into models
+        Args:
+            X: A design matrix
+            aux: Contains information about each example (metadata). Has same index as X and y and is used for post analysis
+            information        
+        Returns: 
+            A dictionary containing the design matrix (X), the response (y), aux (aux), the train set (train)
+            and the test set (test). The train and test variables are a mask which assign each row of X and y to the 
+            train or test set.
+        """
+        # Drops unnecessary regions if a specific region only is required.
         if self.region is not None:
             X.drop(X.index[aux.region != self.region], inplace=True)
             aux.drop(aux.index[aux.region != self.region], inplace=True)
