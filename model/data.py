@@ -11,11 +11,11 @@ import pandas as pd
 import numpy as np
 
 class EpaData(Step):
-	""" Joins the datasets together. Combines output.facility_years0101, output.handlers, output.br
-	and output.facilities. Then it joins onto this the aggregations.  
-	The run method outputs a dict with X as a numpy array and aux.   
-	"""
-    def __init__(self, month, day, year_min=2007, year_max=2016, 
+    """ Joins the datasets together. Combines output.facility_years0101, output.handlers, output.br
+    and output.facilities. Then it joins onto this the aggregations.  
+    The run method outputs a dict with X as a numpy array and aux.   
+    """
+    def __init__(self, month, day, year_min=2007, year_max=2016,
             outcome_years=1, investigations_drop_lists=True, **kwargs):
 
         Step.__init__(self, month=month, day=day, 
@@ -32,7 +32,7 @@ class EpaData(Step):
         dates = tuple(date(year, month, day) for year in range(year_min, year_max+1))
         
 	# Grabs all the aggregation steps in a dict format
-	self.aggregators = aggregations.all_dict(dates)
+        self.aggregators = aggregations.all_dict(dates)
 
         sql_vars = { 'doy' : '%02d%02d' % (month, day), 
                 'date_min' : date(year_min, month, day), 
@@ -95,7 +95,7 @@ where date between '{date_min}' and '{date_max}'""".format(**sql_vars),
         X.drop(['br_date', 'br_reporting_year'], axis=1, inplace=True)
 
         # Adds the aggregations by joining them on
-	logging.info('Joining spatiotemporal aggregations')
+        logging.info('Joining spatiotemporal aggregations')
         for name,aggregator in self.aggregators.iteritems():
             logging.info('Joining %s' % name)
             X = aggregator.join(X)
