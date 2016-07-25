@@ -27,14 +27,14 @@ date_columns = list(censor_dates.keys()) + \
         ['scheduled_compliance_date', 'sep_scheduled_completion_date'] 
 
 def get_sql(date):
-	"""Performs date censoring. Outputs SQL code with only the required dates for an analysis.
+    """Performs date censoring. Outputs SQL code with only the required dates for an analysis.
 
-	Args: 
-		date: The date on which the censoring occurs
+    Args: 
+        date: The date on which the censoring occurs
 
-	Returns: 
-		SQL command with correct selection dates  
-	"""
+    Returns: 
+        SQL command with correct selection dates  
+    """
     sql = read_file(os.path.join(os.path.dirname(os.path.abspath(__file__)), 'investigations.sql'))
     format_vars = {}
     for d in censor_dates:
