@@ -41,7 +41,7 @@ evaluation_args = dict(
 forest = {'__class_name__':['sklearn.ensemble.RandomForestClassifier'], 
         'n_estimators':[500],
         'criterion':['entropy'],
-        'balanced':[True],
+        #'balanced':[True],
         'max_features':['sqrt'],
         'n_jobs':[-1]}
 
@@ -70,6 +70,10 @@ def violation():
 
 def violation_region_4():
     return models(transform_search= dict(train_years=5, **region_4_args), estimator_search=forest)
+
+def violation_region2_nysdec():
+	return models(transform_search=dict(region=2,train_years=5, **violation_args),
+            estimator_search=forest)
 
 def violation_fast():
     return models(transform_search= dict(train_years=1, year=2016, **violation_args), estimator_search=forest)
@@ -152,7 +156,7 @@ def models(transform_search={}, estimator_search={}):
     steps = []
     transform_search = util.merge_dicts(dict(
         train_years = [3],
-        year=range(2011,2014+1) + [2016]
+        year=list(range(2011,2014+1)) + [2016]
     ), transform_search)
 
     for transform_args, estimator_args in product(
