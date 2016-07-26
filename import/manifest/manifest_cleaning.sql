@@ -149,7 +149,3 @@ end $$;
 ALTER TABLE raw.mani90_05 ALTER COLUMN generator_shipped_date TYPE DATE using generator_shipped_date::date;
 ALTER TABLE raw.mani90_05 ALTER COLUMN tsdf_received_date TYPE DATE using tsdf_received_date::date;
 
-
-
-
-
