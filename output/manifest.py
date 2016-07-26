@@ -13,14 +13,15 @@ from drain.aggregate import Aggregate, Count, aggregate_counts, days
 #Need to make manifest dictionary and change this 
 from epa.output import manifest_sql
 
-
+#collects a list of all columns that contain dates
 date_columns = manifest_sql.date_columns
 
-
+#appends on min_/max_ for each of the date_columns names 
 parse_dates = ['min_' + c for c in date_columns] + \
                        ['max_' + c for c in date_columns] + ['start_date']
 
 
+#approx_qty is already calculated to be on the same scale (in pounds) from manifest_cleaning.sql (in the import/manifest folder)
 quantity =  ['approx_qty']
 
 waste_type = ['unit_of_measure']
@@ -28,7 +29,7 @@ waste_type = ['unit_of_measure']
 
 #Classes and Aggregations
 
-class manifestAggregations(SpacetimeAggregation):
+class ManifestAggregations(SpacetimeAggregation):
     def __init__(self, spacedeltas, dates, **kwargs):
         SpacetimeAggregation.__init__(self, spacedeltas=spacedeltas,
                 dates=dates, prefix='manifest',
@@ -41,7 +42,7 @@ class manifestAggregations(SpacetimeAggregation):
                 id_column = ['rcra_id','gen_sign_date'],
                 source_id_column = ['gen_rcra_id','gen_sign_date'],
                 max_date_column = 'max_date',
-                min_date_column = 'gen_start_date',
+                min_date_column = 'start_date',
                 date_column = 'gen_sign_date',
                 date = self.dates[0],
                 from_sql_args = {'parse_dates':parse_dates, 'target':True})
@@ -51,8 +52,8 @@ class manifestAggregations(SpacetimeAggregation):
                 Count(),
 
                 #outcomes
-                Aggregate(outcomes + flag, 'any', fname=False),
-                Count(outcomes + flags, prop=True),
+                Aggregate(quantity),
+                Count(quantity, prop=True),
 
                 Aggregate(days('start_date', date), 'max', name = 'start_date_days'),
                 Aggregate([days('max_' + c, date) for c in date_columns], 'max',
