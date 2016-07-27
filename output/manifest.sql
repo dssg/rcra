@@ -4,17 +4,12 @@ Description: Manifest reduced (reduce to waste_codes) for easier yearly aggregat
 generator RCRAID - year; only look at generators in New York state
 */
 
-
-
 drop table if exists output.manifests;
 create table output.manifests as(
 	select 
-	substring(gen_rcra_id from 1 for 2) as state,
-	array_agg(extract(year from gen_sign_date)::varchar(4)) as year,
-	max(greatest({dates})) as max_date,
-	array_agg(distinct manifest_tracking_num) as manifest_id,
 	gen_rcra_id as rcra_id,
 	gen_sign_date as gen_sign_date,
+	array_agg(distinct manifest_tracking_num) as manifest_id,
 	array_remove(array_agg(distinct tsdf_rcra_id),null) as tsdf_id,
 	array_remove(array_agg(distinct transporter_1_rcra_id),null) as transporter1_id,
 	array_remove(array_agg(distinct transporter_2_rcra_id),null) as transporter2_id,
@@ -31,7 +26,9 @@ create table output.manifests as(
 	array_remove(array_agg(distinct handling_type_code),null) as handling_type_code,
 	array_remove(array_agg(tsdf_sign_date),null) as tsdf_sign_date,	
 	array_remove(array_agg(distinct mgmt_method_type_code),null) as mgmt_method,
-	array_remove(array_agg(distinct coalesce(waste_code_1,'')|| ';' || coalesce(waste_code_2,'') || ';' ||  coalesce(waste_code_3,'') ||';' || coalesce(waste_code_4,'') ||';' ||  coalesce(waste_code_5,'') ||';' ||  coalesce(waste_code_6,'')), null) as waste_codes,
+        ANYARRAY_UNIQ(ARRAY_REMOVE(ANYARRAY_AGG(
+            ARRAY[waste_code_1, waste_code_2, waste_code_3,
+                  waste_code_4, waste_code_5, waste_code_6]), NULL)),
 	array_remove(array_agg(distinct unit_of_measure),null) as waste_measurement,
 	array_remove(array_agg(distinct handling_type_code),null) as handling_code
 	from manifest.new_york
