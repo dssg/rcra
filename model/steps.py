@@ -41,7 +41,7 @@ evaluation_args = dict(
 forest = {'__class_name__':['sklearn.ensemble.RandomForestClassifier'], 
         'n_estimators':[500],
         'criterion':['entropy'],
-        'balanced':[True],
+         # 'balanced':[True],
         'max_features':['sqrt'],
         'n_jobs':[-1]}
 
