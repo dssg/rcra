@@ -25,9 +25,9 @@ class ManifestAggregation(SpacetimeAggregation):
         #       if c not in ('rcra_id', 'receive_date', 'state', 'handler_id')]
 
         aggregates = [
-            Count(name='manifest_line_items')#,
+            Count(name='line_items'),
             #Count(booleans, prop=True),
-            # Aggregate(days('gen_sign_date', date), 'max', name='gen_sign_date')
+            Aggregate('approx_qty', ['max','min','var'], name='approx_qty')
 
         ]
 
