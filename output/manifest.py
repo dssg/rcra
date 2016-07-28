@@ -1,71 +1,37 @@
-import os
-import pandas as pd
-import numpy as np
-import itertools
+import logging
+from datetime import date
 
-from drain import util, data, aggregate
-from drain.data import date_censor_sql, ToHDF, FromSQL, Revise
-from drain.step import Step
-from drain.aggregation import SpacetimeAggregation, SimpleAggregation
-from drain.aggregate import Aggregate, Count, aggregate_counts, days
+from drain.util import day
+from drain.data import FromSQL
+from drain.aggregate import Aggregate, Count, days
+from drain.aggregation import SpacetimeAggregation
 
-
-#Need to make manifest dictionary and change this 
-from epa.output import manifest_sql
-
-#collects a list of all columns that contain dates
-date_columns = manifest_sql.date_columns
-
-#appends on min_/max_ for each of the date_columns names 
-parse_dates = ['min_' + c for c in date_columns] + \
-                       ['max_' + c for c in date_columns] + ['start_date']
-
-
-#approx_qty is already calculated to be on the same scale (in pounds) from manifest_cleaning.sql (in the import/manifest folder)
-quantity =  ['approx_qty']
-
-waste_type = ['unit_of_measure']
-
-
-#Classes and Aggregations
-
-class ManifestAggregations(SpacetimeAggregation):
+class ManifestAggregation(SpacetimeAggregation):
     def __init__(self, spacedeltas, dates, **kwargs):
-        SpacetimeAggregation.__init__(self, spacedeltas=spacedeltas,
-                dates=dates, prefix='manifest',
-                date_column='gen_sign_date', **kwargs)
-        if len(self.dates) !=1 and not self.parallel:
-            raise ValueError('Currently only able to run one date at a time, try parallel=True')
+        SpacetimeAggregation.__init__(self, spacedeltas=spacedeltas, dates=dates, 
+                prefix='manifest', date_column='gen_sign_date', **kwargs)
+
         if not self.parallel:
-            sql=manifest_sql.get_sql(self.dates[0])
-            self.inputs = [Revise(sql=sql,
-                id_column = ['rcra_id','gen_sign_date'],
-                source_id_column = ['gen_rcra_id','gen_sign_date'],
-                max_date_column = 'max_date',
-                min_date_column = 'start_date',
-                date_column = 'gen_sign_date',
-                date = self.dates[0],
-                from_sql_args = {'parse_dates':parse_dates, 'target':True})
-                ]
+            self.manifest = FromSQL(
+                query="""select gen_rcra_id as rcra_id, *,
+                ARRAY_REMOVE(ARRAY[waste_code_1, waste_code_2, waste_code_3,
+                    waste_code_4, waste_code_5, waste_code_6], NULL) as waste_codes
+                from manifest.new_york where substring(gen_rcra_id for 2) = 'NY' """, 
+                tables=['manifest.new_york'], parse_dates=['gen_sign_date'], target=True)
+            self.inputs = [self.manifest]
+
     def get_aggregates(self, date, delta):
+        #booleans = [c for c in self.handlers.get_result().columns 
+        #       if c not in ('rcra_id', 'receive_date', 'state', 'handler_id')]
+
         aggregates = [
-                Count(),
+            Count(name='manifest_line_items')#,
+            #Count(booleans, prop=True),
+            # Aggregate(days('gen_sign_date', date), 'max', name='gen_sign_date')
 
-                #outcomes
-                Aggregate(quantity),
-                Count(quantity, prop=True),
+        ]
 
-                Aggregate(days('start_date', date), 'max', name = 'start_date_days'),
-                Aggregate([days('max_' + c, date) for c in date_columns], 'max',
-                    name = [c + '_days' for c in date_columns]),
-
-                Aggregate(days('min_gen_sign_date', 'start_date'), ['min','mean','max'],'gen_sign_date')]
-
-        if delta=='all':
-            aggregates.extend([
-                Aggregate([days('min_' + c, date) for c in date_columns],
-
-
+        return aggregates
 
 
 
