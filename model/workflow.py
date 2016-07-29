@@ -52,7 +52,17 @@ forest = {'__class_name__':['sklearn.ensemble.RandomForestClassifier'],
         'n_jobs':[-1]}
 
 logit = {'__class_name__':['sklearn.linear_model.LogisticRegression'],
-        'penalty':['l1'], 'C':[.01]}
+        'penalty':['l1'], 'C':[0.1]}
+
+adaboost = {'__class_name__':['sklearn.ensemble.AdaBoostClassifier'],
+            'n_estimators':[25],
+            'learning_rate':[1]}
+
+gradient= {'__class_name__':['sklearn.ensemble.GradientBoostingClassifier'],
+            'loss':['deviance'],
+            'learning_rate':[0.1],
+            'n_estimators':[100],
+            'max_depth':[3]}
 
 svm = {'__class_name__':['sklearn.svm.LinearSVC'],
         'C':[.01], 'penalty':['l1'], 'dual':[False]}
@@ -65,6 +75,9 @@ forest_search = {'__class_name__':['sklearn.ensemble.RandomForestClassifier'],
 
 logit_search = {'__class_name__':['sklearn.linear_model.LogisticRegression'],
         'penalty':['l1','l2'], 'C':[.01,.1,1,10]}
+
+adaboost_search = {'__class_name__':['sklearn.ensemble.AdaBoostClassifier'],
+            'n_estimators':[20,30,50]}
 
 svm_search = [{'__class_name__':['sklearn.svm.LinearSVC'],
         'C':[.01,.1,1], 'penalty':['l2'], 'dual':[True,False]},
@@ -85,7 +98,13 @@ def violation_fast():
     return models(transform_search= dict(train_years=1, year=2016, **violation_args), estimator_search=forest)
 
 def violation_state():
-    return models(transform_search= dict(train_years=range(1,5), **violation_state_args), estimator_search=forest)
+    return models(transform_search= dict(train_years=range(2,4), year=[2013,2015], **violation_state_args), estimator_search=forest)
+
+def violation_state_adaboost():
+    return models(transform_search= dict(train_years=range(2,4), year=[2013,2015], **violation_state_args), estimator_search=adaboost)
+
+def violation_state_logistic():
+    return models(transform_search= dict(train_years=range(2,4), year=[2013,2015], **violation_state_args), estimator_search=logit)
 
 def violation_best():
     return models(transform_search= dict(train_years=2, **violation_args), estimator_search=forest) + \
