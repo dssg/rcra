@@ -81,7 +81,7 @@ def violation_fast():
     return models(transform_search= dict(train_years=1, year=2016, **violation_args), estimator_search=forest)
 
 def violation_state():
-    return models(transform_search= dict(train_years=range(1,5), **violation_state_args), estimator_search=forest)
+    return models(transform_search= dict(train_years=range(2,4), **violation_state_args), estimator_search=forest)
 
 def violation_best():
     return models(transform_search= dict(train_years=2, **violation_args), estimator_search=forest) + \
