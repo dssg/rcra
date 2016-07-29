@@ -1,7 +1,6 @@
 PROFILE:=default_profile
 %include $[PROFILE]
 
-
 ; $ZIP_DEST, $EXTRACT_DEST <- [-timecheck]
 wget_unzip()
     mkdir -p $(dirname $OUTPUT0)
