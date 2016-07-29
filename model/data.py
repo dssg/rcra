@@ -52,8 +52,8 @@ where date between '{date_min}' and '{date_max}'""".format(**sql_vars),
         self.inputs = [X, br] + self.aggregators.values()
 
     def run(self, X, br, *args):
-        # Subset to region 2 for memory reasons
-        X = X[X.region == 2]
+        # Subset to NY for memory reasons
+        X = X[X.state == 'NY']
         
         logging.info('Adding features')
         X['handler_received'] = X.handler_id.notnull()

@@ -60,7 +60,6 @@ class EpaTransform(Step):
 
         logging.info('Splitting train and test sets')
         today = date(self.year, self.month, self.day)
-
         train = index_as_series(aux, 'date') < today
         test = ~train
 
