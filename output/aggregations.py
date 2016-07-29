@@ -2,6 +2,7 @@ from epa.output.handlers import HandlersAggregation
 from epa.output.investigations import InvestigationsAggregation
 from epa.output.icis import IcisFecAggregation
 from epa.output.rmp import RmpAggregation
+from epa.output.manifest import ManifestAggregation
 
 from drain import util
 from datetime import date
@@ -14,8 +15,11 @@ deltas = {'facility' : ['1y', '5y', 'all'],
 #          'state': ['2y']
         }
 
+
+#Spacedeltas: what we will be aggregating over (what we are grouping over)?
 spacedeltas = {index: (indexes[index], deltas[index]) for index in deltas}
 
+#dates here is our prediction window of dates?
 dates = [date(y,1,1) for y in range(2007,2016+1)]
 
 def handlers(dates=dates):
@@ -30,13 +34,18 @@ def rmp(dates=dates):
 def investigations(dates=dates):
     return InvestigationsAggregation(spacedeltas, dates=dates, parallel=True, target=True)
 
+def manifest(dates=dates):
+	return ManifestAggregation(spacedeltas, dates=dates, parallel=True, target=True)
+
+
 @lru_cache(maxsize=10)
 def all_dict(dates=dates):
     return {
         'handlers':handlers(dates), 
         'investigations':investigations(dates),
         'icis': icis(dates), 
-        'rmp': rmp(dates)
+        'rmp': rmp(dates),
+	'manifest': manifest(dates)
     }
 
 def all(dates=dates):
