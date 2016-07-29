@@ -24,17 +24,12 @@ class ManifestAggregation(SpacetimeAggregation):
         aggregates = [
             Count(name='line_items'),
             #Count(booleans, prop=True),
-            Aggregate('approx_qty', ['max','min','mean','var','std','skew','kurt'], name='approx_qty'),
+            Aggregate('approx_qty', ['max','min','mean','std','skew'], name='approx_qty'),
             Aggregate(lambda m: m.waste_codes.apply(lambda w: sum(code[0] == 'P' for code in w)>0) ,['any'], name = 'waste_code_p'),
             Aggregate(lambda m: m.waste_codes.apply(lambda w: sum(code[0] == 'U' for code in w)>0) ,['any'], name = 'waste_code_u'),
             Aggregate(lambda m: m.waste_codes.apply(lambda w: sum(code[0] == 'D' for code in w)>0) ,['any'], name = 'waste_code_d'),
             Aggregate(lambda m: m.waste_codes.apply(lambda w: sum(code[0] == 'F' for code in w)>0) ,['any'], name = 'waste_code_f'),
-            Aggregate(lambda m: m.waste_codes.apply(lambda w: sum(code[0] == 'P' | code == 'F020' 
-                                                                                 | code == 'F021' 
-																				 | code == 'F022'
-																			     | code == 'F023'																		    																  | code == 'F026'
-																				 | code == 'F027' for code in w)>0) ,['any'], name = 'waste_acute')
-        ]
+            Aggregate(lambda m: m.waste_codes.apply(lambda w: sum(code[0] == 'P' or code == 'F020' or code == 'F021' or code == 'F022' or code == 'F023' or code == 'F026' or code == 'F027' for code in w)>0) ,['any'], name = 'waste_acute') ]
 
         return aggregates
 
