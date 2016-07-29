@@ -22,7 +22,7 @@ $[DATA_DIR]/import/rcra/rcra <- import/rcra/load_scripts/, $[DATA_DIR]/import/rc
     done
 
 ; import CSVs in to PostgreSQL data base
-$[SQL_DIR]/rcra/rcra <- $[DATA_DIR]/import/rcra/rcra, $[SQL_DIR]/rcra/tables [method:load_data -timecheck]
+$[SQL_DIR]/rcra/rcra <- $[DATA_DIR]/import/rcra/rcra, $[SQL_DIR]/rcra/tables [method:load_data]
 
 ; get RCRA facilities CSV
 URL="https://echo.epa.gov/files/echodownloads/rcra_downloads.zip"

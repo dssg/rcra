@@ -23,7 +23,7 @@ censor_dates = {
 }
 
 # extra dates are in the enforcement_action_date censor list above
-date_columns = censor_dates.keys() + \
+date_columns = list(censor_dates.keys()) + \
         ['scheduled_compliance_date', 'sep_scheduled_completion_date'] 
 
 def get_sql(date):
@@ -37,4 +37,4 @@ def get_sql(date):
     return sql.format(**format_vars)
 
 if __name__ == '__main__':
-    print get_sql(None)
+    print(get_sql(None))
