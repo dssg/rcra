@@ -106,6 +106,9 @@ def violation_state_adaboost():
 def violation_state_logistic():
     return models(transform_search= dict(train_years=range(2,4), year=[2013,2015], **violation_state_args), estimator_search=logit)
 
+def violation_state_gradient():
+    return models(transform_search= dict(train_years=range(2,4), year=[2013,2015], **violation_state_args), estimator_search=gradient)
+
 def violation_best():
     return models(transform_search= dict(train_years=2, **violation_args), estimator_search=forest) + \
             models(transform_search=violation_args, estimator_search=logit)
