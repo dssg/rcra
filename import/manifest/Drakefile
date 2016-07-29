@@ -1,15 +1,14 @@
 ; get new york manifest data
 $[DATA_DIR]/import/manifest/ <- import/manifest/manifest_download.py [-timecheck]
-    mkdir -p $OUTPUT
-    python import/manifest/manifest_download.py $OUTPUT
+	mkdir -p $OUTPUT
+    python $INPUT $OUTPUT
 
 ; clean ny manifest data 
-$[DATA_DIR]/import/manifest/clean <- $[DATA_DIR]/import/manifest/ [-timecheck] 
+$[DATA_DIR]/import/manifest/clean <- import/manifest/manifest_csvtodb.sh, $[DATA_DIR]/import/manifest/ [-timecheck] 
     mkdir -p $OUTPUT
-    import/manifest/manifest_cleaning.sh $INPUT $OUTPUT
+    $INPUT0 $INPUT1 $OUTPUT
+
+$[SQL_DIR]/manifest/schema <- [method:psql_schema -timecheck]
 
 ; copy ny manifest data to db
-$[SQL_DIR]/manifest <- $[DATA_DIR]/import/manifest/clean [method:psql]
-
-
-
+$[SQL_DIR]/manifest/new_york <- import/manifest/manifest_cleaning.sql, $[DATA_DIR]/import/manifest/clean, $[SQL_DIR]/manifest/schema [method:psql]

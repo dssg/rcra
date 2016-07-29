@@ -69,6 +69,9 @@ where date between '{date_min}' and '{date_max}'""".format(**sql_vars),
         self.inputs = [X, br] + self.aggregators.values()
 
     def run(self, X, br, *args):
+        # Subset to NY for memory reasons
+        X = X[X.state == 'NY']
+        
         logging.info('Adding features')
         X['handler_received'] = X.handler_id.notnull()
         X['handler_age'] = (X.date - X.receive_date)/util.day

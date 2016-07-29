@@ -3,6 +3,12 @@ from epa.model.transform import EpaTransform
 import logging
 from itertools import product
 
+violation_state_args = dict(
+    outcome_expr='aux.violation_state',
+    train_query='aux.evaluation_state', 
+    evaluation=False
+)
+
 violation_args = dict(
     outcome_expr='aux.violation_epa',
     train_query='aux.evaluation_epa', 
@@ -77,6 +83,9 @@ def violation_region2_nysdec():
 
 def violation_fast():
     return models(transform_search= dict(train_years=1, year=2016, **violation_args), estimator_search=forest)
+
+def violation_state():
+    return models(transform_search= dict(train_years=range(1,5), **violation_state_args), estimator_search=forest)
 
 def violation_best():
     return models(transform_search= dict(train_years=2, **violation_args), estimator_search=forest) + \
@@ -156,7 +165,7 @@ def models(transform_search={}, estimator_search={}):
     steps = []
     transform_search = util.merge_dicts(dict(
         train_years = [3],
-        year=list(range(2011,2014+1)) + [2016]
+        year=range(2011,2015+1)
     ), transform_search)
 
     for transform_args, estimator_args in product(
@@ -178,7 +187,7 @@ def calibrated_models(transform_search={}, estimator_search={}):
     steps = []
     transform_search = util.merge_dicts(dict(
         train_years = [3],
-        year=range(2012,2014+1) + [2016]
+        year=range(2012,2015+1)
     ), transform_search)
 
     for transform_args, estimator_args in product(
