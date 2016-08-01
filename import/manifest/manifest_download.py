@@ -21,14 +21,8 @@ for link in soup.find_all('a'):
     if link.get('href') != '#pagecontent': #deals with strange link on page
         if link.get('href') is not None and link.get('href')[-4:len(link.get('href'))] in ('.txt','.csv'):
             print('Getting....' + link.get('href'))
-            print('Saving as ....' + download_dir + link.get('href').rsplit('/', 1)[-1])
-            urllib.urlretrieve(link.get('href'), os.path.join(download_dir , link.get('href').rsplit('/', 1)[-1]))
-
-
-#Run tests on the files to ensure that they exist and contain Data
-
-for link in soup.find_all('a'):
-    if link.get('href') != '#pagecontent': #deals with strange link on page
-        if link.get('href') is not None and link.get('href')[-4:len(link.get('href'))] in ('.txt','.csv'):
             file_path = os.path.join(download_dir , link.get('href').rsplit('/', 1)[-1])
+            print('Saving as ....' + file_path)
+            urllib.urlretrieve(link.get('href'), file_path)
+            # Run a test to check that the file was downloaded correctly
             assert os.path.exists(file_path) and (os.path.getsize(file_path) > 0)
