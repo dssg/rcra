@@ -1,18 +1,18 @@
 $[SQL_DIR]/indexes <- import/create_indexes.sql, $[SQL_DIR]/rcra/rcra [method:psql]
 
 URL="https://echo.epa.gov/files/echodownloads/frs_downloads.zip"
-!$[DATA_DIR]/import/frs/frs_downloads.zip, !$[DATA_DIR]/import/frs/ <- [method:wget_unzip -timecheck]
+$[DATA_DIR]/import/frs/frs_downloads.zip, $[DATA_DIR]/import/frs/ <- [method:wget_unzip -timecheck]
 
-$[SQL_DIR]/frs <- import/import_frs_data.sh, !$[DATA_DIR]/import/frs/ [-timecheck]
+$[SQL_DIR]/frs <- import/import_frs_data.sh, $[DATA_DIR]/import/frs/ [-timecheck]
     $INPUT $INPUT1 && echo > $OUTPUT
 
 ; BR and RMP data received by email
-$[SQL_DIR]/br <- import/create_table_br.sql, !$[DATA_DIR]/import/br/ [-timecheck]
+$[SQL_DIR]/br <- import/create_table_br.sql, $[DATA_DIR]/import/br/ [-timecheck]
     psql -v ON_ERROR_STOP=1 -f $INPUT
     cat $INPUT1/brs_all.csv | psql -v ON_ERROR_STOP=1 -c '\COPY br.brs_all FROM STDIN WITH CSV HEADER;'
     echo > $OUTPUT
 
-$[SQL_DIR]/rmp <- import/create_table_rmp.sql, !$[DATA_DIR]/import/rmp/ [-timecheck]
+$[SQL_DIR]/rmp <- import/create_table_rmp.sql, $[DATA_DIR]/import/rmp/ [-timecheck]
     psql -v ON_ERROR_STOP=1 -f $INPUT
     cat $INPUT1/rmp_inspections.csv | psql -v ON_ERROR_STOP=1 -c '\COPY rmp.rmp_inspections FROM STDIN WITH CSV HEADER;'
     echo > $OUTPUT
