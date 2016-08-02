@@ -21,10 +21,21 @@ numeric_columns = ['total_generated_tons', 'total_managed_tons', 'total_shipped_
 class BrAggregation(SpacetimeAggregation):
     def __init__(self, spacedeltas, dates, **kwargs):
         SpacetimeAggregation.__init__(self, spacedeltas=spacedeltas, dates=dates, 
-                prefix='br', date_column='reporting_year', **kwargs)
+                prefix='br', date_column='date', **kwargs)
 
         if not self.parallel:
             self.inputs = [FromSQL(table='output.br', 
-                    parse_dates=['activity_status_date'], target=True)]
+                    parse_dates=['date'], target=True)]
 
     def get_aggregates(self, date, delta):
+        aggregates = [
+            Count(name='line_items'),
+            Aggregate('total_generated_tons',['min','max','mean','std','skew'],name='generated_tons'),
+            Aggregate('total_managed_tons',['min','max','mean','std','skew'],name='managed_tons'),
+            Aggregate('total_shipped_tons',['min','max','mean','std','skew'],name='shipped_tons'),
+            Aggregate('total_received_tons',['min','max','mean','std','skew'],name='received_tons')
+
+
+
+        ]
+        return aggregates
