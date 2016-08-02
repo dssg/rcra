@@ -60,5 +60,5 @@ CREATE TABLE output.br as (
 	sum(shipped_tons::decimal) as total_shipped_tons,
 	sum(received_tons::decimal) as total_received_tons
 
-	from br.brs_all
+	from rcra.br_reporting
 	group by 1,2);
