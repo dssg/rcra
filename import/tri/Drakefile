@@ -1,5 +1,5 @@
 ; get flat files from EPA FTP
-!$[DATA_DIR]/import/tri/ <- [-timecheck]
+$[DATA_DIR]/import/tri/ <- [-timecheck]
     for i in {1987..2013}; do
         wget -N -P $OUTPUT http://www3.epa.gov/tri/current/US_${i}_v14.zip
     done
