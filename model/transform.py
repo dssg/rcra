@@ -48,7 +48,7 @@ class EpaTransform(Step):
 
     # The ToHDF class writes dataframes to a HDF store 
         store = ToHDF(inputs=[self.data], 
-            put_args={'X':dict(format='t', data_columns=['date', 'evaluation', 'region'])})
+            put_args={'X':dict(format='t', data_columns=['date', 'evaluation'])})
         self.inputs = [EpaHDFReader(year=year, train_years=train_years, evaluation=self.evaluation, region=region, inputs=[store])]
 
     def run(self, X, aux, **kwargs):
