@@ -84,6 +84,23 @@ svm_search = [{'__class_name__':['sklearn.svm.LinearSVC'],
         {'__class_name__':['sklearn.svm.LinearSVC'],
         'C':[.01,.1,1], 'penalty':['l1'], 'dual':[False]}]
 
+### Newly created workflows for NYSDEC project
+def violation_state_original_data():
+    return models(transform_search= dict(train_years=range(2,4), year=[2013,2015],exclude =[['manifest_.*','br_.*']], **violation_state_args), estimator_search=forest)
+
+def violation_state_manifest_added():
+    return models(transform_search= dict(train_years=range(2,4), year=[2013,2015],exclude=[['br_.*']], **violation_state_args), estimator_search=forest)
+
+def violation_state_br_added():
+    return models(transform_search= dict(train_years=range(2,4), year=[2013,2015], exclude=[['manifest_.*']], **violation_state_args), estimator_search=forest)
+
+def violation_state_manifest_br_added():
+    return models(transform_search= dict(train_years=range(2,4), year=[2013,2015], **violation_state_args), estimator_search=forest)
+
+
+
+### Old workflows
+
 def violation():
     return models(transform_search= dict(train_years=2, **violation_args), estimator_search=forest)
 
