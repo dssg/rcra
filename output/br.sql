@@ -52,13 +52,13 @@ CREATE TABLE output.br as (
 
 	bool_or(management_method = 'H141') as management_transfer_offsite,
 
-	bool_or(federal_waste = 'Y') as federal_waste,
-	bool_or(wastewater = 'Y') as wastewater,
+	--bool_or(federal_waste = 'Y') as federal_waste,
+	--bool_or(wastewater = 'Y') as wastewater,
 	
 	sum(generation_tons::decimal) as total_generated_tons,
 	sum(managed_tons::decimal) as total_managed_tons,
 	sum(shipped_tons::decimal) as total_shipped_tons,
 	sum(received_tons::decimal) as total_received_tons
 
-	from br.brs_all
+	from rcra.br_reporting
 	group by 1,2);
