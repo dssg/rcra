@@ -1,7 +1,5 @@
-CREATE SCHEMA IF NOT EXISTS nysdec_br;
-
-DROP TABLE if EXISTS nysdec_br.gm1;
-CREATE TABLE nysdec_br.gm1 (
+DROP TABLE if EXISTS nysdec_reports.GM1;
+CREATE TABLE nysdec_reports.GM1 (
 	handler_id VARCHAR,
 	hz_pg INTEGER, 
 	form_code VARCHAR, 
@@ -17,50 +15,50 @@ CREATE TABLE nysdec_br.gm1 (
         notes VARCHAR,
         on_site_management VARCHAR,
         off_site_shipment VARCHAR,
-        report_year DATE
+        report_year VARCHAR
 );
 
-DROP TABLE if EXISTS nysdec_br.gm2;
-CREATE TABLE nysdec_br.gm2 (
+DROP TABLE if EXISTS nysdec_reports.GM2;
+CREATE TABLE nysdec_reports.GM2 (
 	handler_id VARCHAR, 
 	hz_pg INTEGER, 
 	epa_waste_code VARCHAR,
-        report_year DATE
+        report_year VARCHAR
 );
 
-DROP TABLE if EXISTS nysdec_br.gm3;
-CREATE TABLE nysdec_br.gm3 (
+DROP TABLE if EXISTS nysdec_reports.GM3;
+CREATE TABLE nysdec_reports.GM3 (
 	handler_id VARCHAR, 
 	hz_pg INTEGER, 
 	state_waste_code VARCHAR,
-        report_year DATE
+        report_year VARCHAR
 );
 
-DROP TABLE if EXISTS nysdec_br.gm4;
-CREATE TABLE nysdec_br.gm4 (
+DROP TABLE if EXISTS nysdec_reports.GM4;
+CREATE TABLE nysdec_reports.GM4 (
 	handler_id VARCHAR, 
 	hz_pg INTEGER, 
 	io_pg_num_seq INTEGER,
         management_method VARCHAR,
         io_tdr_id VARCHAR,
         io_tdr_qty DOUBLE PRECISION,
-        report_year DATE
+        report_year VARCHAR
 );
 
-DROP TABLE if EXISTS nysdec_br.gm5;
-CREATE TABLE nysdec_br.gm5 (
+DROP TABLE if EXISTS nysdec_reports.GM5;
+CREATE TABLE nysdec_reports.GM5 (
 	handler_id VARCHAR, 
 	hz_pg INTEGER, 
         sys_pg_num_seq INTEGER,
         management_method VARCHAR,
         sys_tdr_qty DOUBLE PRECISION,
-        report_year DATE
+        report_year VARCHAR
 );
 
-DROP TABLE if EXISTS nysdec_br.si1;
-CREATE TABLE nysdec_br.si1 (
+DROP TABLE if EXISTS nysdec_reports.SI1;
+CREATE TABLE nysdec_reports.SI1 (
 	handler_id VARCHAR, 
-	receive_date DATE,
+	receive_date VARCHAR,
         handler_name VARCHAR,
         location_street_no VARCHAR,
         location_street1 VARCHAR,
@@ -121,11 +119,11 @@ CREATE TABLE nysdec_br.si1 (
         subpart_k_withdrawal VARCHAR,
         include_in_national_report VARCHAR,
         notes VARCHAR,
-        report_year DATE
+        report_year VARCHAR
 );
 
-DROP TABLE if EXISTS nysdec_br.si2;
-CREATE TABLE nysdec_br.si2 (
+DROP TABLE if EXISTS nysdec_reports.SI2;
+CREATE TABLE nysdec_reports.SI2 (
 	handler_id VARCHAR, 
 	owner_operator_seq INTEGER,
         owner_operator_indicator VARCHAR,
@@ -141,43 +139,43 @@ CREATE TABLE nysdec_br.si2 (
         country VARCHAR,
         phone VARCHAR,
         notes VARCHAR,
-        report_year DATE
+        report_year VARCHAR
 );
 
-DROP TABLE if EXISTS nysdec_br.si3;
-CREATE TABLE nysdec_br.si3 (
+DROP TABLE if EXISTS nysdec_reports.SI3;
+CREATE TABLE nysdec_reports.SI3 (
 	handler_id VARCHAR, 
 	naics_seq INTEGER,
         naics_code VARCHAR,
-        report_year DATE
+        report_year VARCHAR
 );
 
-DROP TABLE if EXISTS nysdec_br.si4;
-CREATE TABLE nysdec_br.si4 (
+DROP TABLE if EXISTS nysdec_reports.SI4;
+CREATE TABLE nysdec_reports.SI4 (
 	handler_id VARCHAR, 
         epa_waste_code VARCHAR,
-        report_year DATE
+        report_year VARCHAR
 );
 
-DROP TABLE if EXISTS nysdec_br.si5;
-CREATE TABLE nysdec_br.si5 (
+DROP TABLE if EXISTS nysdec_reports.SI5;
+CREATE TABLE nysdec_reports.SI5 (
 	handler_id VARCHAR, 
         state_waste_code VARCHAR,
-        report_year DATE
+        report_year VARCHAR
 );
 
-DROP TABLE if EXISTS nysdec_br.si6;
-CREATE TABLE nysdec_br.si6 (
+DROP TABLE if EXISTS nysdec_reports.SI6;
+CREATE TABLE nysdec_reports.SI6 (
 	handler_id VARCHAR, 
         universal_waste_owner VARCHAR,
         universal_waste VARCHAR,
         generated VARCHAR,
         accumulated VARCHAR,
-        report_year DATE
+        report_year VARCHAR
 );
 
-DROP TABLE if EXISTS nysdec_br.si7;
-CREATE TABLE nysdec_br.si7 (
+DROP TABLE if EXISTS nysdec_reports.SI7;
+CREATE TABLE nysdec_reports.SI7 (
 	handler_id VARCHAR, 
         cert_seq INTEGER,
         cert_first_name VARCHAR,
@@ -185,11 +183,11 @@ CREATE TABLE nysdec_br.si7 (
         cert_last_name VARCHAR,
         cert_title VARCHAR,
         cert_signed_date DATE,
-        report_year DATE
+        report_year VARCHAR
 );
 
-DROP TABLE if EXISTS nysdec_br.wr1;
-CREATE TABLE nysdec_br.wr1 (
+DROP TABLE if EXISTS nysdec_reports.WR1;
+CREATE TABLE nysdec_reports.WR1 (
 	handler_id VARCHAR,
         hz_pg INTEGER,
         sub_pg_num INTEGER,
@@ -203,23 +201,23 @@ CREATE TABLE nysdec_br.wr1 (
         io_tdr_qty DOUBLE PRECISION,
         description VARCHAR,
         notes VARCHAR,
-        report_year DATE
+        report_year VARCHAR
 );
 
-DROP TABLE if EXISTS nysdec_br.wr2;
-CREATE TABLE nysdec_br.wr2 (
+DROP TABLE if EXISTS nysdec_reports.WR2;
+CREATE TABLE nysdec_reports.WR2 (
 	handler_id VARCHAR,
         hz_pg INTEGER,
         sub_pg_num INTEGER,
         epa_waste_code VARCHAR,
-        report_year DATE
+        report_year VARCHAR
 );
 
-DROP TABLE if EXISTS nysdec_br.wr3;
-CREATE TABLE nysdec_br.wr3 (
+DROP TABLE if EXISTS nysdec_reports.WR3;
+CREATE TABLE nysdec_reports.WR3 (
 	handler_id VARCHAR,
         hz_pg INTEGER,
         sub_pg_num INTEGER,
         state_waste_code VARCHAR,
-        report_year DATE
+        report_year VARCHAR
 );
