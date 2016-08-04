@@ -30,6 +30,7 @@ load_data()
 %include $[BASE]/import/icis/Drakefile
 %include $[BASE]/import/tri/Drakefile
 %include $[BASE]/import/rcra/Drakefile
+%include $[BASE]/import/nysdec_reports/Drakefile
 %include $[BASE]/import/Drakefile
 %include $[BASE]/import/manifest/Drakefile
 %include $[BASE]/output/Drakefile
