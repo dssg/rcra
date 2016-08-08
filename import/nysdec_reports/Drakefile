@@ -1,0 +1,6 @@
+; clean nysdec reports data 
+$[DATA_DIR]/import/nysdec_reports/csv <- import/nysdec_reports/nysdec_reports.sh, $[DATA_DIR]/import/nysdec_reports [-timecheck] 
+    mkdir -p $OUTPUT
+    $INPUT0 $INPUT1 $OUTPUT
+
+$[SQL_DIR]/nysdec_reports/schema <- [method:psql_schema -timecheck]
