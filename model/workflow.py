@@ -97,8 +97,6 @@ def violation_state_br_added():
 def violation_state_manifest_br_added():
     return models(transform_search= dict(train_years=range(2,6), year=range(2013,2016), **violation_state_args), estimator_search=forest)
 
-
-
 ### Old workflows
 
 def violation():
