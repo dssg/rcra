@@ -7,6 +7,7 @@ from drain.data import FromSQL
 from drain.aggregate import Aggregate, Count
 from drain.aggregation import SpacetimeAggregation
 
+'''
 boolean_columns = ['management_location_onsite', 'management_location_offsite', 'management_location_none', 
         'source_ongoing_waste', 'source_intermittent_waste', 'source_pollution_control_waste', 
         'source_spills_accidental_waste', 'source_remediation_waste', 
@@ -16,6 +17,7 @@ boolean_columns = ['management_location_onsite', 'management_location_offsite', 
         'management_disposal', 'management_transfer_offsite', 'federal_waste', 'wastewater']
 
 numeric_columns = ['total_generated_tons', 'total_managed_tons', 'total_shipped_tons', 'total_received_tons']
+'''
 
 class NYSDECReportsAggregation(SpacetimeAggregation):
     def __init__(self, spacedeltas, dates, **kwargs):
@@ -24,13 +26,11 @@ class NYSDECReportsAggregation(SpacetimeAggregation):
 
         if not self.parallel:
             self.inputs = [FromSQL(
-                            query=""" select * from (select handler_id, report_year 
-                                        from nysdec_reports.gm_combined 
-                                        where report_year='2013' 
-                                        GROUP BY handler_id, report_year) a       
+                            query=""" select * from nysdec_reports.gm_combined_collapsed 
+                                        where report_year='2013') a       
                                     LEFT JOIN nysdec_reports.si_combined b
                                     ON (a.handler_id = b.handler_id AND a.report_year = b.report_year)) as a;""",
-                            tables=['nysdec_reports.gm_combined','nysdec_reports.si_combined'], 
+                            tables=['nysdec_reports.gm_combined_collapsed','nysdec_reports.si_combined'], 
                             parse_dates=['report_year'],
                             target=True)]
 
