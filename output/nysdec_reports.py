@@ -7,7 +7,6 @@ from drain.data import FromSQL
 from drain.aggregate import Aggregate, Count
 from drain.aggregation import SpacetimeAggregation
 
-
 boolean_columns = ['management_location_onsite', 'management_location_offsite', 'management_location_none', 
         'source_ongoing_waste', 'source_intermittent_waste', 'source_pollution_control_waste', 
         'source_spills_accidental_waste', 'source_remediation_waste', 
@@ -24,8 +23,16 @@ class NYSDECReportsAggregation(SpacetimeAggregation):
                 prefix='br', date_column='date', **kwargs)
 
         if not self.parallel:
-            self.inputs = [FromSQL(table='output.br', 
-                    parse_dates=['date'], target=True)]
+            self.inputs = [FromSQL(
+                            query=""" select * from (select handler_id, report_year 
+                                        from nysdec_reports.gm_combined 
+                                        where report_year='2013' 
+                                        GROUP BY handler_id, report_year) a       
+                                    LEFT JOIN nysdec_reports.si_combined b
+                                    ON (a.handler_id = b.handler_id AND a.report_year = b.report_year)) as a;""",
+                            tables=['nysdec_reports.gm_combined','nysdec_reports.si_combined'], 
+                            parse_dates=['report_year'],
+                            target=True)]
 
     def get_aggregates(self, date, delta):
         aggregates = [
@@ -34,8 +41,5 @@ class NYSDECReportsAggregation(SpacetimeAggregation):
             Aggregate('total_managed_tons',['min','max','mean','std','skew'],name='managed_tons'),
             Aggregate('total_shipped_tons',['min','max','mean','std','skew'],name='shipped_tons'),
             Aggregate('total_received_tons',['min','max','mean','std','skew'],name='received_tons')
-
-
-
         ]
         return aggregates
