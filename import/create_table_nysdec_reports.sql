@@ -5,7 +5,7 @@ CREATE TABLE nysdec_reports.GM1 (
 	form_code VARCHAR, 
 	unit_of_measure VARCHAR, 
 	wst_density DOUBLE PRECISION, 
-	density_unity_of_measure VARCHAR,
+	density_unit_of_measure VARCHAR,
         management_method VARCHAR,
         waste_min_code VARCHAR,
         source_code VARCHAR,
