@@ -7,3 +7,9 @@ psql
 *.pyc
 model/output
 notebooks
+
+
+api_keys
+db_profile.yaml
+connection.yaml
+config.py
