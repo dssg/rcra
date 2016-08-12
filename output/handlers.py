@@ -13,7 +13,7 @@ class HandlersAggregation(SpacetimeAggregation):
 
         if not self.parallel:
             self.handlers = FromSQL(
-                query='''select *, substring(rcra_id for 2) as state from output.handlers ''', 
+                query='select *, substring(rcra_id for 2) as state from output.handlers', 
                 tables=['output.handlers'], parse_dates=['receive_date'], target=True)
             self.inputs = [self.handlers]
 
