@@ -32,12 +32,13 @@ class ManifestAggregation(SpacetimeAggregation):
         
         aggregates = [
             Count(name='line_items'),
-            #Count(booleans, prop=True),
             Aggregate('approx_qty', ['max','min','mean','std','skew'], name='approx_qty'),
             Aggregate([has_waste_type(p) for p in WASTE_CODE_PREFIXES],
                 ['any'], name = ['waste_code_%s' % p for p in WASTE_CODE_PREFIXES]),
             Aggregate(lambda m: m.waste_codes.apply(lambda w: sum(is_acute_waste(code) for code in w)>0),
-                ['any'], name = 'waste_acute') ]
+                ['any'], name = 'waste_acute'),
+            Aggregate(lambda x: x.unit_of_measure.isin(['L','N','Y']),
+               ['any'], name = 'liquid_shipped') ]
 
         return aggregates
 
