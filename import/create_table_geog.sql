@@ -34,10 +34,20 @@ CREATE VIEW geo.NY_zipcodes AS
 			    );	
 
 --view to get the flood haz in NY zip codes only
-drop view geo.flood_ny_ar;
-create view geo.flood_ny_ar as
-	select distinct nyz.geom, nyz.gid from geo.floodhaz_ar fld inner join
-			geo.ny_zipcodes nyz on ST_Intersects(fld.geom, nyz.geom);
+
+drop table geo.flood_ny_ar_table if exists;
+create table geo.flood_ny_ar_table as
+        select distinct nyz.geom, nyz.gid from geo.floodhaz_ar fld inner join
+	                        geo.ny_zipcodes nyz on ST_Intersects(fld.geom, nyz.geom);
+
+
+--create table of lat/lon
+drop table if exists geo.new_york_lat_long;
+create table geo.new_york_lat_long as(
+	select h.rcra_id as gid, st_setsrid(st_makepoint(l.longitude_measure,l.latitude_measure), 4326) as geom
+	from output.facilities h left join rcra.gis_lat_long l on (h.rcra_id = l.handler_id)
+	where h.state = 'NY'
+)
 
 
 
