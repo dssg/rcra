@@ -57,8 +57,7 @@ select
     under_40_cfr_part_262_subpart_k_as_a_non_profit_research_ins = 'Y'  as handler_nonprofit,
 
     withdrawal_from_40_cfr_part_262_subpart_k = 'Y'  as handler_withdrawal,
-    include_in_national_report = 'Y'  as handler_include_in_br,
-    location_zip_code as handler_zip_code
+    include_in_national_report = 'Y'  as handler_include_in_br
 
 from rcra.hhandler
 );
