@@ -38,7 +38,12 @@ class ManifestAggregation(SpacetimeAggregation):
             Aggregate(lambda m: m.waste_codes.apply(lambda w: sum(is_acute_waste(code) for code in w)>0),
                 ['any'], name = 'waste_acute'),
             Aggregate(lambda x: x.unit_of_measure.isin(['L','N','Y']),
-               ['any'], name = 'liquid_shipped') ]
+                ['any'], name = 'liquid_shipped'),
+            Aggregate(lambda x: x.approx_qty if x.unit_of_measure.isin(['L','N','Y']) else 0,
+                ['sum'], name = 'pounds_liquid_shipped'),
+            Aggregate(lambda x: x.approx_qty if not x.unit_of_measure.isin(['L','N','Y']) else 0,
+                ['sum'], name = 'pounds_solid_shipped')
+            ]
 
         return aggregates
 
