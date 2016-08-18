@@ -3,7 +3,17 @@
 
 DROP TABLE IF EXISTS nysdec_reports.gm_combined;
 CREATE TABLE nysdec_reports.gm_combined AS
-    SELECT a.*, b.epa_waste_codes, c.state_waste_codes, d.management_methods as io_management_methods, d.io_tdr_ids, d.sum_io_tdr_qty, e.management_methods as sys_management_methods, e.sum_sys_tdr_qty FROM
+    SELECT a.*,
+        b.epa_waste_codes, 
+        c.state_waste_codes, 
+        d.management_methods as io_management_methods, 
+        d.io_tdr_ids, 
+        d.sum_io_tdr_qty, 
+        e.management_methods as sys_management_methods, 
+        e.sum_sys_tdr_qty, 
+        f.wastewater, 
+        f.exempt_residual, 
+        f.exempt_recycling FROM
             (SELECT *
             FROM nysdec_reports.gm1) a
         LEFT JOIN
@@ -40,7 +50,16 @@ CREATE TABLE nysdec_reports.gm_combined AS
                     sum(sys_tdr_qty) as sum_sys_tdr_qty
             FROM nysdec_reports.gm5
             GROUP BY handler_id, hz_pg, report_year) e 
-        ON a.handler_id = e.handler_id AND a.hz_pg = e.hz_pg AND a.report_year = e.report_year;
+        ON a.handler_id = e.handler_id AND a.hz_pg = e.hz_pg AND a.report_year = e.report_year
+        LEFT JOIN
+            (SELECT handler_id,
+                    hz_pg,
+                    report_year,
+                    wastewater,
+                    exempt_residual,
+                    exempt_recycling
+            FROM nysdec_reports.gm1nydec) f 
+        ON a.handler_id = f.handler_id AND a.hz_pg = f.hz_pg AND a.report_year = f.report_year;
 
 -- convert gen_qty to pounds
         
@@ -64,17 +83,20 @@ do $$
         when unit_of_measure = '5' and density_unit_of_measure = '2' then wst_density * POUNDS_IN_ONE_GALLON_OF_WATER * gen_qty
         when unit_of_measure = '6' and density_unit_of_measure = '1' then wst_density * gen_qty * GALLONS_IN_LITER
         when unit_of_measure = '6' and density_unit_of_measure = '2' then wst_density * POUNDS_IN_ONE_GALLON_OF_WATER * gen_qty * GALLONS_IN_LITER
-        when unit_of_measure = '6' and density_unit_of_measure = '1' then wst_density * gen_qty * GALLONS_IN_CUBIC_YARD
-        when unit_of_measure = '6' and density_unit_of_measure = '2' then wst_density * POUNDS_IN_ONE_GALLON_OF_WATER * gen_qty * GALLONS_IN_CUBIC_YARD
+        when unit_of_measure = '7' and density_unit_of_measure = '1' then wst_density * gen_qty * GALLONS_IN_CUBIC_YARD
+        when unit_of_measure = '7' and density_unit_of_measure = '2' then wst_density * POUNDS_IN_ONE_GALLON_OF_WATER * gen_qty * GALLONS_IN_CUBIC_YARD
     end;
 end $$;
 
 -- merge the SI* tables
 -- each line is a unique combination of HANDLER_ID and REPORT_YEAR
 
-DROP TABLE IF EXISTS nysdec_reports.si_combined;
-CREATE TABLE nysdec_reports.si_combined AS
-    SELECT a.*, b.naics_codes, c.epa_waste_codes, d.state_waste_codes FROM 
+DROP TABLE IF EXISTS output.si_combined;
+CREATE TABLE output.si_combined AS
+    SELECT a.*, 
+        b.naics_codes, 
+        c.epa_waste_codes, 
+        d.state_waste_codes FROM 
             (SELECT *
             FROM nysdec_reports.si1) a
         LEFT JOIN
@@ -101,26 +123,29 @@ CREATE TABLE nysdec_reports.si_combined AS
 
 -- collapse the gm_combined table into handler_id-report_year observations
 
-DROP TABLE IF EXISTS nysdec_reports.gm_combined_collapsed;
-CREATE TABLE nysdec_reports.gm_combined_collapsed AS
+DROP TABLE IF EXISTS output.gm_combined_collapsed;
+CREATE TABLE output.gm_combined_collapsed AS
     SELECT handler_id, report_year,
-        array_agg(unit_of_measure) as units_of_measure,
-        array_agg(wst_density) as wst_densities,
-        array_agg(management_method) as management_methods,
+        --array_agg(unit_of_measure) as units_of_measure,
+        --array_agg(wst_density) as wst_densities,
+        --array_agg(management_method) as management_methods,
         array_agg(source_code) as source_codes,
         bool_or(include_in_national_report='Y') as include_in_national_report,
-        array_agg(description) as descriptions,
-        array_agg(notes) as notes,
+        --array_agg(description) as descriptions,
+        --array_agg(notes) as notes,
         bool_or(on_site_management='Y') as on_site_management,
         bool_or(off_site_shipment='Y') as off_site_shipment,
         anyarray_agg(epa_waste_codes) as epa_waste_codes,
         anyarray_agg(state_waste_codes) as state_waste_codes,
-        anyarray_agg(io_management_methods) as io_management_methods,
-        anyarray_agg(io_tdr_ids) as io_tdr_ids,
+        --anyarray_agg(io_management_methods) as io_management_methods,
+        --anyarray_agg(io_tdr_ids) as io_tdr_ids,
         sum(sum_io_tdr_qty) as sum_io_tdr_qty,
-        anyarray_agg(sys_management_methods) as sys_management_methods,
+        --anyarray_agg(sys_management_methods) as sys_management_methods,
         sum(sum_sys_tdr_qty) as sum_sys_tdr_qty,
-        sum(gen_qty_lbs) as gen_qty_lbs
+        sum(gen_qty_lbs) as gen_qty_lbs,
+        sum(CASE WHEN wastewater = 'Y' THEN 1 ELSE 0 END) AS number_wastewater,
+        sum(CASE WHEN exempt_residual = 'Y' THEN 1 ELSE 0 END) AS number_exempt_residuals,
+        sum(CASE WHEN exempt_recycling = 'Y' THEN 1 ELSE 0 END) AS number_exempt_recycling
     FROM nysdec_reports.gm_combined
     GROUP BY handler_id, report_year;
 
