@@ -115,35 +115,40 @@ ALTER TABLE manifest.new_york ALTER COLUMN transporter_2_sign_date TYPE DATE usi
 -- Converting waste_qty to all be in pounds
 ALTER TABLE manifest.new_york add approx_qty double precision;
 
-ALTER TABLE manifest.new_york ALTER column waste_qty type double precision using case when length(waste_qty) >0 then waste_qty::double precision
-																		else null
-																		end;
-ALTER TABLE manifest.new_york ALTER column specific_gravity type double precision using case when length(specific_gravity) > 0 then specific_gravity::double precision
-																						else null
-																						end;
+ALTER TABLE manifest.new_york 
+    ALTER column waste_qty type double precision using 
+    case when length(waste_qty) >0 then waste_qty::double precision
+    else null
+    end;
 
+ALTER TABLE manifest.new_york 
+    ALTER column specific_gravity type double precision using 
+    case when length(specific_gravity) > 0 then specific_gravity::double precision
+    else null
+    end;
 
 do $$
-DECLARE POUNDS_IN_ONE_GALLON_OF_WATER  double precision := 8.345404;
-DECLARE POUNDS_IN_KILO  double precision := 2.20462;
-DECLARE POUNDS_IN_GRAM  double precision := 0.00220462;
-DECLARE POUNDS_IN_TON  double precision := 2000;
-DECLARE POUNDS_IN_METRIC_TON  double precision := 2204.62;
+    DECLARE POUNDS_IN_ONE_GALLON_OF_WATER  double precision := 8.345404;
+    DECLARE POUNDS_IN_KILO  double precision := 2.20462;
+    DECLARE POUNDS_IN_GRAM  double precision := 0.00220462;
+    DECLARE POUNDS_IN_TON  double precision := 2000;
+    DECLARE POUNDS_IN_METRIC_TON  double precision := 2204.62;
 
-DECLARE GALLONS_IN_CUBIC_METER  double precision := 264.172;
-DECLARE GALLONS_IN_LITER  double precision := 0.264172;
-DECLARE GALLONS_IN_CUBIC_YARD  double precision := 201.974;
-BEGIN
-update manifest.new_york 
-set approx_qty = case when unit_of_measure = 'K' then waste_qty * POUNDS_IN_KILO
-				when unit_of_measure = 'P' then waste_qty 
-				when unit_of_measure = 'G' then waste_qty * POUNDS_IN_GRAM
-				when unit_of_measure = 'L' then specific_gravity * POUNDS_IN_ONE_GALLON_OF_WATER * waste_qty * GALLONS_IN_LITER
-				when unit_of_measure = 'M' then waste_qty * POUNDS_IN_METRIC_TON
-				when unit_of_measure = 'N' then specific_gravity * POUNDS_IN_ONE_GALLON_OF_WATER * waste_qty * GALLONS_IN_CUBIC_METER 
-				when unit_of_measure = 'T' then waste_qty * POUNDS_IN_TON
-				when unit_of_measure = 'Y' then specific_gravity * POUNDS_IN_ONE_GALLON_OF_WATER * waste_qty * GALLONS_IN_CUBIC_YARD
-				end;
+    DECLARE GALLONS_IN_CUBIC_METER  double precision := 264.172;
+    DECLARE GALLONS_IN_LITER  double precision := 0.264172;
+    DECLARE GALLONS_IN_CUBIC_YARD  double precision := 201.974;
+    
+    BEGIN
+        update manifest.new_york 
+        set approx_qty = case when unit_of_measure = 'K' then waste_qty * POUNDS_IN_KILO
+        when unit_of_measure = 'P' then waste_qty 
+        when unit_of_measure = 'G' then waste_qty * POUNDS_IN_GRAM
+        when unit_of_measure = 'L' then specific_gravity * POUNDS_IN_ONE_GALLON_OF_WATER * waste_qty * GALLONS_IN_LITER
+        when unit_of_measure = 'M' then waste_qty * POUNDS_IN_METRIC_TON
+        when unit_of_measure = 'N' then specific_gravity * POUNDS_IN_ONE_GALLON_OF_WATER * waste_qty * GALLONS_IN_CUBIC_METER 
+        when unit_of_measure = 'T' then waste_qty * POUNDS_IN_TON
+        when unit_of_measure = 'Y' then specific_gravity * POUNDS_IN_ONE_GALLON_OF_WATER * waste_qty * GALLONS_IN_CUBIC_YARD
+       end;
 end $$;
 
 /* Commenting out earlier manifest data
