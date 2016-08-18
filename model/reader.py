@@ -25,11 +25,7 @@ class EpaHDFReader(Step):
         #import pdb; pdb.set_trace()
         
         logging.info('Reading X')
-
-        # commenting select because of pandas HDF bug
-        # https://github.com/pydata/pandas/issues/13892
-        #X = store.select('X', where=where)
-        X = store['X'].query(where)
+        X = store.select('X', where=where)
 
         # evaluation shouldn't be part of X
         X.drop(['evaluation'], axis=1, inplace=True)
