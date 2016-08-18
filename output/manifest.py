@@ -37,7 +37,7 @@ class ManifestAggregation(SpacetimeAggregation):
             Aggregate([has_waste_type(p) for p in WASTE_CODE_PREFIXES],
                 ['any'], name = ['waste_code_%s' % p for p in WASTE_CODE_PREFIXES]),
             Aggregate(lambda m: m.waste_codes.apply(lambda w: sum(is_acute_waste(code) for code in w)>0),
-                ['any'], name = 'waste_acute'),
+                ['any'], name = 'waste_acute')
             '''
             # Liquid/solid features
 
