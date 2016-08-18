@@ -22,6 +22,6 @@ $[SQL_DIR]/nysdec_reports/reports <- import/create_table_nysdec_reports.sql, $[D
             suf="208"
             echo "Copying table $type from year $year"
             cat $INPUT1/$year/$pre$type$suf.csv | psql -v ON_ERROR_STOP=1 -c "COPY nysdec_reports.$type FROM STDIN WITH CSV HEADER QUOTE E'\b' DELIMITER '|' NULL as '';"
-            echo > $OUTPUT
+            echo > $OUTPUT/$year$pre$type$suf
         done
     done
