@@ -97,11 +97,6 @@ def violation_state_br_added():
 def violation_state_manifest_br_added():
     return models(transform_search= dict(train_years=range(2,6), year=range(2012,2016), **violation_state_args), estimator_search=forest)
 
-def violation_state_manifest_br_added_no_liquid():
-    return models(transform_search= dict(train_years=range(2,6), year=range(2012,2016), exclude=[['manifest_.*liquid*']], **violation_state_args), estimator_search=forest)
-
-
-
 ### Old workflows
 
 def violation():
