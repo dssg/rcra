@@ -59,7 +59,6 @@ select
     withdrawal_from_40_cfr_part_262_subpart_k = 'Y'  as handler_withdrawal,
     include_in_national_report = 'Y'  as handler_include_in_br
 
-
 from rcra.hhandler
 );
 

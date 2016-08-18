@@ -48,8 +48,8 @@ def all_dict(dates=dates):
         'investigations':investigations(dates),
         'icis': icis(dates), 
         'rmp': rmp(dates),
-	    'manifest': manifest(dates),
-	    'br':br(dates)
+	'manifest': manifest(dates),
+	'br':br(dates)
     }
 
 def all(dates=dates):
