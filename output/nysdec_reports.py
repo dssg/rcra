@@ -19,6 +19,7 @@ class NYSDECReportsAggregation(SpacetimeAggregation):
 
     def get_aggregates(self, date, delta):
         aggregates = [
+            Count(),
             Aggregate('number_wastewater',['min','max','mean'],name='number_wastewater'),
             Aggregate('number_exempt_residuals',['min','max','mean'],name='number_exempt_residuals'),
             Aggregate('number_exempt_recycling',['min','max','mean'],name='number_exempt_recycling'),

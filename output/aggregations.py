@@ -17,9 +17,11 @@ deltas = {'facility' : ['1y', '5y', 'all'],
 #          'state': ['2y']
         }
 
+manifestdeltas = {'facility' : ['6m', '1y', '5y', 'all'], }
 
 #Spacedeltas: what we will be aggregating over (what we are grouping over)?
 spacedeltas = {index: (indexes[index], deltas[index]) for index in deltas}
+manifestspacedeltas = {index: (indexes[index], manifestdeltas[index]) for index in manifestdeltas}
 
 #dates here is our prediction window of dates?
 dates = [date(y,1,1) for y in range(2007,2016+1)]
@@ -37,7 +39,7 @@ def investigations(dates=dates):
     return InvestigationsAggregation(spacedeltas, dates=dates, parallel=True, target=True)
 
 def manifest(dates=dates):
-    return ManifestAggregation(spacedeltas, dates=dates, parallel=True, target=True)
+    return ManifestAggregation(manifestspacedeltas, dates=dates, parallel=True, target=True)
 
 def br(dates=dates):
     return BrAggregation(spacedeltas, dates=dates, parallel=True, target=True)
