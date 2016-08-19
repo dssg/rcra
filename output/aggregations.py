@@ -37,7 +37,7 @@ def investigations(dates=dates):
     return InvestigationsAggregation(spacedeltas, dates=dates, parallel=True, target=True)
 
 def manifest(dates=dates):
-	return ManifestAggregation(spacedeltas, dates=dates, parallel=True, target=True)
+    return ManifestAggregation(spacedeltas, dates=dates, parallel=True, target=True)
 
 def br(dates=dates):
     return BrAggregation(spacedeltas, dates=dates, parallel=True, target=True)
