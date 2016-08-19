@@ -1,5 +1,16 @@
 #!/bin/bash
 
+########################################################
+# NAMING CONVENTION FOR THESE FILES
+#
+# 'NYGM1NYDEC208.fil':
+#
+# NY = state
+# GM1 = report type (e.g. SI1, SI2...)
+# NYDEC = optional string to indicate special NYDEC file
+# 208 = "date" which the information was uploaded
+########################################################
+
 # set path to NYSDEC reports data here
 DPATH=$1
 OUTPUT_DPATH=$2
@@ -35,6 +46,10 @@ do
     # GM1 files
     gawk '$1=$1' FIELDWIDTHS='12 5 4 1 6 1 4 1 3 18 1 240 240 1 1' OFS='|' $DPATH/$year/NYGM1208.fil > $OUTPUT_DPATH/$year/NYGM1208.csv
 
+    # GM1NYDEC files
+    # NOTE: some lines have extra notes after the 20th char--drop these
+    cut -c-20 $DPATH/$year/NYGM1NYDEC208.fil | gawk '$1=$1' FIELDWIDTHS='12 5 1 1 1' OFS='|' > $OUTPUT_DPATH/$year/NYGM1NYDEC208.csv
+    
     # GM2 files
     gawk '$1=$1' FIELDWIDTHS='12 5 4' OFS='|' $DPATH/$year/NYGM2208.fil > $OUTPUT_DPATH/$year/NYGM2208.csv
 

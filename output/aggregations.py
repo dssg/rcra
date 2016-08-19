@@ -4,6 +4,7 @@ from epa.output.icis import IcisFecAggregation
 from epa.output.rmp import RmpAggregation
 from epa.output.manifest import ManifestAggregation
 from epa.output.br import BrAggregation 
+from epa.output.nysdec_reports import NYSDECReportsAggregation 
 
 from drain import util
 from datetime import date
@@ -36,10 +37,13 @@ def investigations(dates=dates):
     return InvestigationsAggregation(spacedeltas, dates=dates, parallel=True, target=True)
 
 def manifest(dates=dates):
-	return ManifestAggregation(spacedeltas, dates=dates, parallel=True, target=True)
+    return ManifestAggregation(spacedeltas, dates=dates, parallel=True, target=True)
 
 def br(dates=dates):
     return BrAggregation(spacedeltas, dates=dates, parallel=True, target=True)
+
+def nysdec_reports(dates=dates):
+    return NYSDECReportsAggregation(spacedeltas, dates=dates, parallel=True, target=True)
 
 @lru_cache(maxsize=10)
 def all_dict(dates=dates):
@@ -49,7 +53,8 @@ def all_dict(dates=dates):
         'icis': icis(dates), 
         'rmp': rmp(dates),
 	'manifest': manifest(dates),
-	'br':br(dates)
+	'br':br(dates),
+        'nysdec_reports':nysdec_reports(dates)
     }
 
 def all(dates=dates):
