@@ -10,7 +10,7 @@ from datetime import date
 from repoze.lru import lru_cache
 
 # TODO: zip level agg
-indexes = {'facility': 'rcra_id', 'state':'state'}
+indexes = {'facility': 'rcra_id', 'state':'state','zip':'handler_zip_code'}
 
 deltas = {'facility' : ['1y', '5y', 'all'],
 #          'state': ['2y']
