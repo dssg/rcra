@@ -5,7 +5,7 @@ CREATE TABLE nysdec_reports.GM1 (
 	form_code VARCHAR, 
 	unit_of_measure VARCHAR, 
 	wst_density DOUBLE PRECISION, 
-	density_unity_of_measure VARCHAR,
+	density_unit_of_measure VARCHAR,
         management_method VARCHAR,
         waste_min_code VARCHAR,
         source_code VARCHAR,
@@ -15,6 +15,16 @@ CREATE TABLE nysdec_reports.GM1 (
         notes VARCHAR,
         on_site_management VARCHAR,
         off_site_shipment VARCHAR,
+        report_year VARCHAR
+);
+
+DROP TABLE if EXISTS nysdec_reports.GM1NYDEC;
+CREATE TABLE nysdec_reports.GM1NYDEC (
+	handler_id VARCHAR,
+	hz_pg INTEGER,
+        wastewater VARCHAR,
+        exempt_residual VARCHAR,
+        exempt_recycling VARCHAR,
         report_year VARCHAR
 );
 
