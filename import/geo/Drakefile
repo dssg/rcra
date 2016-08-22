@@ -1,7 +1,7 @@
 ;get flood hazard and zip code data into database
 
 ;1) Get in zip code data (downloaded off the web)
-$[DATA_DIR]/import/geo/touchme <- import/geo/clean_shapefiles_geo.sh, $[DATA_DIR]/import/geo/  [-timecheck]
+$[DATA_DIR]/import/geo/touch <- import/geo/clean_shapefiles_geo.sh, $[DATA_DIR]/import/geo/  [-timecheck]
 	mkdir -p $OUTPUT
 	$INPUT0 $INPUT1
 	echo > $OUTPUT
