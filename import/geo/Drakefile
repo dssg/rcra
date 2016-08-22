@@ -1,25 +1,9 @@
-;get flood hazard and zip code data into database
+; NOTE: all loading of data happens in the Drakefile one dir above
+$[SQL_DIR]/geo/schema <- [method:psql_schema -timecheck]
 
-;1) Get in zip code data (downloaded off the web)
-$[DATA_DIR]/import/geo/touch <- import/geo/clean_shapefiles_geo.sh, $[DATA_DIR]/import/geo/  [-timecheck]
+; process zip code data (downloaded off the web)
+$[DATA_DIR]/import/geo/ <- import/geo/clean_zip_shapefiles_geo.sh [-timecheck]
 	mkdir -p $OUTPUT
-	$INPUT0 $INPUT1
-	echo > $OUTPUT
-	
-
-$[SQL_DIR]/geo/NY_zipcodes <- import/geo/create_table_geog.sql [method:psql]
-
-
-
-;2) Get in flood hazard data (which was downloaded off the FEMA website and converted to shape files and now lives on the mount directory)
-
-$[SQL_DIR]/geo/floodhaz <- import/geo
-
-
-
-
-
-
-
+	$INPUT $OUTPUT
 
 
