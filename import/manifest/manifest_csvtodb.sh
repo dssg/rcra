@@ -29,12 +29,12 @@ done
 header='_header'
 for f in man8081 mani82 mani83 mani84 mani85 mani86 mani87 mani88 mani89 
 do
-	cat header8089.txt $DPATH/$f_intermed.csv > $OUTPUT_DPATH/$f$header.csv
+	cat import/manifest/header8089.txt $DPATH/$f_intermed.csv > $OUTPUT_DPATH/$f$header.csv
 done
 
 for f in mani90 mani91 mani92 mani93 mani94 mani95 mani96 mani97 mani98 mani99 mani00 mani01 mani02 mani03 mani04 mani05
 do
-	cat header9005.txt $DPATH/$f_intermed.csv > $OUTPUT_DPATH/$f$header.csv
+	cat import/manifest/header9005.txt $DPATH/$f_intermed.csv > $OUTPUT_DPATH/$f$header.csv
 done
 
 #move 06-16 files to OUTPUT_DPATH (for consistency)
@@ -49,19 +49,20 @@ sed -i 's/\xBA/*/g' $OUTPUT_DPATH/mani88_header.csv
 sed -i 's/\xBA/*/g' $OUTPUT_DPATH/mani89_header.csv
 sed -i 's/\xE5/*/g' $OUTPUT_DPATH/mani97_header.csv
 
-# create 'raw' schema
+# create 'manifest. schema
 eval $(cat psql_profile.config) 
-#psql -c "create schema raw;"
+#psql -c "create schema manifest."
+
 
 # create tables and populate
 for f in man8081 mani82 mani83 mani84 mani85 mani86 mani87 mani88 mani89 
 do
-	psql -c "DROP TABLE IF EXISTS raw.$f;"
-	psql -c "CREATE TABLE raw.$f (
+	psql -c "DROP TABLE IF EXISTS manifest.$f;"
+	psql -c "CREATE TABLE manifest.$f (
 		manifest_number VARCHAR(10) NOT NULL, 
-		manifest_status VARCHAR(1) NOT NULL, 
-		transporter_1_state_id VARCHAR(9) NOT NULL, 
-		transporter_2_state_id VARCHAR(9) NOT NULL, 
+		manifest_status VARCHAR(15) NOT NULL, 
+		transporter_1_state_id VARCHAR(15) NOT NULL, 
+		transporter_2_state_id VARCHAR(15) NOT NULL, 
 		generator_shipped_date VARCHAR(6) NOT NULL, 
 		transporter_1_received_date VARCHAR(6) NOT NULL, 
 		transporter_2_received_date VARCHAR(6) NOT NULL, 
@@ -115,13 +116,14 @@ do
 		handling_method6 VARCHAR(1) NOT NULL, 
 		specific_gravity6 VARCHAR(3) NOT NULL 
 		);"
-	cat $OUTPUT_DPATH/$f$header.csv | psql -c "\copy raw.$f from stdin with csv header;"
+	cat $OUTPUT_DPATH/$f$header.csv | psql -c "\copy manifest.$f from stdin with csv header;"
 done
+
 
 for f in mani90 mani91 mani92 mani93 mani94 mani95 mani96 mani97 mani98 mani99 mani00 mani01 mani02 mani03 mani04 mani05
 do
-        psql -c "DROP TABLE IF EXISTS raw.$f;"
-	psql -c "CREATE TABLE raw.$f (
+        psql -c "DROP TABLE IF EXISTS manifest.$f;"
+	psql -c "CREATE TABLE manifest.$f (
 		manifest_number VARCHAR(10) NOT NULL, 
 		sequence_number VARCHAR(2) NOT NULL, 
 		generator_rcra_id_number VARCHAR(12) NOT NULL, 
@@ -179,13 +181,13 @@ do
 		waste_code4_4 VARCHAR(4) NOT NULL, 
 		waste_code4_5 VARCHAR(4) NOT NULL 
 		);"
-	cat $OUTPUT_DPATH/$f$header.csv | psql -c "\copy raw.$f from stdin with csv header;"
+	cat $OUTPUT_DPATH/$f$header.csv | psql -c "\copy manifest.$f from stdin with csv header;"
 done
 
 for f in mani06 mani07 mani08 mani9 mani10 mani11 mani12 mani13 mani14 mani15 mani16 
 do
-	psql -c "DROP TABLE IF EXISTS raw.$f;"
-	psql -c "CREATE TABLE raw.$f (
+	psql -c "DROP TABLE IF EXISTS manifest.$f;"
+	psql -c "CREATE TABLE manifest.$f (
 		manifest_tracking_num VARCHAR(12) NOT NULL, 
 		page_num VARCHAR(6), 
 		line_item_num VARCHAR(6), 
@@ -221,11 +223,11 @@ do
 		waste_code_5 VARCHAR(4), 
 		waste_code_6 VARCHAR(4)
 		);"
-	cat $OUTPUT_DPATH/$f.csv | psql -c "\copy raw.$f from stdin with csv header;"
+	cat $OUTPUT_DPATH/$f.csv | psql -c "\copy manifest.$f from stdin with csv header;"
 done
 
-psql -c "DROP TABLE IF EXISTS raw.locaddr;"
-psql -c "CREATE TABLE raw.locaddr (
+psql -c "DROP TABLE IF EXISTS manifest.locaddr;"
+psql -c "CREATE TABLE manifest.locaddr (
 	rcra_id VARCHAR(12) NOT NULL, 
 	district_name VARCHAR(76) NOT NULL, 
 	location_street1 VARCHAR(69), 
@@ -237,9 +239,9 @@ psql -c "CREATE TABLE raw.locaddr (
 	location_country VARCHAR(4), 
 	location_county VARCHAR(11)
 	);"
-cat $DPATH/locaddr.csv | psql -c "\copy raw.locaddr from stdin with csv header;"
+cat $DPATH/locaddr.csv | psql -c "\copy manifest.locaddr from stdin with csv header;"
 
 # remove the intermediate
 rm $DPATH/*clean.txt
-rm $DPATH/*intermed.csv
+# rm $DPATH/*intermed.csv
 
