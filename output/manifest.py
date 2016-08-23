@@ -19,10 +19,10 @@ class ManifestAggregation(SpacetimeAggregation):
 
         if not self.parallel:
             self.manifest = FromSQL(
-                query="""select gen_rcra_id as rcra_id, *,
+                query=""" select *,
                 ARRAY_REMOVE(ARRAY[waste_code_1, waste_code_2, waste_code_3,
                     waste_code_4, waste_code_5, waste_code_6], NULL) as waste_codes
-                from manifest.new_york where substring(gen_rcra_id for 2) = 'NY' """, 
+                from output.manifest where substring(rcra_id for 2) = 'NY' """, 
                 tables=['output.manifest'], parse_dates=['gen_sign_date'], target=True)
             self.inputs = [self.manifest]
 

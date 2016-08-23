@@ -57,17 +57,18 @@ select
     under_40_cfr_part_262_subpart_k_as_a_non_profit_research_ins = 'Y'  as handler_nonprofit,
 
     withdrawal_from_40_cfr_part_262_subpart_k = 'Y'  as handler_withdrawal,
-    include_in_national_report = 'Y'  as handler_include_in_br,
-    case when location_zip_code ~* '[a-z]'
-          then null
-          else left(location_zip_code,5)
-    end as handler_zip_code
+    include_in_national_report = 'Y'  as handler_include_in_br--,
+    --case when location_zip_code ~* '[a-z]'
+    --      then null
+    --      else left(location_zip_code,5)
+    --end as handler_zip_code
 
 from rcra.hhandler
-where case when location_zip_code ~* '[a-z]'
-          then null
-          else left(location_zip_code,5)
-    end is not null
+--where 
+--case when location_zip_code ~* '[a-z]'
+--          then null
+--          else left(location_zip_code,5)
+--    end is not null
 
 );
 

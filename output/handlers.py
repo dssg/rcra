@@ -18,6 +18,8 @@ class HandlersAggregation(SpacetimeAggregation):
             self.inputs = [self.handlers]
 
     def get_aggregates(self, date, delta):
+        # assume that everything not in the below list is a boolean
+        # to be aggregated as count and proportion		
         booleans = [c for c in self.handlers.get_result().columns 
                 if c not in ('rcra_id', 'receive_date', 'state', 'handler_id')]
         aggregates = [
