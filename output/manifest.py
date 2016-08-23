@@ -32,24 +32,3 @@ class ManifestAggregation(SpacetimeAggregation):
             Aggregate(lambda m: m.waste_codes.apply(lambda w: sum(code[0] == 'P' or code == 'F020' or code == 'F021' or code == 'F022' or code == 'F023' or code == 'F026' or code == 'F027' for code in w)>0) ,['any'], name = 'waste_acute') ]
 
         return aggregates
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
