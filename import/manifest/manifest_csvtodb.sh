@@ -10,31 +10,38 @@ OUTPUT_DPATH=$2
 clean='_clean'
 for f in man8081 mani82 mani83 mani84 mani85 mani86 mani87 mani88 mani89 mani90 mani91 mani92 mani93 mani94 mani95 mani96 mani97 mani98 mani99 mani00 mani01 mani02 mani03 mani04 mani05 
 do
-	cat $DPATH/$f.txt | tr ',' ':' > $DPATH/$f$clean.txt 
+	cat $DPATH/$f.txt | tr ',' '~' > $DPATH/$f$clean.txt 
 done
 
+## Fixing issue with 2005 manifest data files
+#sed -i -e 's/\-11//g' $DPATH/mani05_clean.txt
+#sed -i -e 's/\-10//g' $DPATH/mani05_clean.txt
+sed -i -e '/\-/d' $DPATH/mani05_clean.txt
+sed -i -e '/\-/d' $DPATH/mani03_clean.txt
+sed -i -e '/\-/d' $DPATH/mani02_clean.txt
 
+intermed='_intermed'
 # converted fixed-width to CSV based on the format csv files
 for f in man8081 mani82 mani83 mani84 mani85 mani86 mani87 mani88 mani89
 do
-	gawk '$1=$1' FIELDWIDTHS='10 1 9 9 6 6 6 6 6 6 12 12 12 12 4 5 1 3 2 1 3 4 5 1 3 2 1 3 4 5 1 3 2 1 3 4 5 1 3 2 1 3 4 5 1 3 2 1 3 4 5 1 3 2 1 3' OFS=, $DPATH/$f$clean.txt > $DPATH/$f_intermed.csv
+	gawk '$1=$1' FIELDWIDTHS='10 1 9 9 6 6 6 6 6 6 12 12 12 12 4 5 1 3 2 1 3 4 5 1 3 2 1 3 4 5 1 3 2 1 3 4 5 1 3 2 1 3 4 5 1 3 2 1 3 4 5 1 3 2 1 3' OFS=, $DPATH/$f$clean.txt > $DPATH/$f$intermed.csv
 done
 
 for f in mani90 mani91 mani92 mani93 mani94 mani95 mani96 mani97 mani98 mani99 mani00 mani01 mani02 mani03 mani04 mani05
 do
-	gawk '$1=$1' FIELDWIDTHS='10 2 12 10 12 10 12 9 10 12 9 10 3 2 5 1 5 1 4 4 4 4 4 3 2 5 1 5 1 4 4 4 4 4 3 2 5 1 5 1 4 4 4 4 4 3 2 5 1 5 1 4 4 4 4 4' OFS=, $DPATH/$f$clean.txt > $DPATH/$f_intermed.csv
+	gawk '$1=$1' FIELDWIDTHS='10 2 12 10 12 10 12 9 10 12 9 10 3 2 5 1 5 1 4 4 4 4 4 3 2 5 1 5 1 4 4 4 4 4 3 2 5 1 5 1 4 4 4 4 4 3 2 5 1 5 1 4 4 4 4 4' OFS=, $DPATH/$f$clean.txt > $DPATH/$f$intermed.csv
 done
 
 # append headers to the newly-made CSV's
 header='_header'
 for f in man8081 mani82 mani83 mani84 mani85 mani86 mani87 mani88 mani89 
 do
-	cat import/manifest/header8089.txt $DPATH/$f_intermed.csv > $OUTPUT_DPATH/$f$header.csv
+	cat import/manifest/header8089.txt $DPATH/$f$intermed.csv > $OUTPUT_DPATH/$f$header.csv
 done
 
 for f in mani90 mani91 mani92 mani93 mani94 mani95 mani96 mani97 mani98 mani99 mani00 mani01 mani02 mani03 mani04 mani05
 do
-	cat import/manifest/header9005.txt $DPATH/$f_intermed.csv > $OUTPUT_DPATH/$f$header.csv
+	cat import/manifest/header9005.txt $DPATH/$f$intermed.csv > $OUTPUT_DPATH/$f$header.csv
 done
 
 #move 06-16 files to OUTPUT_DPATH (for consistency)
@@ -243,5 +250,5 @@ cat $DPATH/locaddr.csv | psql -c "\copy manifest.locaddr from stdin with csv hea
 
 # remove the intermediate
 rm $DPATH/*clean.txt
-# rm $DPATH/*intermed.csv
+rm $DPATH/*intermed.csv
 
