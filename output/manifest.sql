@@ -1,7 +1,7 @@
 
 drop table if exists output.manifest;
 create table output.manifest as (
-select generator_rcra_id_number as rcra_id,
+select generator_rcra_id_number as rcra_id, gen_sign_date,
 nullif(waste_code_1,'    ')::varchar(5) as waste_code_1,
 nullif(waste_code_2,'    ')::varchar(5) as waste_code_2,
 nullif(waste_code_3,'    ')::varchar(5) as waste_code_3,
@@ -21,7 +21,8 @@ from
 
 (
 with manifest_arrays as (
-select generator_rcra_id_number,
+select generator_rcra_id_number, generator_shipped_date as gen_sign_date,
+		ARRAY[1,2,3,4] as line_numbers,
         ARRAY[quantity_of_waste1, quantity_of_waste2,quantity_of_waste3, quantity_of_waste4] quantities,
         ARRAY[waste_code1_1, waste_code2_1, waste_code3_1, waste_code4_1]  waste_codes_1,
         ARRAY[waste_code1_2, waste_code2_2, waste_code3_2, waste_code4_2]  waste_codes_2,
@@ -30,11 +31,13 @@ select generator_rcra_id_number,
         ARRAY[waste_code1_5, waste_code2_5, waste_code3_5, waste_code4_5]  waste_codes_5,
         ARRAY[number_of_containers1, number_of_containers2, number_of_containers3, number_of_containers4] num_of_containers,
         ARRAY[units_of_quantity1, units_of_quantity2,units_of_quantity3,units_of_quantity4] as unit_of_measure,
-        ARRAY[specific_gravity1,specific_gravity2,specific_gravity3,specific_gravity1] as specific_gravity,
+        ARRAY[specific_gravity1,specific_gravity2,specific_gravity3,specific_gravity4] as specific_gravity,
         ARRAY[handling_method1,handling_method2,handling_method3,handling_method4] as handling_type_code
-        from raw.mani90_05
+        from manifest.mani90_05 
+
 )
-select generator_rcra_id_number,
+select generator_rcra_id_number, gen_sign_date,
+unnest(line_numbers) as line_number,
 unnest(quantities) as waste_qty,
 unnest(waste_codes_1) as waste_code_1,
 unnest(waste_codes_2) as waste_code_2,
@@ -49,11 +52,15 @@ unnest(handling_type_code) as handling_type_code
 
 from manifest_arrays
 
+
 ) as a
+where nullif(waste_code_1,'    ')::varchar(5) is not null
+
 
 union all
 
-select gen_rcra_id as rcra_id,
+
+select gen_rcra_id as rcra_id, gen_sign_date,
 waste_code_1::varchar(5), waste_code_2::varchar(5), waste_code_3::varchar(5), waste_code_4::varchar(5), waste_code_5::varchar(5), waste_code_6::varchar(5),
 case when length(num_of_containers) < 1 then null
         else num_of_containers::double precision end, unit_of_measure::varchar(1),
@@ -64,9 +71,8 @@ case when length(waste_qty) < 1 then null
 
 
 from manifest.mani06_
+
 );
-
-
 
 
 -- Converting waste_qty to all be in pounds
