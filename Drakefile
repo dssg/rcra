@@ -33,4 +33,5 @@ load_data()
 %include $[BASE]/import/nysdec_reports/Drakefile
 %include $[BASE]/import/Drakefile
 %include $[BASE]/import/manifest/Drakefile
+%include $[BASE]/import/geo/Drakefile
 %include $[BASE]/output/Drakefile

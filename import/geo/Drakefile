@@ -1,0 +1,9 @@
+; NOTE: all loading of data happens in the Drakefile one dir above
+$[SQL_DIR]/geo/schema <- [method:psql_schema -timecheck]
+
+; process zip code data (downloaded off the web)
+$[DATA_DIR]/import/geo/ <- import/geo/clean_zip_shapefiles_geo.sh [-timecheck]
+	mkdir -p $OUTPUT
+	$INPUT $OUTPUT
+
+
