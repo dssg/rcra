@@ -1,0 +1,8 @@
+DROP VIEW geo.NY_zipcodes;
+
+CREATE VIEW geo.NY_zipcodes AS (
+    SELECT zipcode.* FROM
+    geo.zipcode JOIN
+        geo.states ON ST_INTERSECTS(zipcode.geom, states.geom)
+    WHERE name = 'New York');
+

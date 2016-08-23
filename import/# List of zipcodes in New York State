@@ -1,0 +1,15 @@
+# List of zipcodes in New York State
+# http://www.zipcodestogo.com/New%20York/
+
+
+CREATE TABLE geo.NY_zipcodeList (
+        "Zip Code" INTEGER 
+        "City" VARCHAR
+        "County" VARCHAR
+);
+
+
+
+cat NY_zipcodes.csv | psql -c "\copy geo.NY_zipcodelist FROM './NY_zipcodes.csv' with csv header;"
+
+

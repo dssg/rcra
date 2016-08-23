@@ -11,17 +11,17 @@ $[SQL_DIR]/rmp <- import/create_table_rmp.sql, $[DATA_DIR]/import/rmp/ [-timeche
     cat $INPUT1/rmp_inspections.csv | psql -v ON_ERROR_STOP=1 -c '\COPY rmp.rmp_inspections FROM STDIN WITH CSV HEADER;'
     echo > $OUTPUT
 
-$[SQL_DIR]/nysdec_reports <- import/create_table_nysdec_reports.sql, $[DATA_DIR]/import/nysdec_reports/csv [-timecheck]
+$[SQL_DIR]/nysdec_reports/reports <- import/create_table_nysdec_reports.sql, $[DATA_DIR]/import/nysdec_reports/csv [-timecheck]
     psql -v ON_ERROR_STOP=1 -f $INPUT
 
     for year in 2006 2007 2008 2009 2010 2011 2012 2013 2014 2015
     do
-        for type in GM1 GM2 GM3 GM4 GM5 SI1 SI2 SI3 SI4 SI5 SI6 SI7 WR1 WR2 WR3
+        for type in GM1 GM1NYDEC GM2 GM3 GM4 GM5 SI1 SI2 SI3 SI4 SI5 SI6 SI7 WR1 WR2 WR3
         do
             pre="NY"
             suf="208"
             echo "Copying table $type from year $year"
             cat $INPUT1/$year/$pre$type$suf.csv | psql -v ON_ERROR_STOP=1 -c "COPY nysdec_reports.$type FROM STDIN WITH CSV HEADER QUOTE E'\b' DELIMITER '|' NULL as '';"
-            echo > $OUTPUT
+            echo > $OUTPUT/$year$pre$type$suf
         done
     done

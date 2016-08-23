@@ -112,6 +112,7 @@ ALTER TABLE manifest.mani06_ ALTER COLUMN transporter_2_sign_date TYPE DATE usin
 	  end ; 
 
 
+
 ---Fixing up the 1990 - 2005 manifest data
 ALTER TABLE manifest.mani90_05 ALTER COLUMN generator_shipped_date TYPE DATE using generator_shipped_date::date;
 ALTER TABLE manifest.mani90_05 ALTER COLUMN tsdf_received_date TYPE DATE using tsdf_received_date::date;
