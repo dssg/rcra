@@ -100,6 +100,10 @@ def violation_state_manifest_br_added():
 def violation_state_manifest_br_added_no_report():
     return models(transform_search= dict(train_years=5, year=range(2012,2016), exclude=[['reports_.*']],  **violation_state_args), estimator_search=forest)
 
+def violation_state_manifest_more_train_years():
+    return models(transform_search= dict(train_years=range(4,10), year=range(2012,2016), **violation_state_args), estimator_search=forest)
+
+
 ### Old workflows
 
 def violation():
