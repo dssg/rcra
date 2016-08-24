@@ -14,7 +14,7 @@ CREATE TABLE geo.ny_zipcodelist (
 --Create view that is the intersection of New York state and its zip codes; we include those zip codes that are touching the state boundary
 
 --temp table to load the zip codes in NY only
-CREATE TEMP TABLE geo.ny_zipcodes AS (
+CREATE TEMP TABLE ny_zipcodes AS (
     SELECT zipcode.* FROM
     geo.zipcode JOIN
         geo.states ON ST_INTERSECTS(zipcode.geom, states.geom)
@@ -26,7 +26,7 @@ drop table if exists geo.flood_ny_ar_table;
 create table geo.flood_ny_ar_table as
         select distinct nyz.geom, nyz.gid from geo.floodhaz_ar fld
         inner join
-        geo.ny_zipcodes nyz on ST_Intersects(fld.geom, nyz.geom);
+        ny_zipcodes nyz on ST_Intersects(fld.geom, nyz.geom);
 
 --create table of lat/lon
 drop table if exists geo.new_york_lat_long;

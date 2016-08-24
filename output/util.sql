@@ -1,3 +1,8 @@
+-- these must be dropped in the right order to avoid dependency issues
+DROP AGGREGATE IF EXISTS anyarray_agg(anyarray);
+DROP FUNCTION IF EXISTS anyarray_agg_statefunc(anyarray, anyarray);
+DROP FUNCTION IF EXISTS anyarray_uniq(anyarray);
+
 -- make_date is not available on postgresql < 9.4
 CREATE OR REPLACE FUNCTION make_date(int, int, int) RETURNS date AS
 E'SELECT (($1::text) || \'-\' || ($2::text) || \'-\' || ($3::text))::date;' LANGUAGE SQL;
@@ -8,7 +13,6 @@ E'SELECT (make_date(extract(year from $1)::int, $2, $3) - (make_date(extract(yea
 CREATE OR REPLACE FUNCTION date_ceil(date, int, int) RETURNS date AS
 E'SELECT (make_date(extract(year from $1)::int, $2, $3) + (make_date(extract(year from $1)::int, $2, $3) < $1)::int * interval \'1 year\')::date' LANGUAGE SQL;
 
-DROP FUNCTION IF EXISTS anyarray_agg_statefunc(anyarray, anyarray);
 CREATE FUNCTION anyarray_agg_statefunc(state anyarray, value anyarray)
     RETURNS anyarray AS
 $BODY$
@@ -19,7 +23,6 @@ COMMENT ON FUNCTION anyarray_agg_statefunc(anyarray, anyarray) IS '
 Used internally by aggregate anyarray_agg(anyarray).
 ';
 
-DROP AGGREGATE IF EXISTS anyarray_agg(anyarray);
 CREATE AGGREGATE anyarray_agg(anyarray) (
     SFUNC = anyarray_agg_statefunc,
     STYPE = anyarray
@@ -28,7 +31,6 @@ COMMENT ON AGGREGATE anyarray_agg(anyarray) IS '
 Concatenates arrays into a single array when aggregating.
 ';
 
-DROP FUNCTION IF EXISTS anyarray_uniq(anyarray);
 CREATE OR REPLACE FUNCTION anyarray_uniq(with_array anyarray)
     RETURNS anyarray AS
 $BODY$

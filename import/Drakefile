@@ -11,21 +11,6 @@ $[SQL_DIR]/rmp <- import/create_table_rmp.sql, $[DATA_DIR]/import/rmp/ [-timeche
     cat $INPUT1/rmp_inspections.csv | psql -v ON_ERROR_STOP=1 -c '\COPY rmp.rmp_inspections FROM STDIN WITH CSV HEADER;'
     echo > $OUTPUT
 
-$[SQL_DIR]/geo/create_table <- import/create_table_geog.sql, $[DATA_DIR]/import/geo/ [method:psql]
-
-$[SQL_DIR]/geo/copy <- $[DATA_DIR]/import/geo
-    # Import flood insurance risk zone shapefiles (shown on FIRM)
-    # http://www.fema.gov/media-library/assets/documents/34519
-    # AR files: polygons
-    # LN files: lines
-    shp2pgsql -I -s 4269:4326 -d $INPUT/NFHL_36_20160712_Fld_Haz_Ar geo.floodhaz_ar | psql -q -v ON_ERROR_STOP=1
-    shp2pgsql -I -s 4269:4326 -d $INPUT/NFHL_36_20160712_Fld_Haz_Ln geo.floodhaz_ln | psql -q -v ON_ERROR_STOP=1
-    # ZIP code shapefiles
-    shp2pgsql -I -s 4269:4326 -d $INPUT/cb_2015_us_zcta510_500k geo.zipcode | psql -q -v ON_ERROR_STOP=1
-    shp2pgsql -I -s 4269:4326 -d $INPUT/fe_2007_us_state geo.states | psql -q -v ON_ERROR_STOP=1
-    # NY zip code
-    cat $INPUT/NY_zipcodes.csv | psql -c '\COPY geo.ny_zipcodelist FROM STDIN WITH CSV HEADER;'
-
 $[SQL_DIR]/nysdec_reports/reports <- import/create_table_nysdec_reports.sql, $[DATA_DIR]/import/nysdec_reports/csv [-timecheck]
     psql -v ON_ERROR_STOP=1 -f $INPUT
 

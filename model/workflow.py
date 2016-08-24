@@ -88,20 +88,11 @@ svm_search = [{'__class_name__':['sklearn.svm.LinearSVC'],
 def violation_state_original_data():
     return models(transform_search= dict(train_years=range(2,6), year=range(2012,2016),exclude =[['manifest_.*','br_.*']], **violation_state_args), estimator_search=forest)
 
-def violation_state_manifest_added():
-    return models(transform_search= dict(train_years=range(2,6), year=range(2012,2016),exclude=[['br_.*']], **violation_state_args), estimator_search=forest)
-
-def violation_state_br_added():
-    return models(transform_search= dict(train_years=range(2,6), year=range(2012,2016), exclude=[['manifest_.*']], **violation_state_args), estimator_search=forest)
-
-def violation_state_manifest_br_added():
+def violation_state_base():
     return models(transform_search= dict(train_years=range(2,6), year=range(2012,2016), **violation_state_args), estimator_search=forest)
 
-def violation_state_manifest_br_added_no_report():
-    return models(transform_search= dict(train_years=5, year=range(2012,2016), exclude=[['reports_.*']],  **violation_state_args), estimator_search=forest)
-
 def violation_state_manifest_more_train_years():
-    return models(transform_search= dict(train_years=[5,8], year=range(2009,2016), **violation_state_args), estimator_search=forest)
+    return models(transform_search= dict(train_years=range(5,8), year=range(2012,2016), **violation_state_args), estimator_search=forest)
 
 
 ### Old workflows
