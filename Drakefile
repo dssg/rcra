@@ -8,7 +8,7 @@ wget_unzip()
     unzip -o "$OUTPUT0" -d $OUTPUT1
 
 psql()
-    psql -v ON_ERROR_STOP=1 -f $INPUT && echo > $OUTPUT
+    psql -v ON_ERROR_STOP=1 -f $INPUT 2>&1 && echo > $OUTPUT
 
 ; create a schema (does not drop)
 psql_schema()

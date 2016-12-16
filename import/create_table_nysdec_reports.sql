@@ -1,3 +1,5 @@
+CREATE SCHEMA IF NOT EXISTS nysdec_reports;
+
 DROP TABLE if EXISTS nysdec_reports.GM1;
 CREATE TABLE nysdec_reports.GM1 (
 	handler_id VARCHAR,

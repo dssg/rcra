@@ -60,6 +60,7 @@ sed -i 's/\xE5/*/g' $OUTPUT_DPATH/mani97_header.csv
 eval $(cat psql_profile.config) 
 #psql -c "create schema manifest."
 
+psql -c "CREATE SCHEMA IF NOT EXISTS manifest;"
 
 # create tables and populate
 for f in man8081 mani82 mani83 mani84 mani85 mani86 mani87 mani88 mani89 
@@ -236,7 +237,7 @@ done
 psql -c "DROP TABLE IF EXISTS manifest.locaddr;"
 psql -c "CREATE TABLE manifest.locaddr (
 	rcra_id VARCHAR(12) NOT NULL, 
-	district_name VARCHAR(76) NOT NULL, 
+	district_name text NOT NULL, 
 	location_street1 VARCHAR(69), 
 	location_street2 VARCHAR(47), 
 	location_city VARCHAR(25), 
