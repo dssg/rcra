@@ -9,16 +9,24 @@ violation_state_args = dict(
     evaluation=False
 )
 
-violation_args = dict(
+violation_epa_args = dict(
     outcome_expr='aux.violation_epa',
     train_query='aux.evaluation_epa', 
+    evaluation=False
+)
+
+violation_args = dict(
+    outcome_expr='aux.violation',
+    train_query='aux.evaluation', 
     evaluation=False
 )
 
 region_4_violation_types = [
         '262.A',
         # 264.*
-        '264.A', '264.AA', '264.B', '264.BB', '264.C', '264.CC', '264.D', '264.DD', '264.E', '264.EE', '264.F', '264.G', '264.H', '264.I', '264.J', '264.K', '264.L', '264.M', '264.N', '264.O', '264.S', '264.W', '264.X', 
+        '264.A', '264.AA', '264.B', '264.BB', '264.C', '264.CC', '264.D', '264.DD', '264.E', 
+        '264.EE', '264.F', '264.G', '264.H', '264.I', '264.J', '264.K', '264.L', '264.M', 
+        '264.N', '264.O', '264.S', '264.W', '264.X', 
         # 268.*
         '268.A', '268.B', '268.C', '268.D', '268.E', 
         # 270.*
@@ -36,10 +44,17 @@ region_4_args = dict(
     region=4,
     evaluation=False)
 
-evaluation_args = dict(
-    outcome_expr='aux.evaluation_epa', 
+evaluation_state_args = dict(
+    outcome_expr='aux.evaluation', 
     train_query=['aux.active_today | aux.evaluation | (aux.handler_age < 365) | aux.br',
-            #'(active_today or evaluation or (handler_age < 365)) and br'
+            ], 
+    evaluation=True
+)
+
+
+evaluation_args = dict(
+    outcome_expr='aux.evaluation', 
+    train_query=['aux.active_today | aux.evaluation | (aux.handler_age < 365) | aux.br',
             ], 
     evaluation=True
 )
@@ -85,6 +100,21 @@ svm_search = [{'__class_name__':['sklearn.svm.LinearSVC'],
         'C':[.01,.1,1], 'penalty':['l1'], 'dual':[False]}]
 
 ### Newly created workflows for NYSDEC project
+def violation_state_baseline():
+    return models(transform_search= dict(train_years=5, year=range(2012,2018), **violation_state_args), estimator_search=forest)
+
+
+def evaluation_state_baseline():
+    return models(transform_search= dict(train_years=5, year=range(2012,2018), **evaluation_state_args), estimator_search=forest)
+
+def evaluation_and_violation_state_baseline():
+    return evaluation_and_violation_models(evaluation_state_baseline(), violation_state_baseline())
+
+
+def violation_baseline():
+    return models(transform_search= dict(train_years=5, year=range(2012,2018), **violation_args), estimator_search=forest)
+
+
 def violation_state_original_data():
     return models(transform_search= dict(train_years=range(2,6), year=range(2012,2016),exclude =[['manifest_.*','br_.*']], **violation_state_args), estimator_search=forest)
 
@@ -105,7 +135,7 @@ def violation_region_4():
 
 def violation_region2_nysdec():
 	return models(transform_search=dict(region=2,train_years=5, **violation_args),
-            estimator_search=forest)
+            estimator_search=forest+logit)
 
 def violation_fast():
     return models(transform_search= dict(train_years=1, year=2016, **violation_args), estimator_search=forest)
@@ -162,9 +192,9 @@ def evaluation_and_violation_models(es, vs):
     evs = []
     for e in es:
         e_year = e.inputs[1].year
-        e.get_input('transform').__name__ = 'e_transform'
-        e.get_input('estimator').__name__ = 'e_estimator'
-        e.get_input('y').__name__ = 'e_y'
+        e.get_input('transform')._name = 'e_transform'
+        e.get_input('estimator')._name = 'e_estimator'
+        e.get_input('y')._name = 'e_y'
         for v in vs:
             v_year = v.inputs[1].year
             if e_year == v_year:
