@@ -27,14 +27,14 @@ load_data()
     done
     echo > $OUTPUT
 
-%include $[BASE]/import/icis/Drakefile
-%include $[BASE]/import/tri/Drakefile
-%include $[BASE]/import/rcra/Drakefile
-%include $[BASE]/import/nysdec_reports/Drakefile
-%include $[BASE]/import/Drakefile
-%include $[BASE]/import/manifest/Drakefile
+%include import/icis/Drakefile
+%include import/tri/Drakefile
+%include import/rcra/Drakefile
+%include import/nysdec_reports/Drakefile
+%include import/Drakefile
+%include import/manifest/Drakefile
 
 ; shapefile importing disabled -- steps are broken at the moment
-;%include $[BASE]/import/geo/Drakefile
+;%include import/geo/Drakefile
 
-%include $[BASE]/output/Drakefile
+%include output/Drakefile
