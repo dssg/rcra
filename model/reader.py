@@ -22,8 +22,6 @@ class EpaHDFReader(Step):
         # HDF bug makes this not work. because region isn't in the index? neither is evaluation though
         #if self.region is not None:
         #    where = "(region == {region}) & ({where})".format(region=self.region, where=where)
-        #import pdb; pdb.set_trace()
-        
         logging.info('Reading X')
         X = store.select('X', where=where)
 
