@@ -3,8 +3,24 @@ drop table if exists output.handlers;
 create table output.handlers as (
 
 select 
-    epa_handler_id  as rcra_id,
+    epa_handler_id as rcra_id,
     receive_date,
+    current_site_name,
+    state_district,
+
+    location_street_number,
+    location_street_1,
+    location_street_2,
+    location_city,
+    location_state,
+    location_zip_code,
+
+    mailing_street_number,
+    mailing_street_1,
+    mailing_street_2,
+    mailing_city,
+    mailing_state,
+    mailing_zip_code,
 
     non_notifier = 'X'  as handler_non_notifier,
     non_notifier = 'O'  as handler_non_notifier_former,
@@ -58,18 +74,8 @@ select
 
     withdrawal_from_40_cfr_part_262_subpart_k = 'Y'  as handler_withdrawal,
     include_in_national_report = 'Y'  as handler_include_in_br--,
-    --case when location_zip_code ~* '[a-z]'
-    --      then null
-    --      else left(location_zip_code,5)
-    --end as handler_zip_code
 
 from rcra.hhandler
---where 
---case when location_zip_code ~* '[a-z]'
---          then null
---          else left(location_zip_code,5)
---    end is not null
-
 );
 
 alter table output.handlers add handler_id serial primary key;
