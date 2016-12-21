@@ -49,7 +49,7 @@ create temp table active_not_investigated as (
     join generate_series({min_year}, {max_year}) as year on 1=1
     left join investigation_years i on f.rcra_id = i.rcra_id and i.date = make_date(year, {month}, {day}) 
     left join output.br 
-        on f.rcra_id = br.rcra_id and year - 3 +year % 2 = br.reporting_year
+        on f.rcra_id = br.rcra_id and least(year - 3 +(year % 2), 2013) = br.reporting_year
     where min_receive_date < make_date(year, {month}, {day}) -- handler received
     and i.rcra_id is null -- not investigated
 );
