@@ -3,6 +3,7 @@ from drain.data import ToHDF, FromSQL, index_as_series, Merge
 from drain.step import Step
 from drain.aggregation import AggregationJoin
 from epa.output import aggregations, investigations
+from epa.output.handlers import HANDLER_BOOLEANS
 
 import os
 from datetime import date
@@ -76,23 +77,22 @@ where date between '{date_min}' and '{date_max}'""".format(**sql_vars),
         X['handler_received'] = X.handler_id.notnull()
         X['handler_age'] = (X.date - X.receive_date)/util.day
 
-        handler_columns = self.handlers.get_result().columns
-        # keep handler except a few plus a few
-
-        # aux is facility_years join facilities plus handler_received and handler_age
+        # aux is facility_years join facilities join handlers
+        # minus the final index (rcra_id, date) plus naics_codes
         # (plus last_investigation, which is added below)
         aux_columns = X.columns.difference(['rcra_id', 'date'])\
-                .difference(handler_columns)\
-                .union(['naics_codes', 'receive_date'])
+                .difference(HANDLER_BOOLEANS)\
+                .union(['naics_codes'])
 
         # drop facility and facility_years except a few columns
+        # evaluation is included for the HDF index, then dropped by the hdf reader
         x_drop_columns = aux_columns.union(['receive_date', 'handler_id'])\
                 .difference(['evaluation', 'handler_received', 'handler_age', 'br', 'region', 'state'])
 	
-	# Joins on the br data
+	# Joins on the br data, 2013 is hard coded as the latest year available!
         logging.info('Joining BR')
         year = X.date.dt.year
-        X['br_reporting_year'] = year - 3 + (year % 2)
+        X['br_reporting_year'] = (year - 3 + (year % 2)).apply(lambda y: max(y, 2013))
         data.prefix_columns(br, 'br_', ignore=['rcra_id'])
         X = X.merge(br, on=['rcra_id', 'br_reporting_year'], how='left')
         X.drop(['br_date', 'br_reporting_year'], axis=1, inplace=True)
@@ -111,11 +111,11 @@ where date between '{date_min}' and '{date_max}'""".format(**sql_vars),
 
         X.drop(x_drop_columns, axis=1, inplace=True)
 
-        # get X_COLUMNS plus all of the most recent handler minus rcra_id
-
         aux['last_investigation_days'] = X['investigations_facility_all_start_date_days_min']
         aux['last_investigation_date'] = (index_as_series(aux, 'date') - 
                 aux.last_investigation_days*util.day)
+        aux['manifest_monthly_3y_approx_qty_max'] = X.manifest_monthly_facility_3y_approx_qty_max
+        aux['manifest_monthly_all_approx_qty_max'] = X.manifest_monthly_facility_all_approx_qty_max
         
 	# Drops NA in NAICS codes and theb binarizes them
         logging.info('Expanding naics codes')

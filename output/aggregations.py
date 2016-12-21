@@ -3,6 +3,7 @@ from epa.output.investigations import InvestigationsAggregation
 from epa.output.icis import IcisFecAggregation
 from epa.output.rmp import RmpAggregation
 from epa.output.manifest import ManifestAggregation
+from epa.output.manifest_monthly import ManifestMonthlyAggregation
 from epa.output.br import BrAggregation 
 from epa.output.nysdec_reports import NYSDECReportsAggregation 
 
@@ -18,11 +19,15 @@ deltas = {'facility' : ['1y', '5y', 'all'],
 #          'state': ['2y']
         }
 
-manifestdeltas = {'facility' : ['6m', '1y', '5y', 'all'], }
+manifest_deltas = {'facility' : ['6m', '1y', '5y', 'all'], }
+manifest_monthly_deltas = {'facility' : ['3y', 'all'] }
 
 #Spacedeltas: what we will be aggregating over (what we are grouping over)?
 spacedeltas = {index: (indexes[index], deltas[index]) for index in deltas}
-manifestspacedeltas = {index: (indexes[index], manifestdeltas[index]) for index in manifestdeltas}
+manifest_spacedeltas = {index: (indexes[index], manifest_deltas[index])
+        for index in manifest_deltas}
+manifest_monthly_spacedeltas = {index: (indexes[index], manifest_monthly_deltas[index])
+        for index in manifest_monthly_deltas}
 
 #dates here is our prediction window of dates?
 dates = [date(y,1,1) for y in range(2007,2016+1)]
@@ -40,7 +45,10 @@ def investigations(dates=dates):
     return InvestigationsAggregation(spacedeltas, dates=dates, parallel=True, target=True)
 
 def manifest(dates=dates):
-    return ManifestAggregation(manifestspacedeltas, dates=dates, parallel=True, target=True)
+    return ManifestAggregation(manifest_spacedeltas, dates=dates, parallel=True, target=True)
+
+def manifest_monthly(dates=dates):
+    return ManifestMonthlyAggregation(manifest_monthly_spacedeltas, dates=dates, parallel=True, target=True)
 
 def br(dates=dates):
     return BrAggregation(spacedeltas, dates=dates, parallel=True, target=True)
@@ -56,6 +64,7 @@ def all_dict(dates=dates):
         'icis': icis(dates), 
         'rmp': rmp(dates),
 	'manifest': manifest(dates),
+	'manifest_monthly': manifest_monthly(dates),
 	'br':br(dates),
         'nysdec_reports':nysdec_reports(dates)
     }

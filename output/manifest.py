@@ -30,16 +30,17 @@ class ManifestAggregation(SpacetimeAggregation):
         
         aggregates = [
             Count(name='line_items'),
-            Aggregate('approx_qty', ['sum','max','min','mean','std','skew'], name='approx_qty'),
+            Aggregate('approx_qty', ['sum','max','min','mean','std','skew'], name='pounds_shipped'),
             Aggregate([has_waste_type(p) for p in WASTE_CODE_PREFIXES],
                 ['any'], name = ['waste_code_%s' % p for p in WASTE_CODE_PREFIXES]),
             Aggregate(lambda m: m.waste_codes.apply(lambda w: sum(is_acute_waste(code) for code in w)>0),
-                ['any'], name = 'waste_acute')
-            # Liquid/solid features
+                ['any'], name = 'waste_acute'),
 
-            #Aggregate(lambda x: x.unit_of_measure.isin(['L','N','Y']), ['any'], name = 'liquid_shipped'),
-            #Aggregate(lambda x: np.where(x.unit_of_measure.isin(['L','N','Y']), x.approx_qty, np.zeros(np.shape(x.approx_qty))), ['sum','max','min','mean','std','skew'], name = 'pounds_liquid_shipped'),
-            #Aggregate(lambda x: np.where(~x.unit_of_measure.isin(['L','N','Y']), x.approx_qty, np.zeros(np.shape(x.approx_qty))), ['sum','max','min','mean','std','skew'], name = 'pounds_solid_shipped')
+            # Liquid/solid features
+            Aggregate(lambda x: x.unit_of_measure.isin(['L','N','Y']), ['any'], name = 'liquid_shipped'),
+            Aggregate(lambda x: np.where(x.unit_of_measure.isin(['L','N','Y']), x.approx_qty, np.zeros(np.shape(x.approx_qty))), ['sum','max','min','mean','std','skew'], name = 'pounds_liquid_shipped'),
+            Aggregate(lambda x: np.where(~x.unit_of_measure.isin(['L','N','Y']), x.approx_qty, np.zeros(np.shape(x.approx_qty))), ['sum','max','min','mean','std','skew'], name = 'pounds_solid_shipped'),
+
             ]
 
         return aggregates
