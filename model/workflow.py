@@ -5,9 +5,12 @@ from itertools import product
 
 violation_state_args = dict(
     outcome_expr='aux.violation_state',
-    train_query='aux.evaluation_state', 
+    train_query='aux.evaluation_state',
     evaluation=False
 )
+
+violation_state_lqg_args = util.merge_dicts(violation_state_args,
+    dict(train_query='aux.evaluation_state & (aux.manifest_monthly_3y_approx_qty_max >= 1000)'))
 
 violation_epa_args = dict(
     outcome_expr='aux.violation_epa',
@@ -46,11 +49,12 @@ region_4_args = dict(
 
 evaluation_state_args = dict(
     outcome_expr='aux.evaluation', 
-    train_query=['aux.active_today | aux.evaluation | (aux.handler_age < 365) | aux.br',
-            ], 
+    train_query=['aux.active_today | aux.evaluation | (aux.handler_age < 365) | aux.br'],
     evaluation=True
 )
 
+evaluation_state_lqg_args = util.merge_dicts(evaluation_state_args,
+    dict(train_query='aux.manifest_monthly_3y_approx_qty_max >= 1000'))
 
 evaluation_args = dict(
     outcome_expr='aux.evaluation', 
@@ -64,6 +68,7 @@ forest = {'__class_name__':['sklearn.ensemble.RandomForestClassifier'],
         'criterion':['entropy'],
         #'balanced':[True],
         'max_features':['sqrt'],
+        'random_state':[0],
         'n_jobs':[-1]}
 
 logit = {'__class_name__':['sklearn.linear_model.LogisticRegression'],
@@ -86,7 +91,7 @@ forest_search = {'__class_name__':['sklearn.ensemble.RandomForestClassifier'],
         'n_estimators':[500],
         'criterion': ['entropy', 'gini'],
         'max_features':['sqrt','log2'],
-        'n_jobs':[-1]}
+        'n_jobs':[-1], 'random_state':[0]}
 
 logit_search = {'__class_name__':['sklearn.linear_model.LogisticRegression'],
         'penalty':['l1','l2'], 'C':[.01,.1,1,10]}
@@ -101,16 +106,36 @@ svm_search = [{'__class_name__':['sklearn.svm.LinearSVC'],
 
 ### Newly created workflows for NYSDEC project
 def violation_state_baseline():
-    return models(transform_search= dict(train_years=5, year=range(2012,2018), **violation_state_args), estimator_search=forest)
-
+    return models(transform_search= dict(train_years=5, year=range(2012,2018), **violation_state_args), estimator_search=forest) 
 
 def evaluation_state_baseline():
-    return models(transform_search= dict(train_years=5, year=range(2012,2018), **evaluation_state_args), estimator_search=forest)
+    return models(transform_search= dict(train_years=4, year=range(2012,2018), **evaluation_state_args), estimator_search=forest) 
 
 def evaluation_and_violation_state_baseline():
     return evaluation_and_violation_models(evaluation_state_baseline(), violation_state_baseline())
 
+# lqg only model
+def violation_state_lqg_baseline():
+    return models(transform_search= dict(train_years=5, year=range(2012,2018), **violation_state_lqg_args), estimator_search=forest) 
 
+def evaluation_state_lqg_baseline():
+    return models(transform_search= dict(train_years=4, year=range(2012,2018), **evaluation_state_lqg_args), estimator_search=forest) 
+
+def evaluation_and_violation_state_lqg_baseline():
+    return evaluation_and_violation_models(evaluation_state_lqg_baseline(), violation_state_lqg_baseline())
+
+
+
+# for dumping data for storing
+def violation_state_data():
+    data = [m.inputs[1] for m in models(transform_search= dict(train_years=5, year=range(2012,2013), **violation_state_args), estimator_search=forest)]
+    for d in data:
+        d._target = True
+
+    return data
+
+
+###
 def violation_baseline():
     return models(transform_search= dict(train_years=5, year=range(2012,2018), **violation_args), estimator_search=forest)
 
