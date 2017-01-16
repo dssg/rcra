@@ -104,7 +104,7 @@ svm_search = [{'__class_name__':['sklearn.svm.LinearSVC'],
         {'__class_name__':['sklearn.svm.LinearSVC'],
         'C':[.01,.1,1], 'penalty':['l1'], 'dual':[False]}]
 
-### Newly created workflows for NYSDEC project
+### the "baseline" models are random forests with manually selected train_years
 def violation_state_baseline():
     return models(transform_search= dict(train_years=5, year=range(2012,2018), **violation_state_args), estimator_search=forest) 
 
@@ -114,43 +114,49 @@ def evaluation_state_baseline():
 def evaluation_and_violation_state_baseline():
     return evaluation_and_violation_models(evaluation_state_baseline(), violation_state_baseline())
 
-# lqg only model
-def violation_state_lqg_baseline():
-    return models(transform_search= dict(train_years=5, year=range(2012,2018), **violation_state_lqg_args), estimator_search=forest) 
-
-def evaluation_state_lqg_baseline():
-    return models(transform_search= dict(train_years=4, year=range(2012,2018), **evaluation_state_lqg_args), estimator_search=forest) 
-
-def evaluation_and_violation_state_lqg_baseline():
-    return evaluation_and_violation_models(evaluation_state_lqg_baseline(), violation_state_lqg_baseline())
-
-
-
 # for dumping data for storing
 def violation_state_data():
-    data = [m.inputs[1] for m in models(transform_search= dict(train_years=5, year=range(2012,2013), **violation_state_args), estimator_search=forest)]
+    data = [m.inputs[1] for m in models(transform_search= dict(train_years=5, year=range(2012,2017), **violation_state_args), estimator_search=forest)]
     for d in data:
         d._target = True
 
     return data
 
-
-###
-def violation_baseline():
-    return models(transform_search= dict(train_years=5, year=range(2012,2018), **violation_args), estimator_search=forest)
-
-
+# no manifest
 def violation_state_original_data():
-    return models(transform_search= dict(train_years=range(2,6), year=range(2012,2016),exclude =[['manifest_.*','br_.*']], **violation_state_args), estimator_search=forest)
+    return models(transform_search= dict(train_years=5, year=range(2012,2016),exclude =[['manifest_.*']], **violation_state_args), estimator_search=forest)
 
-def violation_state_base():
-    return models(transform_search= dict(train_years=range(2,6), year=range(2012,2016), **violation_state_args), estimator_search=forest)
-
-def violation_state_manifest_more_train_years():
-    return models(transform_search= dict(train_years=range(5,8), year=range(2012,2016), **violation_state_args), estimator_search=forest)
+# vary train years
+def violation_state_train_years():
+    return models(transform_search= dict(train_years=range(1,8), year=range(2012,2016), **violation_state_args), estimator_search=forest)
 
 
-### Old workflows
+# grid searches for various model classes
+def violation_state_adaboost():
+    return models(transform_search= dict(train_years=range(2,5), year=range(2012,2016), **violation_state_args), estimator_search=adaboost_search)
+
+def violation_state_forest():
+    return models(transform_search= dict(train_years=range(2,5), year=range(2012,2016), **violation_state_args), estimator_search=forest_search)
+
+def violation_state_logit():
+    return models(transform_search= dict(train_years=range(2,5), year=range(2012,2016), **violation_state_args), estimator_search=logit_search)
+
+def violation_state_svm():
+    return models(transform_search= dict(train_years=range(2,5), year=range(2012,2016), **violation_state_args), estimator_search=svm_search)
+
+# the best model of each class
+def violation_state_best():
+    return (models(transform_search= dict(train_years=5, year=range(2012,2016), **violation_state_args), estimator_search=logit) +
+            models(transform_search= dict(train_years=5, year=range(2012,2016), **violation_state_args), estimator_search=forest) +
+            models(transform_search= dict(train_years=5, year=range(2012,2016), **violation_state_args), estimator_search=adaboost) +
+            models(transform_search= dict(train_years=5, year=range(2012,2016), **violation_state_args), estimator_search=svm) +
+            models(transform_search= dict(train_years=5, year=range(2012,2016), **violation_state_args), estimator_search=gradient))
+
+
+## national models
+
+def violation_fast():
+    return models(transform_search= dict(train_years=1, year=2016, **violation_args), estimator_search=forest)
 
 def violation():
     return models(transform_search= dict(train_years=2, **violation_args), estimator_search=forest)
@@ -158,21 +164,6 @@ def violation():
 def violation_region_4():
     return models(transform_search= dict(train_years=5, **region_4_args), estimator_search=forest)
 
-def violation_region2_nysdec():
-	return models(transform_search=dict(region=2,train_years=5, **violation_args),
-            estimator_search=forest+logit)
-
-def violation_fast():
-    return models(transform_search= dict(train_years=1, year=2016, **violation_args), estimator_search=forest)
-
-def violation_state():
-    return models(transform_search= dict(train_years=range(2,4), year=[2013,2015], **violation_state_args), estimator_search=forest)
-
-def violation_state_adaboost():
-    return models(transform_search= dict(train_years=range(2,4), year=[2013,2015], **violation_state_args), estimator_search=adaboost)
-
-def violation_state_logistic():
-    return models(transform_search= dict(train_years=range(2,4), year=[2013,2015], **violation_state_args), estimator_search=logit)
 
 def violation_best():
     return models(transform_search= dict(train_years=2, **violation_args), estimator_search=forest) + \
