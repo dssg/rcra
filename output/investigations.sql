@@ -77,13 +77,12 @@ select handler_id as rcra_id,
     max({final_amount}) as final_amount
 
 from rcra.cmecomp3 
-    where handler_id is not null 
-    and 1=1
+join output.facilities on rcra_id = handler_id
+where 1=1
 group by 1,2)
 
 select *,
     formal_enforcement and enforcement_state as formal_enforcement_state,
     formal_enforcement and enforcement_epa as formal_enforcement_epa
  from investigations
-left join output.region_states rs on substring(rcra_id for 2) = rs.state
 );

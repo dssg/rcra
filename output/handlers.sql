@@ -76,6 +76,7 @@ select
     include_in_national_report = 'Y'  as handler_include_in_br--,
 
 from rcra.hhandler
+join output.facilities on epa_handler_id = rcra_id
 );
 
 alter table output.handlers add handler_id serial primary key;

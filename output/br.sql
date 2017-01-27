@@ -61,4 +61,5 @@ CREATE TABLE output.br as (
 	sum(received_tons::decimal) as total_received_tons
 
 	from rcra.br_reporting
+        join output.facilities on handler_id = rcra_id
 	group by 1,2);

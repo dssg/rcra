@@ -66,7 +66,7 @@ evaluation_args = dict(
 forest = {'__class_name__':['sklearn.ensemble.RandomForestClassifier'], 
         'n_estimators':[500],
         'criterion':['entropy'],
-        #'balanced':[True],
+        'balanced':[True],
         'max_features':['sqrt'],
         'random_state':[0],
         'n_jobs':[-1]}
@@ -106,13 +106,16 @@ svm_search = [{'__class_name__':['sklearn.svm.LinearSVC'],
 
 ### the "baseline" models are random forests with manually selected train_years
 def violation_state_baseline():
-    return models(transform_search= dict(train_years=5, year=range(2012,2018), **violation_state_args), estimator_search=forest) 
+    return models(transform_search= dict(train_years=5, year=range(2010,2018), **violation_state_args), estimator_search=forest) 
 
 def evaluation_state_baseline():
-    return models(transform_search= dict(train_years=4, year=range(2012,2018), **evaluation_state_args), estimator_search=forest) 
+    return models(transform_search= dict(train_years=5, year=range(2010,2018), **evaluation_state_args), estimator_search=forest, predict_train=True) 
 
 def evaluation_and_violation_state_baseline():
     return evaluation_and_violation_models(evaluation_state_baseline(), violation_state_baseline())
+
+def violation_state_ipw():
+    return models(transform_search= dict(train_years=5, year=range(2010,2018), **violation_state_args), estimator_search=forest, evaluation_models = evaluation_state_baseline()) 
 
 # for dumping data for storing
 def violation_state_data():
@@ -128,7 +131,7 @@ def violation_state_original_data():
 
 # vary train years
 def violation_state_train_years():
-    return models(transform_search= dict(train_years=range(1,8), year=range(2012,2016), **violation_state_args), estimator_search=forest)
+    return models(transform_search= dict(train_years=range(1,8), year=range(2010,2016), **violation_state_args), estimator_search=adaboost)
 
 
 # grid searches for various model classes
@@ -146,11 +149,11 @@ def violation_state_svm():
 
 # the best model of each class
 def violation_state_best():
-    return (models(transform_search= dict(train_years=5, year=range(2012,2016), **violation_state_args), estimator_search=logit) +
-            models(transform_search= dict(train_years=5, year=range(2012,2016), **violation_state_args), estimator_search=forest) +
-            models(transform_search= dict(train_years=5, year=range(2012,2016), **violation_state_args), estimator_search=adaboost) +
-            models(transform_search= dict(train_years=5, year=range(2012,2016), **violation_state_args), estimator_search=svm) +
-            models(transform_search= dict(train_years=5, year=range(2012,2016), **violation_state_args), estimator_search=gradient))
+    return (models(transform_search= dict(train_years=5, year=range(2010,2016), **violation_state_args), estimator_search=logit) +
+            models(transform_search= dict(train_years=5, year=range(2010,2016), **violation_state_args), estimator_search=forest) +
+            models(transform_search= dict(train_years=5, year=range(2010,2016), **violation_state_args), estimator_search=adaboost) +
+            models(transform_search= dict(train_years=5, year=range(2010,2016), **violation_state_args), estimator_search=svm) +
+            models(transform_search= dict(train_years=5, year=range(2010,2016), **violation_state_args), estimator_search=gradient))
 
 
 ## national models
@@ -204,6 +207,13 @@ def evaluation_and_violation():
 def evaluation_and_violation_region_4():
     return evaluation_and_violation_models(evaluation(), violation_region_4())
 
+def evaluation_best():
+    return models(transform_search=evaluation_args, estimator_search=forest) + \
+            models(transform_search=evaluation_args, estimator_search=svm) + \
+            models(transform_search=evaluation_args, estimator_search=logit)
+
+
+# Utilities for generated various workflows
 def evaluation_and_violation_models(es, vs):
     evs = []
     for e in es:
@@ -234,17 +244,25 @@ def calibrated_evaluation_and_violation():
     return [ve]
 
 
-def evaluation_best():
-    return models(transform_search=evaluation_args, estimator_search=forest) + \
-            models(transform_search=evaluation_args, estimator_search=svm) + \
-            models(transform_search=evaluation_args, estimator_search=logit)
-
-def models(transform_search={}, estimator_search={}):
+def models(transform_search, estimator_search, evaluation_models=None, predict_train=False):
+    """
+    Args:
+        transform_search: args to search over for EpaTransform
+        estimator_search: args to search over for Construct of estimator
+        evaluation_models: optional list of models to use for inverse probability weighting
+        test: whether or not to predict on training set
+    """
     steps = []
-    transform_search = util.merge_dicts(dict(
-        train_years = [3],
-        year=range(2011,2015+1)
-    ), transform_search)
+    #transform_search = util.merge_dicts(dict(
+    #    train_years = [5],
+    #    year=range(2011,2015+1)
+    #), transform_search)
+
+    if evaluation_models is not None:
+        for e in evaluation_models:
+            e.get_input('transform')._name = 'ipw_transform'
+            e.get_input('estimator')._name = 'ipw_estimator'
+            e.get_input('y')._name = 'ipw_y'
 
     for transform_args, estimator_args in product(
             util.dict_product(transform_search), 
@@ -255,8 +273,16 @@ def models(transform_search={}, estimator_search={}):
 
         estimator = step.Construct(name='estimator', **estimator_args)
 
-        y = model.FitPredict(inputs=[estimator, transform], name='y', target=True)
-        steps.append(y)
+        if evaluation_models is None:
+            y = model.FitPredict(inputs=[estimator, transform], name='y', target=True, predict_train=predict_train)
+            steps.append(y)
+        else:
+            # find all evaluation models of the same year and add them via IPW
+            for e in evaluation_models:
+                if e.inputs[1].year == transform.year:
+                    ipw = model.InverseProbabilityWeights(inputs=[e])
+                    y = model.FitPredict(inputs=[estimator, transform, ipw], name='y', target=True)
+                    steps.append(y)
 
     return steps
 

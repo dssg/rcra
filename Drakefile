@@ -1,4 +1,5 @@
 PROFILE:=default_profile
+FACILITIES_CONDITION:="True"
 %include $[PROFILE]
 
 ; $ZIP_DEST, $EXTRACT_DEST <- [-timecheck]
@@ -8,7 +9,7 @@ wget_unzip()
     unzip -o "$OUTPUT0" -d $OUTPUT1
 
 psql()
-    psql -v ON_ERROR_STOP=1 -f $INPUT 2>&1 && echo > $OUTPUT
+    cat $INPUT | envsubst | psql -v ON_ERROR_STOP=1 2>&1 && echo > $OUTPUT
 
 ; create a schema (does not drop)
 psql_schema()

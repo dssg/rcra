@@ -16,7 +16,7 @@ class EpaData(Step):
     and output.facilities. Then it joins onto this the aggregations.  
     The run method outputs a dict with X as a numpy array and aux.   
     """
-    def __init__(self, month, day, year_min=2007, year_max=2017,
+    def __init__(self, month, day, year_min=2000, year_max=2017,
             outcome_years=1, investigations_drop_lists=True, **kwargs):
 
         Step.__init__(self, month=month, day=day, 

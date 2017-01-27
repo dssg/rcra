@@ -6,8 +6,8 @@ with facilities as (
 	select b.pgm_sys_id as rcra_id,
 	a.registry_id, a.activity_id
 	from fec.fec_facilities a
-	left join frs.program_links b
-	using  (registry_id)
+	join frs.program_links b using (registry_id)
+        join output.facilities on b.pgm_sys_id = rcra_id
 	where b.pgm_sys_acrnm = 'RCRAINFO'),
 
 enforcements as (
@@ -45,7 +45,6 @@ penalties as (
 	   compliance_action_cost, federal_cost_recovery_amt,
 	   state_local_cost_recovery_amt 
 	from fec.fec_penalties)    
-
 
 select * from facilities
 left join enforcements using (activity_id)

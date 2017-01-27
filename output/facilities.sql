@@ -23,8 +23,7 @@ evaluations as (
 
 handlers as (
     select rcra_id, min(receive_date) as min_receive_date, max(receive_date) as max_receive_date
---    , handler_zip_code
-    from output.handlers group by 1 --,4
+    from output.handlers group by 1
 ),
 
 f as (select epa_handler_id as rcra_id from rcra.hhandler UNION select rcra_id from active_facilities UNION select handler_id from rcra.cmecomp3)
@@ -33,7 +32,6 @@ select rcra_id,
     coalesce(active_today, False) as active_today,
     state, region,
     naics_codes, min_start_date, max_start_date, min_receive_date, max_receive_date
-  --  ,handler_zip_code
 from f
 left join active_facilities using (rcra_id)
 left join naics using (rcra_id)
@@ -41,6 +39,7 @@ left join evaluations using (rcra_id)
 left join output.region_states on substring(rcra_id for 2) = state
 left join handlers using (rcra_id)
 where rcra_id is not null
+and ${FACILITIES_CONDITION}
 );
 
 alter table output.facilities add primary key (rcra_id);
