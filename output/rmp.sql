@@ -3,7 +3,7 @@ DROP TABLE IF EXISTS output.rmp;
 CREATE TABLE output.rmp AS (
    
 	    select facility_uin as rmp_id,
-	    pgm_sys_id as rcra_id,
+	    rcra_id,
 
 	    bool_or(activity_status_desc = 'Achieved') as activity_status_achieved,
 	    bool_or(activity_status_desc = 'Active') as activity_status_active,
@@ -16,8 +16,8 @@ CREATE TABLE output.rmp AS (
 	    actual_end_date 
 
 	    from rmp.rmp_inspections a
-	    left join frs.program_links b
-	    on (a.facility_uin = b.registry_id)
+	    join frs.program_links b on (a.facility_uin = b.registry_id)
+            join output.facilities on pgm_sys_id = rcra_id
 
 	    where b.pgm_sys_acrnm = 'RCRAINFO'
 	    and b.pgm_sys_id is not null
