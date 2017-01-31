@@ -12,19 +12,21 @@ WASTE_CODE_PREFIXES = ('P', 'U', 'D', 'F')
 # acute waste is defined as either P waste or one of these six F wastes
 ACUTE_WASTE_REGEX = re.compile('^(P|F02[012367]$)')
 
-class ManifestAggregation(SpacetimeAggregation):
-    def __init__(self, spacedeltas, dates, **kwargs):
-        SpacetimeAggregation.__init__(self, spacedeltas=spacedeltas, dates=dates, 
-                prefix='manifest', date_column='gen_sign_date', **kwargs)
+manifest = FromSQL(query=
+    """ select *,
+    ARRAY_REMOVE(ARRAY[waste_code_1, waste_code_2, waste_code_3,
+        waste_code_4, waste_code_5, waste_code_6], NULL) as waste_codes
+    from output.manifest""", 
+    tables=['output.manifest'], parse_dates=['gen_sign_date'])
+manifest.target = True
 
-        if not self.parallel:
-            self.manifest = FromSQL(
-                query=""" select *,
-                ARRAY_REMOVE(ARRAY[waste_code_1, waste_code_2, waste_code_3,
-                    waste_code_4, waste_code_5, waste_code_6], NULL) as waste_codes
-                from output.manifest where substring(rcra_id for 2) = 'NY' """, 
-                tables=['output.manifest'], parse_dates=['gen_sign_date'], target=True)
-            self.inputs = [self.manifest]
+
+class ManifestAggregation(SpacetimeAggregation):
+    def __init__(self, spacedeltas, dates, parallel=True):
+        SpacetimeAggregation.__init__(self, inputs=[manifest], 
+                spacedeltas=spacedeltas, dates=dates, 
+                prefix='manifest', date_column='gen_sign_date', 
+                parallel=parallel)
 
     def get_aggregates(self, date, delta):
         
