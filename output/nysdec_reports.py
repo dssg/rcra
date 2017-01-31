@@ -7,15 +7,14 @@ from drain.data import FromSQL
 from drain.aggregate import Aggregate, Count
 from drain.aggregation import SpacetimeAggregation
 
-class NYSDECReportsAggregation(SpacetimeAggregation):
-    def __init__(self, spacedeltas, dates, **kwargs):
-        SpacetimeAggregation.__init__(self, spacedeltas=spacedeltas, dates=dates, 
-                prefix='reports', date_column='date', **kwargs)
+reports = FromSQL(table='output.nysdec_reports', parse_dates=['date'])
+reports.target = True
 
-        if not self.parallel:
-            self.inputs = [FromSQL(table='output.nysdec_reports', 
-                            parse_dates=['date'],
-                            target=True)]
+class NYSDECReportsAggregation(SpacetimeAggregation):
+    def __init__(self, spacedeltas, dates, parallel=True):
+        SpacetimeAggregation.__init__(self, inputs=[reports],
+                spacedeltas=spacedeltas, dates=dates, 
+                prefix='reports', date_column='date', parallel=parallel)
 
     def get_aggregates(self, date, delta):
         aggregates = [

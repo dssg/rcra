@@ -18,14 +18,14 @@ boolean_columns = ['management_location_onsite', 'management_location_offsite', 
 
 numeric_columns = ['total_generated_tons', 'total_managed_tons', 'total_shipped_tons', 'total_received_tons']
 
-class BrAggregation(SpacetimeAggregation):
-    def __init__(self, spacedeltas, dates, **kwargs):
-        SpacetimeAggregation.__init__(self, spacedeltas=spacedeltas, dates=dates, 
-                prefix='br', date_column='date', **kwargs)
+br = FromSQL(table='output.br', parse_dates=['date'])
+br.target = True
 
-        if not self.parallel:
-            self.inputs = [FromSQL(table='output.br', 
-                    parse_dates=['date'], target=True)]
+class BrAggregation(SpacetimeAggregation):
+    def __init__(self, spacedeltas, dates, parallel=True):
+        SpacetimeAggregation.__init__(self, inputs=[br],
+                spacedeltas=spacedeltas, dates=dates, 
+                prefix='br', date_column='date', parallel=parallel)
 
     def get_aggregates(self, date, delta):
         aggregates = [

@@ -7,14 +7,15 @@ from drain.data import FromSQL
 from drain.aggregate import Aggregate, Count
 from drain.aggregation import SpacetimeAggregation
 
-class IcisFecAggregation(SpacetimeAggregation):
-    def __init__(self, spacedeltas, dates, **kwargs):
-        SpacetimeAggregation.__init__(self, spacedeltas=spacedeltas, dates=dates, 
-                prefix='icis_fec', date_column='activity_status_date', **kwargs)
+icis = FromSQL(table='output.icis_fec', parse_dates=['activity_status_date'])
+icis.target = True
 
-        if not self.parallel:
-            self.inputs = [FromSQL(table='output.icis_fec', 
-                    parse_dates=['activity_status_date'], target=True)]
+class IcisFecAggregation(SpacetimeAggregation):
+    def __init__(self, spacedeltas, dates, parallel=True):
+        SpacetimeAggregation.__init__(self, inputs=[icis],
+                spacedeltas=spacedeltas, dates=dates, 
+                prefix='icis_fec', date_column='activity_status_date', 
+                parallel=parallel)
 
     def get_aggregates(self, date, delta):
         aggregates = [
