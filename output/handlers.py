@@ -30,17 +30,16 @@ HANDLER_BOOLEANS = [
        'handler_used_oil_transfer_facility',
        'handler_used_oil_transporter', 'handler_withdrawal'
 ]
+handlers = FromSQL(query='select *, substring(rcra_id for 2) as state from output.handlers', 
+    tables=['output.handlers'], parse_dates=['receive_date'])
+handlers.target = True
 
 class HandlersAggregation(SpacetimeAggregation):
-    def __init__(self, spacedeltas, dates, **kwargs):
-        SpacetimeAggregation.__init__(self, spacedeltas=spacedeltas, dates=dates, 
-                prefix='handlers', date_column='receive_date', **kwargs)
-
-        if not self.parallel:
-            self.handlers = FromSQL(
-                query='select *, substring(rcra_id for 2) as state from output.handlers', 
-                tables=['output.handlers'], parse_dates=['receive_date'], target=True)
-            self.inputs = [self.handlers]
+    def __init__(self, spacedeltas, dates, parallel=True):
+        SpacetimeAggregation.__init__(self, inputs=[handlers],
+                spacedeltas=spacedeltas, dates=dates, 
+                prefix='handlers', date_column='receive_date', 
+                parallel=parallel)
 
     def get_aggregates(self, date, delta):
         aggregates = [

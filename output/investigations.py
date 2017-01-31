@@ -34,25 +34,23 @@ flags = ['corrective_action_component', 'citizen_complaint',
         'multimedia_inspection', 'sampling', 'not_subtitle_c']
 
 class InvestigationsAggregation(SpacetimeAggregation):
-    def __init__(self, spacedeltas, dates, **kwargs):
+    def __init__(self, spacedeltas, dates, parallel=True):
         SpacetimeAggregation.__init__(self, spacedeltas=spacedeltas, 
                 dates=dates, prefix='investigations',
-                date_column='start_date', **kwargs)
+                date_column='start_date', parallel=parallel)
 
-        if len(self.dates) != 1 and not self.parallel:
-            raise ValueError('Currently only able to run one date at a time, try parallel=True')
-
-        if not self.parallel:
+        if not parallel:
             sql = investigations_sql.get_sql(self.dates[0])
-            self.inputs = [Revise(sql=sql, 
+            i = Revise(sql=sql, 
                     id_column = ['rcra_id', 'start_date'],
                     source_id_column = ['handler_id', 'evaluation_start_date'],
                     max_date_column = 'max_date',
                     min_date_column = 'start_date',
                     date_column = 'evaluation_start_date',
                     date = self.dates[0],
-                    from_sql_args={'parse_dates':parse_dates, 'target':True})
-            ]
+                    from_sql_args={'parse_dates':parse_dates})
+            for j in i.inputs: j.target = True
+            self.inputs = [j]
 
     def get_aggregates(self, date, delta):
         aggregates =  [
