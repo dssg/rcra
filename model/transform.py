@@ -28,7 +28,7 @@ class EpaTransform(Step):
             rmp={},
             investigations_expand_counts=False,
             exclude=[], include=[],
-            impute=True, normalize=True, **kwargs):
+            impute=True, normalize=True):
         # Includes or excludes certain features
         exclude = set(exclude)
         include = set(include)
@@ -41,17 +41,21 @@ class EpaTransform(Step):
                 investigations=investigations, handlers=handlers, 
                 icis=icis, rmp=rmp,
                 investigations_expand_counts=investigations_expand_counts,
-                exclude=exclude, include=include, impute=impute, normalize=normalize, **kwargs)
+                exclude=exclude, include=include, impute=impute, normalize=normalize)
 
-    # The EpaData class 
+        # The EpaData class 
         self.data = EpaData(month=month, day=day)
 
-    # The ToHDF class writes dataframes to a HDF store 
-        store = ToHDF(inputs=[self.data], 
-            put_args={'X':dict(format='t', data_columns=['date', 'evaluation'])})
-        self.inputs = [EpaHDFReader(year=year, train_years=train_years, evaluation=self.evaluation, region=region, inputs=[store])]
+        # The ToHDF class writes dataframes to a HDF store 
+        store = ToHDF(inputs=[self.data],
+                      put_args={'X':dict(format='t', data_columns=['date', 'evaluation'])})
+        store.target = True
 
-    def run(self, X, aux, **kwargs):
+        self.inputs = [EpaHDFReader(year=year, train_years=train_years, 
+                                    evaluation=self.evaluation, region=region, 
+                                    inputs=[store])]
+
+    def run(self, X, aux):
         """ Transforms and reshapes the data so that it can be fed into models
         Args:
             X: A design matrix

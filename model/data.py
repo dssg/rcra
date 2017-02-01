@@ -17,13 +17,12 @@ class EpaData(Step):
     The run method outputs a dict with X as a numpy array and aux.   
     """
     def __init__(self, month, day, year_min=2000, year_max=2017,
-            outcome_years=1, investigations_drop_lists=True, **kwargs):
+            outcome_years=1, investigations_drop_lists=True):
 
         Step.__init__(self, month=month, day=day, 
                 year_min=year_min, year_max=year_max, 
                 outcome_years=outcome_years, 
-                investigations_drop_lists=investigations_drop_lists, 
-                **kwargs)
+                investigations_drop_lists=investigations_drop_lists)
 
         if outcome_years != 1:
             raise NotImplementedError(
@@ -44,27 +43,29 @@ class EpaData(Step):
         facility_years = FromSQL(query="""
 select * from output.facility_years{doy} 
 where date between '{date_min}' and '{date_max}'""".format(**sql_vars),
-                parse_dates=['date'], tables=['output.facility_years{doy}'.format(**sql_vars)], target=True)
+                parse_dates=['date'], tables=['output.facility_years{doy}'.format(**sql_vars)])
+        facility_years.target = True
         
 	# Extracts handler data (ie: whether it is sqg or lqg and other handler specific data)
 	# store reference handlers because we need those columns
-        self.handlers = FromSQL(table='output.handlers', 
-                parse_dates=['receive_date'], target=True)
+        self.handlers = FromSQL(table='output.handlers', parse_dates=['receive_date'])
+        self.handlers.target = True
 
 	# Merge is a wrapper for df.merge in pandas 
 	# Left joins facility_years with the entire output.facilities postgres table using rcra_id
 	# output.facilities contains state, region, NAICS code
-        X = Merge(on='rcra_id', how='left', 
-                inputs=[facility_years, FromSQL(table='output.facilities', 
-                        parse_dates=['min_start_date', 'max_start_date', 
-                                     'min_receive_date', 'max_receive_date'], target=True)])
-	
-	# Merges with handler (sqg/lqg status etc.)
+        facilities = FromSQL(table='output.facilities',
+            parse_dates=['min_start_date', 'max_start_date',
+                         'min_receive_date', 'max_receive_date'])
+        facilities.target = True
+        X = Merge(on='rcra_id', how='left', inputs=[facility_years, facilities])	
+        # Merges with handler (sqg/lqg status etc.)
         X = Merge(on=['rcra_id', 'handler_id'], how='left',
                 inputs = [X, self.handlers])
 
 	# Imports br data
-        br = FromSQL(table='output.br', target=True)
+        br = FromSQL(table='output.br')
+        br.target=True
 	
 	# combines (but does not join) X, br and aggregation data
         self.inputs = [X, br] + self.aggregators.values()
@@ -121,14 +122,14 @@ where date between '{date_min}' and '{date_max}'""".format(**sql_vars),
         logging.info('Expanding naics codes')
         X['naics1'] = aux.naics_codes.dropna().apply(lambda n: set(i[0] for i in n) )
         X['naics2'] = aux.naics_codes.dropna().apply(lambda n: set(i[0:2] for i in n) )
-        data.binarize_set(X, 'naics1')
-        data.binarize_set(X, 'naics2')
+        data.binarize_sets(X, ['naics1'])
+        data.binarize_sets(X, ['naics2'])
 
         #_investigations_lists(X, drop=self.investigations_drop_lists) 
         #X = data.select_features(X, exclude=self.EXCLUDE)
 	
 	# Binarizes state and region
-        data.binarize(X, category_classes={'region', 'state'})
+        data.binarize(X, ['region', 'state'])
 	
 	# Converts to np array so that it can be fed into models
         X = X.astype(np.float32, copy=False)

@@ -63,7 +63,7 @@ evaluation_args = dict(
     evaluation=True
 )
 
-forest = {'__class_name__':['sklearn.ensemble.RandomForestClassifier'], 
+forest = {'_class_name':['sklearn.ensemble.RandomForestClassifier'], 
         'n_estimators':[500],
         'criterion':['entropy'],
         'balanced':[True],
@@ -71,37 +71,37 @@ forest = {'__class_name__':['sklearn.ensemble.RandomForestClassifier'],
         'random_state':[0],
         'n_jobs':[-1]}
 
-logit = {'__class_name__':['sklearn.linear_model.LogisticRegression'],
+logit = {'_class_name':['sklearn.linear_model.LogisticRegression'],
         'penalty':['l1'], 'C':[0.1]}
 
-adaboost = {'__class_name__':['sklearn.ensemble.AdaBoostClassifier'],
+adaboost = {'_class_name':['sklearn.ensemble.AdaBoostClassifier'],
             'n_estimators':[25],
             'learning_rate':[1]}
 
-gradient= {'__class_name__':['sklearn.ensemble.GradientBoostingClassifier'],
+gradient= {'_class_name':['sklearn.ensemble.GradientBoostingClassifier'],
             'loss':['deviance'],
             'learning_rate':[0.1],
             'n_estimators':[100],
             'max_depth':[3]}
 
-svm = {'__class_name__':['sklearn.svm.LinearSVC'],
+svm = {'_class_name':['sklearn.svm.LinearSVC'],
         'C':[.01], 'penalty':['l1'], 'dual':[False]}
 
-forest_search = {'__class_name__':['sklearn.ensemble.RandomForestClassifier'], 
+forest_search = {'_class_name':['sklearn.ensemble.RandomForestClassifier'], 
         'n_estimators':[500],
         'criterion': ['entropy', 'gini'],
         'max_features':['sqrt','log2'],
         'n_jobs':[-1], 'random_state':[0]}
 
-logit_search = {'__class_name__':['sklearn.linear_model.LogisticRegression'],
+logit_search = {'_class_name':['sklearn.linear_model.LogisticRegression'],
         'penalty':['l1','l2'], 'C':[.01,.1,1,10]}
 
-adaboost_search = {'__class_name__':['sklearn.ensemble.AdaBoostClassifier'],
+adaboost_search = {'_class_name':['sklearn.ensemble.AdaBoostClassifier'],
             'n_estimators':[20,30,50]}
 
-svm_search = [{'__class_name__':['sklearn.svm.LinearSVC'],
+svm_search = [{'_class_name':['sklearn.svm.LinearSVC'],
         'C':[.01,.1,1], 'penalty':['l2'], 'dual':[True,False]},
-        {'__class_name__':['sklearn.svm.LinearSVC'],
+        {'_class_name':['sklearn.svm.LinearSVC'],
         'C':[.01,.1,1], 'penalty':['l1'], 'dual':[False]}]
 
 ### the "baseline" models are random forests with manually selected train_years
@@ -121,7 +121,7 @@ def violation_state_ipw():
 def violation_state_data():
     data = [m.inputs[1] for m in models(transform_search= dict(train_years=5, year=range(2012,2017), **violation_state_args), estimator_search=forest)]
     for d in data:
-        d._target = True
+        d.target = True
 
     return data
 
@@ -218,15 +218,15 @@ def evaluation_and_violation_models(es, vs):
     evs = []
     for e in es:
         e_year = e.inputs[1].year
-        e.get_input('transform')._name = 'e_transform'
-        e.get_input('estimator')._name = 'e_estimator'
-        e.get_input('y')._name = 'e_y'
+        e.get_input('transform').name = 'e_transform'
+        e.get_input('estimator').name = 'e_estimator'
+        e.get_input('y').name = 'e_y'
         for v in vs:
             v_year = v.inputs[1].year
             if e_year == v_year:
                 ev = model.PredictProduct(inputs= [e,v], 
-                    inputs_mapping=['evaluation', 'violation'], 
-                    target=True)
+                    inputs_mapping=['evaluation', 'violation'])
+                ev.target = True
                 evs.append(ev)
     return evs
 
@@ -237,10 +237,12 @@ def calibrated_violation():
 def calibrated_evaluation_and_violation():
     e = calibrated_evaluation()[0]
     v = calibrated_violation()[0]
-    ve = model.PredictProduct(inputs= [e,v], inputs_mapping=['inspection', 'violation'], target=True)
-    ve.get_input('transform').__name__ = 'transform2'
-    ve.get_input('estimator').__name__ = 'estimator2'
-    ve.get_input('y').__name__ = 'y2'
+    ve = model.PredictProduct(inputs= [e,v], inputs_mapping=['inspection', 'violation'])
+    ve.target = True
+
+    ve.get_input('transform').name = 'transform2'
+    ve.get_input('estimator').name = 'estimator2'
+    ve.get_input('y').name = 'y2'
     return [ve]
 
 
@@ -260,28 +262,35 @@ def models(transform_search, estimator_search, evaluation_models=None, predict_t
 
     if evaluation_models is not None:
         for e in evaluation_models:
-            e.get_input('transform')._name = 'ipw_transform'
-            e.get_input('estimator')._name = 'ipw_estimator'
-            e.get_input('y')._name = 'ipw_y'
+            e.get_input('transform').name = 'ipw_transform'
+            e.get_input('estimator').name = 'ipw_estimator'
+            e.get_input('y').name = 'ipw_y'
 
     for transform_args, estimator_args in product(
             util.dict_product(transform_search), 
             util.dict_product(estimator_search)):
         logging.info('%s, %s' % (transform_args, estimator_args))
 
-        transform = EpaTransform(month=1, day=1, name='transform', **transform_args)
+        transform = EpaTransform(month=1, day=1, **transform_args)
+        transform.name='transform'
 
-        estimator = step.Construct(name='estimator', **estimator_args)
+        estimator = step.Construct(**estimator_args)
+        estimator.name='estimator'
 
         if evaluation_models is None:
-            y = model.FitPredict(inputs=[estimator, transform], name='y', target=True, predict_train=predict_train)
+            y = model.FitPredict(inputs=[estimator, transform], predict_train=predict_train)
+            y.target = True
+            y.name = 'y'
+
             steps.append(y)
         else:
             # find all evaluation models of the same year and add them via IPW
             for e in evaluation_models:
                 if e.inputs[1].year == transform.year:
                     ipw = model.InverseProbabilityWeights(inputs=[e])
-                    y = model.FitPredict(inputs=[estimator, transform, ipw], name='y', target=True)
+                    y = model.FitPredict(inputs=[estimator, transform, ipw])
+                    y.target = True
+                    y.name = 'y'
                     steps.append(y)
 
     return steps
@@ -299,13 +308,18 @@ def calibrated_models(transform_search={}, estimator_search={}):
             util.dict_product(estimator_search)):
         logging.info('%s, %s' % (transform_args, estimator_args))
 
-        transform = EpaTransform(month=1, day=1, name='transform', **transform_args)
+        transform = EpaTransform(month=1, day=1, **transform_args)
+        transform.name = 'transform'
         
-        estimator = step.Construct(name='estimator', **estimator_args)
+        estimator = step.Construct(**estimator_args)
+        estimator.name = 'estimator'
         calibrator =  step.Construct('sklearn.calibration.CalibratedClassifierCV', cv=10,
-                inputs=[estimator], inputs_mapping=['base_estimator'], name='calibrator')
+                inputs=[estimator], inputs_mapping=['base_estimator'])
+        calibrator.name = 'calibrator'
 
-        y = model.FitPredict(inputs=[calibrator, transform], name='y', target=True)
+        y = model.FitPredict(inputs=[calibrator, transform])
+        y.target = True
+        y.name = 'y'
         steps.append(y)
 
     return steps
