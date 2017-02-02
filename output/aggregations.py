@@ -62,7 +62,7 @@ def all_dict(dates=dates):
         'handlers':handlers(dates), 
         'investigations':investigations(dates),
         'icis': icis(dates), 
-        #'rmp': rmp(dates),
+        'rmp': rmp(dates),
 	'manifest': manifest(dates),
 	'manifest_monthly': manifest_monthly(dates),
 	'br':br(dates),
