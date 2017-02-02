@@ -115,7 +115,7 @@ def evaluation_and_violation_state_baseline():
     return evaluation_and_violation_models(evaluation_state_baseline(), violation_state_baseline())
 
 def violation_state_ipw():
-    return models(transform_search= dict(train_years=5, year=range(2010,2018), **violation_state_args), estimator_search=forest, evaluation_models = evaluation_state_baseline()) 
+    return models(transform_search= dict(train_years=5, year=range(2010,2018), **violation_state_args), estimator_search=forest, evaluation_models = evaluation_state_logit()) 
 
 # for dumping data for storing
 def violation_state_data():
@@ -154,6 +154,10 @@ def violation_state_best():
             models(transform_search= dict(train_years=5, year=range(2010,2016), **violation_state_args), estimator_search=adaboost) +
             models(transform_search= dict(train_years=5, year=range(2010,2016), **violation_state_args), estimator_search=svm) +
             models(transform_search= dict(train_years=5, year=range(2010,2016), **violation_state_args), estimator_search=gradient))
+
+def evaluation_state_logit():
+    return models(transform_search= dict(train_years=range(2,5), year=range(2012,2018), **evaluation_state_args), estimator_search=logit_search)
+
 
 
 ## national models
