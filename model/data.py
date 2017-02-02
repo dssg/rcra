@@ -71,9 +71,6 @@ where date between '{date_min}' and '{date_max}'""".format(**sql_vars),
         self.inputs = [X, br] + self.aggregators.values()
 
     def run(self, X, br, *args):
-        # Subset to NY for memory reasons
-        X = X[X.state == 'NY']
-        
         logging.info('Adding features')
         X['handler_received'] = X.handler_id.notnull()
         X['handler_age'] = (X.date - X.receive_date)/util.day
@@ -126,13 +123,13 @@ where date between '{date_min}' and '{date_max}'""".format(**sql_vars),
         data.binarize_sets(X, ['naics2'])
 
         #_investigations_lists(X, drop=self.investigations_drop_lists) 
-        #X = data.select_features(X, exclude=self.EXCLUDE)
-	
 	# Binarizes state and region
         data.binarize(X, ['region', 'state'])
 	
 	# Converts to np array so that it can be fed into models
         X = X.astype(np.float32, copy=False)
+        # make sure active_today is a bool
+        aux['active_today'] = aux.active_today.astype(np.bool)
         return {'X': X, 'aux':aux}
 
 def _investigations_lists(df, drop):
