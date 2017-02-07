@@ -9,7 +9,7 @@ violation_state_args = dict(
     evaluation=False
 )
 
-violation_state_lqg_args = util.merge_dicts(violation_state_args,
+violation_state_lqg_args = util.dict_merge(violation_state_args,
     dict(train_query='aux.evaluation_state & (aux.manifest_monthly_3y_approx_qty_max >= 1000)'))
 
 violation_epa_args = dict(
@@ -53,7 +53,7 @@ evaluation_state_args = dict(
     evaluation=True
 )
 
-evaluation_state_lqg_args = util.merge_dicts(evaluation_state_args,
+evaluation_state_lqg_args = util.dict_merge(evaluation_state_args,
     dict(train_query='aux.manifest_monthly_3y_approx_qty_max >= 1000'))
 
 evaluation_args = dict(
@@ -73,6 +73,9 @@ forest = {'_class_name':['sklearn.ensemble.RandomForestClassifier'],
 
 logit = {'_class_name':['sklearn.linear_model.LogisticRegression'],
         'penalty':['l1'], 'C':[0.1]}
+
+logit_evaluation = {'_class_name':['sklearn.linear_model.LogisticRegression'],
+        'penalty':['l1'], 'C':[0.01]}
 
 adaboost = {'_class_name':['sklearn.ensemble.AdaBoostClassifier'],
             'n_estimators':[25],
@@ -111,11 +114,14 @@ def violation_state_baseline():
 def evaluation_state_baseline():
     return models(transform_search= dict(train_years=5, year=range(2010,2018), **evaluation_state_args), estimator_search=forest, predict_train=True) 
 
+def evaluation_state_baseline_logit():
+    return models(transform_search= dict(train_years=3, year=range(2010,2018), **evaluation_state_args), estimator_search=logit_evaluation, predict_train=True) 
+
 def evaluation_and_violation_state_baseline():
     return evaluation_and_violation_models(evaluation_state_baseline(), violation_state_baseline())
 
 def violation_state_ipw():
-    return models(transform_search= dict(train_years=5, year=range(2010,2018), **violation_state_args), estimator_search=forest, evaluation_models = evaluation_state_logit()) 
+    return models(transform_search= dict(train_years=3, year=range(2010,2018), **violation_state_args), estimator_search=forest, evaluation_models = evaluation_state_baseline_logit()) 
 
 # for dumping data for storing
 def violation_state_data():
@@ -259,7 +265,7 @@ def models(transform_search, estimator_search, evaluation_models=None, predict_t
         test: whether or not to predict on training set
     """
     steps = []
-    #transform_search = util.merge_dicts(dict(
+    #transform_search = util.dict_merge(dict(
     #    train_years = [5],
     #    year=range(2011,2015+1)
     #), transform_search)
@@ -302,7 +308,7 @@ def models(transform_search, estimator_search, evaluation_models=None, predict_t
 
 def calibrated_models(transform_search={}, estimator_search={}):
     steps = []
-    transform_search = util.merge_dicts(dict(
+    transform_search = util.dict_merge(dict(
         train_years = [3],
         year=range(2012,2015+1)
     ), transform_search)
