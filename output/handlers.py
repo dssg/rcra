@@ -44,8 +44,11 @@ class HandlersAggregation(SpacetimeAggregation):
     def get_aggregates(self, date, delta):
         aggregates = [
             Count(),
-            Count(HANDLER_BOOLEANS, prop=True),
-            Aggregate(days('receive_date', date), 'max', name='receive_date')
+            Count(HANDLER_BOOLEANS, prop=True)
         ]
+        if delta == 'all':
+            aggregates.append(
+                    Aggregate(days('receive_date', date), 
+                              ['max','min'], name='receive_date'))
 
         return aggregates

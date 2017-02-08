@@ -32,6 +32,7 @@ class ManifestAggregation(SpacetimeAggregation):
         
         aggregates = [
             Count(name='line_items'),
+            Aggregate('gen_sign_date', 'nunique'),
             Aggregate('approx_qty', ['sum','max','min','mean','std','skew'], name='pounds_shipped'),
             Aggregate([has_waste_type(p) for p in WASTE_CODE_PREFIXES],
                 ['any'], name = ['waste_code_%s' % p for p in WASTE_CODE_PREFIXES]),
@@ -42,8 +43,12 @@ class ManifestAggregation(SpacetimeAggregation):
             Aggregate(lambda x: x.unit_of_measure.isin(['L','N','Y']), ['any'], name = 'liquid_shipped'),
             Aggregate(lambda x: np.where(x.unit_of_measure.isin(['L','N','Y']), x.approx_qty, np.zeros(np.shape(x.approx_qty))), ['sum','max','min','mean','std','skew'], name = 'pounds_liquid_shipped'),
             Aggregate(lambda x: np.where(~x.unit_of_measure.isin(['L','N','Y']), x.approx_qty, np.zeros(np.shape(x.approx_qty))), ['sum','max','min','mean','std','skew'], name = 'pounds_solid_shipped'),
+        ]
 
-            ]
+        if delta == 'all':
+            aggregates.append(
+                    Aggregate(days('gen_sign_date', date), 
+                              ['max','min'], name='gen_sign_date'))
 
         return aggregates
 
