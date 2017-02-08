@@ -66,6 +66,8 @@ from manifest
 join output.facilities using (rcra_id)
 );
 
+CREATE INDEX ON output.manifest (rcra_id);
+
 -- Converting waste_qty to all be in pounds
 ALTER TABLE output.manifest add approx_qty double precision;
 
