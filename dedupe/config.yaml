@@ -1,0 +1,16 @@
+# Schema for Dedupe's tables:
+schema: dedupe
+# The source table to dedupe:
+table: output.handlers
+# The column in the source table that is the key
+key: handler_id
+# The fields to use as evidence of a duplicate row and their comparison operator:
+fields:
+    -   field: current_site_name 
+        type: Name
+regexp_replace:
+    - "'[^ -~]'"
+    - "''"
+    - "'g'"
+merge_exact:
+    - rcra_id
