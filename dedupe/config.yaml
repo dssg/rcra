@@ -7,7 +7,7 @@ key: handler_id
 # The fields to use as evidence of a duplicate row and their comparison operator:
 fields:
     -   field: current_site_name 
-        type: Name
+        type: String
 regexp_replace:
     - "'[^ -~]'"
     - "''"
