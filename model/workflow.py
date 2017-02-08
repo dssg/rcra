@@ -1,7 +1,8 @@
 from drain import step, model, util
 from epa.model.transform import EpaTransform
-import logging
 from itertools import product
+
+YEARS = range(2010, 2015+1)
 
 violation_state_args = dict(
     outcome_expr='aux.violation_state',
@@ -109,19 +110,19 @@ svm_search = [{'_class_name':['sklearn.svm.LinearSVC'],
 
 ### the "baseline" models are random forests with manually selected train_years
 def violation_state_baseline():
-    return models(transform_search= dict(train_years=5, year=range(2010,2018), **violation_state_args), estimator_search=forest) 
+    return models(transform_search= dict(train_years=5, year=YEARS, **violation_state_args), estimator_search=forest) 
 
 def evaluation_state_baseline():
-    return models(transform_search= dict(train_years=5, year=range(2010,2018), **evaluation_state_args), estimator_search=forest, predict_train=True) 
+    return models(transform_search= dict(train_years=5, year=YEARS, **evaluation_state_args), estimator_search=forest, predict_train=True) 
 
 def evaluation_state_baseline_logit():
-    return models(transform_search= dict(train_years=3, year=range(2010,2018), **evaluation_state_args), estimator_search=logit_evaluation, predict_train=True) 
+    return models(transform_search= dict(train_years=3, year=YEARS, **evaluation_state_args), estimator_search=logit_evaluation, predict_train=True) 
 
 def evaluation_and_violation_state_baseline():
     return evaluation_and_violation_models(evaluation_state_baseline(), violation_state_baseline())
 
 def violation_state_ipw():
-    return models(transform_search= dict(train_years=3, year=range(2010,2018), **violation_state_args), estimator_search=forest, evaluation_models = evaluation_state_baseline_logit()) 
+    return models(transform_search= dict(train_years=3, year=YEARS, **violation_state_args), estimator_search=forest, evaluation_models = evaluation_state_baseline_logit()) 
 
 # for dumping data for storing
 def violation_state_data():
@@ -139,6 +140,12 @@ def violation_state_original_data():
 def violation_state_train_years():
     return models(transform_search= dict(train_years=range(1,8), year=range(2010,2016), **violation_state_args), estimator_search=adaboost)
 
+def violation_state_train_queries():
+    transform_search = util.dict_merge(violation_state_args, dict(year=YEARS, train_years=5, train_query=[
+            'aux.evaluation_state',
+            'aux.evaluation_state & aux.handler_received & (aux.active_today | (aux.handler_age < 365) | aux.br)'
+        ]))
+    return models(transform_search= transform_search, estimator_search=adaboost)
 
 # grid searches for various model classes
 def violation_state_adaboost():
@@ -279,7 +286,6 @@ def models(transform_search, estimator_search, evaluation_models=None, predict_t
     for transform_args, estimator_args in product(
             util.dict_product(transform_search), 
             util.dict_product(estimator_search)):
-        logging.info('%s, %s' % (transform_args, estimator_args))
 
         transform = EpaTransform(month=1, day=1, **transform_args)
         transform.name='transform'
@@ -316,7 +322,6 @@ def calibrated_models(transform_search={}, estimator_search={}):
     for transform_args, estimator_args in product(
             util.dict_product(transform_search), 
             util.dict_product(estimator_search)):
-        logging.info('%s, %s' % (transform_args, estimator_args))
 
         transform = EpaTransform(month=1, day=1, **transform_args)
         transform.name = 'transform'
