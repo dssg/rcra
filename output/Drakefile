@@ -23,6 +23,4 @@ $[SQL_DIR]/output/facility_years0101 <- output/facility_years.py, output/facilit
 
 $[SQL_DIR]/output/icis_fec <- output/icis_fec.sql, $[SQL_DIR]/icis/fec [method:psql]
 
-$[SQL_DIR]/output/rmp <- output/rmp.sql, $[SQL_DIR]/rmp, $[SQL_DIR]/frs [method:psql]
-
 $[SQL_DIR]/output/nysdec_reports <- output/nysdec_reports.sql [method:psql]
