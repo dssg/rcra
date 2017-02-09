@@ -272,10 +272,6 @@ def models(transform_search, estimator_search, evaluation_models=None, predict_t
         test: whether or not to predict on training set
     """
     steps = []
-    #transform_search = util.dict_merge(dict(
-    #    train_years = [5],
-    #    year=range(2011,2015+1)
-    #), transform_search)
 
     if evaluation_models is not None:
         for e in evaluation_models:
