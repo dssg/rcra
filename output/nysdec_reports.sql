@@ -2,7 +2,7 @@
 -- each line is a unique combination of HANDLER_ID, HZ_PG, and REPORT_YEAR
 
 DROP TABLE IF EXISTS nysdec_reports.gm_combined;
-CREATE TABLE nysdec_reports.gm_combined AS
+CREATE TABLE nysdec_reports.gm_combined AS (
     SELECT a.*,
         b.epa_waste_codes, 
         c.state_waste_codes, 
@@ -59,7 +59,8 @@ CREATE TABLE nysdec_reports.gm_combined AS
                     exempt_residual,
                     exempt_recycling
             FROM nysdec_reports.gm1nydec) f 
-        ON a.handler_id = f.handler_id AND a.hz_pg = f.hz_pg AND a.report_year = f.report_year;
+        ON a.handler_id = f.handler_id AND a.hz_pg = f.hz_pg AND a.report_year = f.report_year
+);
 
 -- convert gen_qty to pounds
 
@@ -183,7 +184,7 @@ CREATE TABLE output.si_combined AS
 --       so that will be created here
 
 DROP TABLE IF EXISTS output.nysdec_reports;
-CREATE TABLE output.nysdec_reports AS
+CREATE TABLE output.nysdec_reports AS (
     SELECT handler_id as rcra_id,
         report_year,
         make_date(report_year::int+1, 1, 1) as date, -- assume 2013 AR available 2014-1-1
@@ -208,7 +209,7 @@ CREATE TABLE output.nysdec_reports AS
         sum(CASE WHEN exempt_residual = 'Y' THEN 1 ELSE 0 END) AS number_exempt_residuals,
         sum(CASE WHEN exempt_recycling = 'Y' THEN 1 ELSE 0 END) AS number_exempt_recycling
     FROM nysdec_reports.gm_combined
-    GROUP BY handler_id, report_year;
+    GROUP BY handler_id, report_year
+);
 
-
-
+ALTER TABLE output.nysdec_reports ADD PRIMARY KEY (rcra_id, report_year);
