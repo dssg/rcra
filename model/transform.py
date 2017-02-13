@@ -25,7 +25,6 @@ class EpaTransform(Step):
             investigations={},
             handlers={},
             icis={},
-            rmp={},
             investigations_expand_counts=False,
             exclude=[], include=[],
             impute=True, normalize=True):
@@ -39,7 +38,7 @@ class EpaTransform(Step):
                 train_query = train_query,
                 evaluation = evaluation,
                 investigations=investigations, handlers=handlers, 
-                icis=icis, rmp=rmp,
+                icis=icis, 
                 investigations_expand_counts=investigations_expand_counts,
                 exclude=exclude, include=include, impute=impute, normalize=normalize)
 
@@ -77,7 +76,6 @@ class EpaTransform(Step):
 #        X = aggregators['investigations'].select(X, self.investigations)
 #        X = aggregators['handlers'].select(X, self.handlers)
 #        X = aggregators['icis'].select(X, self.icis)
-#        X = aggregators['rmp'].select(X, self.icis)
 
         logging.info('Splitting train and test sets')
         today = date(self.year, self.month, self.day)

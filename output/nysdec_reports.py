@@ -3,16 +3,19 @@ from datetime import date
 import pandas as pd
 
 from drain.util import day
-from drain.data import FromSQL
+from drain.data import FromSQL, Merge
 from drain.aggregate import Aggregate, Count
 from drain.aggregation import SpacetimeAggregation
+
+from epa.output import facilities
 
 reports = FromSQL(table='output.nysdec_reports', parse_dates=['date'])
 reports.target = True
 
 class NYSDECReportsAggregation(SpacetimeAggregation):
     def __init__(self, spacedeltas, dates, parallel=True):
-        SpacetimeAggregation.__init__(self, inputs=[reports],
+        SpacetimeAggregation.__init__(self, 
+                inputs=[Merge(inputs=[reports, facilities], on='rcra_id')],
                 spacedeltas=spacedeltas, dates=dates, 
                 prefix='reports', date_column='date', parallel=parallel)
 

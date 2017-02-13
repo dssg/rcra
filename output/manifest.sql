@@ -93,10 +93,3 @@ set approx_qty = case when unit_of_measure = 'K' then waste_qty * POUNDS_IN_KILO
                 when unit_of_measure = 'Y' then specific_gravity * POUNDS_IN_ONE_GALLON_OF_WATER * waste_qty * GALLONS_IN_CUBIC_YARD
                 end;
 end $$;
-
-
-
-
-
-
-

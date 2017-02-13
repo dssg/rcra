@@ -63,3 +63,5 @@ CREATE TABLE output.br as (
 	from rcra.br_reporting
         join output.facilities on handler_id = rcra_id
 	group by 1,2);
+
+ALTER TABLE output.br ADD PRIMARY KEY (rcra_id, reporting_year);

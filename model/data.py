@@ -114,6 +114,10 @@ where date between '{date_min}' and '{date_max}'""".format(**sql_vars),
                 aux.last_investigation_days*util.day)
         aux['manifest_monthly_3y_approx_qty_max'] = X.manifest_monthly_facility_3y_approx_qty_max
         aux['manifest_monthly_all_approx_qty_max'] = X.manifest_monthly_facility_all_approx_qty_max
+
+        aux['last_manifest_gen_sign_days'] = X['manifest_facility_all_gen_sign_date_min']
+        aux['last_manifest_gen_sign_date'] = (index_as_series(aux, 'date') - 
+                aux.last_manifest_gen_sign_days*util.day)
         
 	# Drops NA in NAICS codes and theb binarizes them
         logging.info('Expanding naics codes')

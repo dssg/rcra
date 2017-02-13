@@ -5,12 +5,12 @@ import numpy as np
 import itertools
 
 from drain import util, data, aggregate
-from drain.data import date_censor_sql, ToHDF, FromSQL, Revise
+from drain.data import date_censor_sql, ToHDF, FromSQL, Revise, Merge
 from drain.step import Step
 from drain.aggregation import SpacetimeAggregation, SimpleAggregation
 from drain.aggregate import Aggregate, Count, aggregate_counts, days
 
-from epa.output import investigations_sql
+from epa.output import investigations_sql, facilities
 
 # these are arrays that get concatenated and then counted and proportioned
 #list_columns = ['violation_type', 'enforcement_type', 'evaluation_type',
@@ -50,7 +50,7 @@ class InvestigationsAggregation(SpacetimeAggregation):
                     date = self.dates[0],
                     from_sql_args={'parse_dates':parse_dates})
             for j in i.inputs: j.target = True
-            self.inputs = [j]
+            self.inputs = [Merge(inputs=[i, facilities], on='rcra_id')]
 
     def get_aggregates(self, date, delta):
         aggregates =  [

@@ -1,7 +1,6 @@
 from epa.output.handlers import HandlersAggregation
 from epa.output.investigations import InvestigationsAggregation
 from epa.output.icis import IcisFecAggregation
-from epa.output.rmp import RmpAggregation
 from epa.output.manifest import ManifestAggregation
 from epa.output.manifest_monthly import ManifestMonthlyAggregation
 from epa.output.br import BrAggregation 
@@ -12,14 +11,13 @@ from datetime import date
 from repoze.lru import lru_cache
 
 # TODO: zip level agg
-indexes = {'facility': 'rcra_id', 'state':'state'}
-#indexes = {'facility': 'rcra_id', 'state':'state','zip':'handler_zip_code'}
-
+indexes = {'facility': 'rcra_id', 'zip': 'zip_code'}
 deltas = {'facility' : ['1y', '5y', 'all'],
-#          'state': ['2y']
-        }
+          'zip': ['2y']}
 
-manifest_deltas = {'facility' : ['6m', '1y', '5y', 'all'], }
+manifest_deltas = {'facility' : ['6m', '1y', '5y', 'all'],
+                   'zip': ['2y']}
+
 manifest_monthly_deltas = {'facility' : ['3y', 'all'] }
 
 #Spacedeltas: what we will be aggregating over (what we are grouping over)?
@@ -37,9 +35,6 @@ def handlers(dates=dates):
 
 def icis(dates=dates):
     return IcisFecAggregation(util.dict_subset(spacedeltas, ['facility']), dates)
-
-def rmp(dates=dates):
-    return RmpAggregation(util.dict_subset(spacedeltas, ['facility']), dates)
 
 def investigations(dates=dates):
     return InvestigationsAggregation(spacedeltas, dates=dates)
@@ -62,7 +57,6 @@ def all_dict(dates=dates):
         'handlers':handlers(dates), 
         'investigations':investigations(dates),
         'icis': icis(dates), 
-        'rmp': rmp(dates),
 	'manifest': manifest(dates),
 	'manifest_monthly': manifest_monthly(dates),
 	'br':br(dates),

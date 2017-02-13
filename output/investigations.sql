@@ -86,3 +86,5 @@ select *,
     formal_enforcement and enforcement_epa as formal_enforcement_epa
  from investigations
 );
+
+alter table output.investigations add primary key (rcra_id, start_date);
