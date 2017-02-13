@@ -3,16 +3,19 @@ from datetime import date
 import pandas as pd
 
 from drain.util import day
-from drain.data import FromSQL
+from drain.data import FromSQL, Merge
 from drain.aggregate import Aggregate, Count
 from drain.aggregation import SpacetimeAggregation
+
+from epa.output import facilities
 
 icis = FromSQL(table='output.icis_fec', parse_dates=['activity_status_date'])
 icis.target = True
 
 class IcisFecAggregation(SpacetimeAggregation):
     def __init__(self, spacedeltas, dates, parallel=True):
-        SpacetimeAggregation.__init__(self, inputs=[icis],
+        SpacetimeAggregation.__init__(self, 
+                inputs=[Merge(inputs=[icis, facilities], on='rcra_id')],
                 spacedeltas=spacedeltas, dates=dates, 
                 prefix='icis_fec', date_column='activity_status_date', 
                 parallel=parallel)

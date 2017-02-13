@@ -33,7 +33,7 @@ f as (select epa_handler_id as rcra_id from rcra.hhandler UNION select rcra_id f
 
 select rcra_id,
     coalesce(active_today, False) as active_today,
-    state, region,
+    location_zip_code as zip_code, state, region,
     naics_codes, min_start_date, max_start_date, min_receive_date, max_receive_date
 from f
 left join active_facilities using (rcra_id)

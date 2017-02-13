@@ -4,9 +4,11 @@ import re
 import numpy as np
 
 from drain.util import day
-from drain.data import FromSQL
+from drain.data import FromSQL, Merge
 from drain.aggregate import Aggregate, Count, days
 from drain.aggregation import SpacetimeAggregation
+
+from epa.output import facilities
 
 WASTE_CODE_PREFIXES = ('P', 'U', 'D', 'F')
 # acute waste is defined as either P waste or one of these six F wastes
@@ -23,7 +25,8 @@ manifest.target = True
 
 class ManifestAggregation(SpacetimeAggregation):
     def __init__(self, spacedeltas, dates, parallel=True):
-        SpacetimeAggregation.__init__(self, inputs=[manifest], 
+        SpacetimeAggregation.__init__(self, 
+                inputs=[Merge(inputs=[manifest, facilities], on='rcra_id')], 
                 spacedeltas=spacedeltas, dates=dates, 
                 prefix='manifest', date_column='gen_sign_date', 
                 parallel=parallel)

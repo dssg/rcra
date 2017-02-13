@@ -3,9 +3,11 @@ from datetime import date
 import pandas as pd
 
 from drain.util import day
-from drain.data import FromSQL
+from drain.data import FromSQL, Merge
 from drain.aggregate import Aggregate, Count
 from drain.aggregation import SpacetimeAggregation
+
+from epa.output import facilities
 
 
 boolean_columns = ['management_location_onsite', 'management_location_offsite', 'management_location_none', 
@@ -23,7 +25,8 @@ br.target = True
 
 class BrAggregation(SpacetimeAggregation):
     def __init__(self, spacedeltas, dates, parallel=True):
-        SpacetimeAggregation.__init__(self, inputs=[br],
+        SpacetimeAggregation.__init__(self, 
+                inputs=[Merge(inputs=[br, facilities], on='rcra_id')],
                 spacedeltas=spacedeltas, dates=dates, 
                 prefix='br', date_column='date', parallel=parallel)
 
