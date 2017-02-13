@@ -26,3 +26,5 @@ $[SQL_DIR]/output/icis_fec <- output/icis_fec.sql, $[SQL_DIR]/icis/fec [method:p
 $[SQL_DIR]/output/rmp <- output/rmp.sql, $[SQL_DIR]/rmp, $[SQL_DIR]/frs [method:psql]
 
 $[SQL_DIR]/output/nysdec_reports <- output/nysdec_reports.sql [method:psql]
+
+$[SQL_DIR]/output/handler_names <- output/handler_names.sql, $[SQL_DIR]/output/handlers [method:psql]
