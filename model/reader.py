@@ -24,7 +24,9 @@ class EpaHDFReader(Step):
         #if self.region is not None:
         #    where = "(region == {region}) & ({where})".format(region=self.region, where=where)
         logging.info('Reading X')
-        X = store.select('X', where=where)
+        #X = store.select('X', where=where)
+        X = store['X']
+        X = X.query(where)
 
         # evaluation shouldn't be part of X
         X.drop(['evaluation'], axis=1, inplace=True)

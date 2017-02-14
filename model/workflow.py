@@ -1,13 +1,21 @@
 from drain import step, model, util
 from epa.model.transform import EpaTransform
+from epa.output.aggregations import spacedeltas
 from itertools import product
 
 YEARS = range(2010, 2015+1)
 
+aggregations = {a: {level: indexdelta[1]  for level, indexdelta in s.items()}
+                for a,s in spacedeltas.iteritems()}
+
+def aggregations_by_index(names):
+    return {a: util.dict_subset(d, names) for a,d in aggregations.items()}
+
 violation_state_args = dict(
     outcome_expr='aux.violation_state',
     train_query='aux.evaluation_state',
-    evaluation=False
+    evaluation=False,
+    aggregations=aggregations
 )
 
 violation_state_lqg_args = util.dict_merge(violation_state_args,
@@ -131,6 +139,14 @@ def violation_state_data():
         d.target = True
 
     return data
+
+def violation_state_aggregation_levels():
+    transform_search = dict(train_years=5, year=YEARS, **violation_state_args)
+    transform_search['aggregations'] = [
+            aggregations_by_index(names) for names in [[], ['facility'], ['facility', 'zip'], ['facility', 'entity'], ['facility', 'zip', 'entity']]
+    ]
+                                        
+    return models(transform_search=transform_search, estimator_search=forest)
 
 # no manifest
 def violation_state_original_data():

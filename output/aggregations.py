@@ -10,13 +10,17 @@ from drain import util
 from datetime import date
 from repoze.lru import lru_cache
 
-# TODO: zip level agg
-indexes = {'facility': 'rcra_id', 'zip': 'zip_code'}
+indexes = {'facility': 'rcra_id', 
+           'zip': 'zip_code', 
+           'entity': 'entity_id'}
+
 deltas = {'facility' : ['1y', '5y', 'all'],
-          'zip': ['2y']}
+          'zip': ['2y'],
+          'entity': ['5y']}
 
 manifest_deltas = {'facility' : ['6m', '1y', '5y', 'all'],
-                   'zip': ['2y']}
+                   'zip': ['2y'],
+                   'entity': ['5y']}
 
 manifest_monthly_deltas = {'facility' : ['3y', 'all'] }
 
@@ -30,39 +34,28 @@ manifest_monthly_spacedeltas = {index: (indexes[index], manifest_monthly_deltas[
 #dates here is our prediction window of dates?
 dates = tuple(date(y,1,1) for y in range(2007,2017+1))
 
-def handlers(dates=dates):
-    return HandlersAggregation(spacedeltas, dates)
+aggregations = {'handlers': HandlersAggregation, 
+                'icis_fec': IcisFecAggregation, 
+                'investigations': InvestigationsAggregation,
+                'manifest': ManifestAggregation, 
+                'manifest_monthly': ManifestMonthlyAggregation, 
+                'br': BrAggregation,
+                'nysdec_reports': NYSDECReportsAggregation}
 
-def icis(dates=dates):
-    return IcisFecAggregation(util.dict_subset(spacedeltas, ['facility']), dates)
-
-def investigations(dates=dates):
-    return InvestigationsAggregation(spacedeltas, dates=dates)
-
-def manifest(dates=dates):
-    return ManifestAggregation(manifest_spacedeltas, dates=dates)
-
-def manifest_monthly(dates=dates):
-    return ManifestMonthlyAggregation(manifest_monthly_spacedeltas, dates=dates)
-
-def br(dates=dates):
-    return BrAggregation(spacedeltas, dates=dates)
+spacedeltas = {'handlers': spacedeltas, 
+               'icis_fec': util.dict_subset(spacedeltas, ['facility']),
+               'investigations': spacedeltas,
+               'manifest': manifest_spacedeltas, 
+               'manifest_monthly': manifest_monthly_spacedeltas,
+               'br': spacedeltas,
+               'nysdec_reports': spacedeltas}
 
 def nysdec_reports(dates=dates):
     return NYSDECReportsAggregation(spacedeltas, dates=dates)
 
 @lru_cache(maxsize=10)
 def all_dict(dates=dates):
-    d = {
-        'handlers':handlers(dates), 
-        'investigations':investigations(dates),
-        'icis': icis(dates), 
-	'manifest': manifest(dates),
-	'manifest_monthly': manifest_monthly(dates),
-	'br':br(dates),
-        'nysdec_reports':nysdec_reports(dates)
-    }
-   
+    d = {k: aggregations[k](spacedeltas[k], dates=dates) for k in aggregations.keys()}   
     # set parallel aggregations to be targets
     for a in d.values():
         for i in a.inputs:

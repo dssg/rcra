@@ -34,8 +34,7 @@ load_data()
 %include import/nysdec_reports/Drakefile
 %include import/Drakefile
 %include import/manifest/Drakefile
-
 ; shapefile importing disabled -- steps are broken at the moment
 ;%include import/geo/Drakefile
-
 %include output/Drakefile
+%include dedupe/Drakefile

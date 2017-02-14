@@ -22,32 +22,31 @@ class EpaTransform(Step):
             train_query,
             evaluation, # whether the outcome is an evaluation, hence include unevaluated facilities
             region=None,
-            investigations={},
-            handlers={},
-            icis={},
-            investigations_expand_counts=False,
+            aggregations=None,
             exclude=[], include=[],
             impute=True, normalize=True):
         # Includes or excludes certain features
         exclude = set(exclude)
         include = set(include)
+        if aggregations is None: aggregations = {}
 
         Step.__init__(self, month=month, day=day, year=year, 
-                train_years=train_years, region=region,
+                train_years=train_years, 
+                region=region,
                 outcome_expr=outcome_expr,
                 train_query = train_query,
                 evaluation = evaluation,
-                investigations=investigations, handlers=handlers, 
-                icis=icis, 
-                investigations_expand_counts=investigations_expand_counts,
-                exclude=exclude, include=include, impute=impute, normalize=normalize)
+                aggregations = aggregations,
+                exclude=exclude, include=include, 
+                impute=impute, normalize=normalize)
 
         # The EpaData class 
         self.data = EpaData(month=month, day=day)
 
         # The ToHDF class writes dataframes to a HDF store 
         store = ToHDF(inputs=[self.data],
-                      put_args={'X':dict(format='t', data_columns=['date', 'evaluation'])})
+                      #put_args={'X':dict(format='t', data_columns=['date', 'evaluation'])}
+                )
         store.target = True
 
         self.inputs = [EpaHDFReader(year=year, train_years=train_years, 
@@ -73,10 +72,9 @@ class EpaTransform(Step):
         logging.info('Selecting spatiotemporal aggregations')
         aggregators = self.data.aggregators
 
-#        X = aggregators['investigations'].select(X, self.investigations)
-#        X = aggregators['handlers'].select(X, self.handlers)
-#        X = aggregators['icis'].select(X, self.icis)
-
+        for k in aggregators.keys():
+            X = aggregators[k].select(X, self.aggregations.get(k, []))
+        
         logging.info('Splitting train and test sets')
         today = date(self.year, self.month, self.day)
         train = index_as_series(aux, 'date') < today

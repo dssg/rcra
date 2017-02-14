@@ -58,7 +58,11 @@ where date between '{date_min}' and '{date_max}'""".format(**sql_vars),
             parse_dates=['min_start_date', 'max_start_date',
                          'min_receive_date', 'max_receive_date'])
         facilities.target = True
-        X = Merge(on='rcra_id', how='left', inputs=[facility_years, facilities])	
+
+        handler_names = FromSQL('select rcra_id, dedupe_id as entity_id from dedupe.unique_map', tables=['dedupe.unique_map'])
+        handler_names.target=True
+
+        X = Merge(on='rcra_id', how='left', inputs=[facility_years, facilities, handler_names])	
         # Merges with handler (sqg/lqg status etc.)
         X = Merge(on=['rcra_id', 'handler_id'], how='left',
                 inputs = [X, self.handlers])
