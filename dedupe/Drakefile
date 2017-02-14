@@ -1,0 +1,2 @@
+$[SQL_DIR]/dedupe/unique_map <- dedupe/config.yaml, dedupe/database.yaml, $[SQL_DIR]/output/handler_names
+    python ~/superdeduper/superdeduper/cli.py --config $INPUT0 --db $INPUT1
