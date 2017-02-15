@@ -10,7 +10,7 @@ LQG = '(manifest_monthly_3y_approx_qty_max >= 2200)'
 LQG_UNINSPECTED = '~(last_investigation_days < 1825) and (manifest_monthly_3y_approx_qty_max >= 2200)'
 R2_LQG_UNINSPECTED = "~(last_investigation_days < 1825) and state_district == 'NYSDEC R2' and (manifest_monthly_3y_approx_qty_max >= 2200)"
 
-QUERIES = [ACTIVE, LQG, LQG_UNINSPECTED, R2_LQG_UNINSPECTED]
+QUERIES = [ACTIVE, LQG, LQG_UNINSPECTED]
 
 aggregations = {a: {level: indexdelta[1]  for level, indexdelta in s.items()}
                 for a,s in spacedeltas.iteritems()}
@@ -140,7 +140,8 @@ def violation_state_big_loop():
     transform_search = dict(
             evaluation=False,
             year=YEARS,
-            train_years=[4,6,8],
+            train_years=[5,8],
+            aggregations=aggregations,
     )
     s = []
     outcome_expr = ['aux.violation', 'aux.violation_state']
@@ -155,6 +156,35 @@ def violation_state_big_loop():
         s += models(transform_search=transform_search, 
                     estimator_search=logit)
     return s
+
+def violation_state_ipw_big_loop():
+    transform_search = dict(
+            year=YEARS,
+            train_years=[5,8],
+            aggregations=aggregations
+    )
+    s = []
+
+    tsi = dict(transform_search)
+    tsv = dict(transform_search)
+    for q in QUERIES:    
+        tsi.update(train_query=q)
+        tsi.update(evaluation=True)
+        tsi.update(outcome_expr='aux.evaluation_state')
+
+        i = models(transform_search=tsi,
+                   estimator_search=logit_evaluation)
+
+        for e in logit, forest:
+            tsv.update(train_query='evaluation_state and ' + q)
+            tsv.update(evaluation=False)
+            tsv.update(outcome_expr='aux.violation_state')
+
+            s += models(transform_search=tsv, 
+                        estimator_search=e, 
+                    evaluation_models=i)
+    return s
+
 
 def violation_state_ipw():
     transform_search=dict(train_years=5, year=YEARS, **violation_state_args)
@@ -336,9 +366,12 @@ def models(transform_search, estimator_search, evaluation_models=None, predict_t
 
     if evaluation_models is not None:
         for e in evaluation_models:
-            e.get_input('transform').name = 'ipw_transform'
-            e.get_input('estimator').name = 'ipw_estimator'
-            e.get_input('y').name = 'ipw_y'
+            t = e.get_input('transform')
+            m = e.get_input('estimator')
+            y = e.get_input('y')
+            if t is not None: t.name = 'ipw_transform'
+            if m is not None: m.name = 'ipw_estimator'
+            if y is not None: y.name = 'ipw_y'
 
     for transform_args, estimator_args in product(
             util.dict_product(transform_search), 

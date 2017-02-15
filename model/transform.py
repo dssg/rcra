@@ -21,14 +21,13 @@ class EpaTransform(Step):
             outcome_expr,
             train_query,
             evaluation, # whether the outcome is an evaluation, hence include unevaluated facilities
+            aggregations,
             region=None,
-            aggregations=None,
             exclude=[], include=[],
             impute=True, normalize=True):
         # Includes or excludes certain features
         exclude = set(exclude)
         include = set(include)
-        if aggregations is None: aggregations = {}
 
         Step.__init__(self, month=month, day=day, year=year, 
                 train_years=train_years, 
