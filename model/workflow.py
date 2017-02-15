@@ -5,6 +5,13 @@ from itertools import product
 
 YEARS = range(2010, 2015+1)
 
+ACTIVE = 'handler_received and (active_today or (handler_age < 365) or br)'
+LQG = '(manifest_monthly_3y_approx_qty_max >= 2200)'
+LQG_UNINSPECTED = '~(last_investigation_days < 1825) and (manifest_monthly_3y_approx_qty_max >= 2200)'
+R2_LQG_UNINSPECTED = "~(last_investigation_days < 1825) and state_district == 'NYSDEC R2' and (manifest_monthly_3y_approx_qty_max >= 2200)"
+
+QUERIES = [ACTIVE, LQG, LQG_UNINSPECTED, R2_LQG_UNINSPECTED]
+
 aggregations = {a: {level: indexdelta[1]  for level, indexdelta in s.items()}
                 for a,s in spacedeltas.iteritems()}
 
@@ -13,7 +20,7 @@ def aggregations_by_index(names):
 
 violation_state_args = dict(
     outcome_expr='aux.violation_state',
-    train_query='aux.evaluation_state',
+    train_query='evaluation_state',
     evaluation=False,
     aggregations=aggregations
 )
@@ -23,13 +30,13 @@ violation_state_lqg_args = util.dict_merge(violation_state_args,
 
 violation_epa_args = dict(
     outcome_expr='aux.violation_epa',
-    train_query='aux.evaluation_epa', 
+    train_query='evaluation_epa', 
     evaluation=False
 )
 
 violation_args = dict(
     outcome_expr='aux.violation',
-    train_query='aux.evaluation', 
+    train_query='evaluation', 
     evaluation=False
 )
 
@@ -58,7 +65,7 @@ region_4_args = dict(
 
 evaluation_state_args = dict(
     outcome_expr='aux.evaluation', 
-    train_query=['aux.active_today | aux.evaluation | (aux.handler_age < 365) | aux.br'],
+    train_query=ACTIVE,
     evaluation=True
 )
 
@@ -148,20 +155,36 @@ def violation_state_aggregation_levels():
                                         
     return models(transform_search=transform_search, estimator_search=forest)
 
-# no manifest
-def violation_state_original_data():
-    return models(transform_search= dict(train_years=5, year=range(2012,2016),exclude =[['manifest_.*']], **violation_state_args), estimator_search=forest)
-
 # vary train years
 def violation_state_train_years():
-    return models(transform_search= dict(train_years=range(1,8), year=range(2010,2016), **violation_state_args), estimator_search=adaboost)
+    return models(transform_search= dict(train_years=range(1,8), year=YEARS, **violation_state_args), estimator_search=adaboost)
 
 def violation_state_train_queries():
-    transform_search = util.dict_merge(violation_state_args, dict(year=YEARS, train_years=5, train_query=[
-            'aux.evaluation_state',
-            'aux.evaluation_state & aux.handler_received & (aux.active_today | (aux.handler_age < 365) | aux.br)'
-        ]))
-    return models(transform_search= transform_search, estimator_search=adaboost)
+    transform_search = util.dict_merge(violation_state_args, 
+            dict(year=YEARS, train_years=5, 
+                 train_query=["evaluation"] + ["evaluation and " + q for q in QUERIES] ))
+
+    return models(transform_search= transform_search, estimator_search=forest)
+
+def evaluation_state_aggregation_levels():
+    transform_search = dict(train_years=5, year=YEARS, **evaluation_state_args)
+    transform_search['aggregations'] = [
+            aggregations_by_index(names) for names in [[], ['facility'], ['facility', 'zip'], ['facility', 'entity'], ['facility', 'zip', 'entity']]
+    ]
+                                        
+    return models(transform_search=transform_search, estimator_search=logit_evaluation)
+
+# vary train years
+def evaluation_state_train_years():
+    return models(transform_search= dict(train_years=range(1,8), year=YEARS, **evaluation_state_args), estimator_search=logit_evaluation)
+
+def evaluation_state_train_queries():
+    transform_search = util.dict_merge(evaluation_state_args, 
+            dict(year=YEARS, train_years=5, 
+                 train_query=QUERIES ))
+
+    return models(transform_search= transform_search, estimator_search=logit_evaluation)
+
 
 # grid searches for various model classes
 def violation_state_adaboost():

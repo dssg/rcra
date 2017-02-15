@@ -80,7 +80,7 @@ class EpaTransform(Step):
         train = index_as_series(aux, 'date') < today
         test = ~train
 
-        train &= eval(self.train_query)
+        train &= aux.eval(self.train_query)
 
         # reshape to train | test
         aux.drop(aux.index[~(train | test)], inplace=True)
