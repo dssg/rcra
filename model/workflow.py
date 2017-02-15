@@ -66,7 +66,8 @@ region_4_args = dict(
 evaluation_state_args = dict(
     outcome_expr='aux.evaluation', 
     train_query=LQG_UNINSPECTED,
-    evaluation=True
+    evaluation=True,
+    aggregations=aggregations
 )
 
 evaluation_state_lqg_args = util.dict_merge(evaluation_state_args,
@@ -173,7 +174,8 @@ def violation_state_ipw_big_loop():
         tsi.update(outcome_expr='aux.evaluation_state')
 
         i = models(transform_search=tsi,
-                   estimator_search=logit_evaluation)
+                   estimator_search=logit_evaluation,
+                   predict_train=True)
 
         for e in logit, forest:
             tsv.update(train_query='evaluation_state and ' + q)
