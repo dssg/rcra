@@ -20,7 +20,7 @@ def aggregations_by_index(names):
 
 violation_state_args = dict(
     outcome_expr='aux.violation_state',
-    train_query='evaluation_state',
+    train_query='evaluation_state and ' + LQG_UNINSPECTED,
     evaluation=False,
     aggregations=aggregations
 )
@@ -65,7 +65,7 @@ region_4_args = dict(
 
 evaluation_state_args = dict(
     outcome_expr='aux.evaluation', 
-    train_query=ACTIVE,
+    train_query=LQG_UNINSPECTED,
     evaluation=True
 )
 
@@ -131,13 +131,35 @@ def evaluation_state_baseline():
     return models(transform_search= dict(train_years=5, year=YEARS, **evaluation_state_args), estimator_search=forest, predict_train=True) 
 
 def evaluation_state_baseline_logit():
-    return models(transform_search= dict(train_years=3, year=YEARS, **evaluation_state_args), estimator_search=logit_evaluation, predict_train=True) 
+    return models(transform_search= dict(train_years=5, year=YEARS, **evaluation_state_args), estimator_search=logit_evaluation, predict_train=True) 
 
 def evaluation_and_violation_state_baseline():
     return evaluation_and_violation_models(evaluation_state_baseline(), violation_state_baseline())
 
+def violation_state_big_loop():
+    transform_search = dict(
+            evaluation=False,
+            year=YEARS,
+            train_years=[4,6,8],
+    )
+    s = []
+    outcome_expr = ['aux.violation', 'aux.violation_state']
+    train_query = ['evaluation', 'evaluation_state']
+
+    for o, t in zip(outcome_expr, train_query):
+        transform_search.update(outcome_expr=o)
+        transform_search.update(train_query=
+                [t] + [t + ' and ' + q for q in QUERIES])
+        s += models(transform_search=transform_search, 
+                    estimator_search=forest)
+        s += models(transform_search=transform_search, 
+                    estimator_search=logit)
+    return s
+
 def violation_state_ipw():
-    return models(transform_search= dict(train_years=3, year=YEARS, **violation_state_args), estimator_search=forest, evaluation_models = evaluation_state_baseline_logit()) 
+    transform_search=dict(train_years=5, year=YEARS, **violation_state_args)
+    transform_search.update(train_query=LQG_UNINSPECTED)
+    return models(transform_search=transform_search, estimator_search=forest, evaluation_models = evaluation_state_baseline_logit()) 
 
 # for dumping data for storing
 def violation_state_data():
@@ -157,12 +179,12 @@ def violation_state_aggregation_levels():
 
 # vary train years
 def violation_state_train_years():
-    return models(transform_search= dict(train_years=range(1,8), year=YEARS, **violation_state_args), estimator_search=adaboost)
+    return models(transform_search= dict(train_years=range(1,10), year=YEARS, **violation_state_args), estimator_search=forest)
 
 def violation_state_train_queries():
     transform_search = util.dict_merge(violation_state_args, 
             dict(year=YEARS, train_years=5, 
-                 train_query=["evaluation"] + ["evaluation and " + q for q in QUERIES] ))
+                 train_query=["evaluation_state"] + ["evaluation_state and " + q for q in QUERIES] ))
 
     return models(transform_search= transform_search, estimator_search=forest)
 
