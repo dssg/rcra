@@ -20,13 +20,10 @@ def aggregations_by_index(names):
 
 violation_state_args = dict(
     outcome_expr='aux.violation_state',
-    train_query='evaluation_state and ' + LQG_UNINSPECTED,
+    train_query='evaluation_state and ' + LQG,
     evaluation=False,
     aggregations=aggregations
 )
-
-violation_state_lqg_args = util.dict_merge(violation_state_args,
-    dict(train_query='aux.evaluation_state & (aux.manifest_monthly_3y_approx_qty_max >= 1000)'))
 
 violation_epa_args = dict(
     outcome_expr='aux.violation_epa',
