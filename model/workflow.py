@@ -161,30 +161,29 @@ def violation_state_big_loop():
 def violation_state_ipw_big_loop():
     transform_search = dict(
             year=YEARS,
-            train_years=[5,8],
             aggregations=aggregations
     )
     s = []
 
-    tsi = dict(transform_search)
-    tsv = dict(transform_search)
-    for q in QUERIES:    
-        tsi.update(train_query=q)
-        tsi.update(evaluation=True)
-        tsi.update(outcome_expr='aux.evaluation_state')
+    for y, q, e in product([5,8], QUERIES, [logit,forest]):
+        tsi = dict(train_years=y, **transform_search)
+        tsv = dict(train_years=y, **transform_search)
+        
+        tsi.update(train_query=q,
+                   evaluation=True,
+                   outcome_expr='aux.evaluation_state')
 
         i = models(transform_search=tsi,
                    estimator_search=logit_evaluation,
                    predict_train=True)
 
-        for e in logit, forest:
-            tsv.update(train_query='evaluation_state and ' + q)
-            tsv.update(evaluation=False)
-            tsv.update(outcome_expr='aux.violation_state')
+        tsv.update(train_query='evaluation_state and ' + q,
+                   evaluation=False,
+                   outcome_expr='aux.violation_state')
 
-            s += models(transform_search=tsv, 
-                        estimator_search=e, 
-                    evaluation_models=i)
+        s += models(transform_search=tsv, 
+                    estimator_search=e, 
+                evaluation_models=i)
     return s
 
 
