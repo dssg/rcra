@@ -43,8 +43,16 @@ evaluation_state_args = dict(
     outcome_expr='aux.evaluation_state', 
     train_query=LQG,
     evaluation=True,
-    aggregations=aggregations
+    aggregations=aggregations_by_index(['facility'])
 )
+
+evaluation_and_violation_state_args = dict(
+    outcome_expr='aux.evaluation_state & aux.violation_state', 
+    train_query=LQG,
+    evaluation=True,
+    aggregations=aggregations_by_index(['facility'])
+)
+
 
 evaluation_state_lqg_args = util.dict_merge(evaluation_state_args,
     dict(train_query='aux.manifest_monthly_3y_approx_qty_max >= 1000'))
@@ -73,9 +81,10 @@ adaboost = {'_class_name':['sklearn.ensemble.AdaBoostClassifier'],
 
 gradient = {'_class_name':['sklearn.ensemble.GradientBoostingClassifier'],
             'loss':['deviance'],
-            'learning_rate':[0.1],
+            'learning_rate':[0.01],
             'n_estimators':[100],
-            'max_depth':[3]}
+            'max_depth':[3],
+            'random_state':[0]}
 
 svm = {'_class_name':['sklearn.svm.LinearSVC'],
         'C':[.01], 'penalty':['l1'], 'dual':[False]}
@@ -106,7 +115,8 @@ gradient_search = {'_class_name':['sklearn.ensemble.GradientBoostingClassifier']
 
 ### the "baseline" models are random forests with manually selected train_years
 def violation_state_baseline():
-    return models(transform_search= dict(train_years=5, year=YEARS, **violation_state_args), estimator_search=forest) 
+    return models(transform_search= dict(train_years=7, year=YEARS, **violation_state_args), 
+                  estimator_search=forest) 
 
 def violation_state_baseline_logit():
     transform_search = dict(train_years=5, year=YEARS, **violation_state_args)
@@ -122,12 +132,19 @@ def violation_state_forest_states_4k():
 
 
 def evaluation_state_baseline():
-    return models(transform_search= dict(train_years=5, year=YEARS, **evaluation_state_args), estimator_search=forest, predict_train=True)
+    return models(transform_search= dict(train_years=3, year=YEARS, **evaluation_state_args), estimator_search=forest)
 
 def evaluation_state_baseline_logit():
+    return models(transform_search= dict(train_years=5, year=YEARS, **evaluation_state_args), estimator_search=logit) 
+
+def evaluation_state_baseline_logit_predict_train():
     return models(transform_search= dict(train_years=5, year=YEARS, **evaluation_state_args), estimator_search=logit, predict_train=True) 
 
-def evaluation_and_violation_state_baseline():
+
+def evaluation_and_violation_state():
+    return models(transform_search= dict(train_years=3, year=YEARS, **evaluation_and_violation_state_args), estimator_search=forest)
+
+def evaluation_and_violation_state_product():
     return evaluation_and_violation_models(evaluation_state_baseline(), violation_state_baseline())
 
 def violation_state_big_loop():
@@ -184,13 +201,13 @@ def violation_state_ipw():
     transform_search=dict(train_years=5, year=YEARS, **violation_state_args)
     return models(transform_search=transform_search, 
             estimator_search=dict_merge(forest, dict(random_state=range(4))), 
-                  evaluation_models = evaluation_state_baseline_logit()) 
+                  evaluation_models = evaluation_state_baseline_logit_predict_train()) 
 
 def violation_state_ipw_logit():
     transform_search=dict(train_years=5, year=YEARS, **violation_state_args)
     return models(transform_search=transform_search, 
                   estimator_search=logit, 
-                  evaluation_models = evaluation_state_baseline_logit()) 
+                  evaluation_models = evaluation_state_baseline_logit_predict_train()) 
 
 
 # for dumping data for storing
@@ -211,7 +228,8 @@ def violation_state_aggregation_levels():
 
 # vary train years
 def violation_state_train_years():
-    return models(transform_search= dict(train_years=range(1,10), year=YEARS, **violation_state_args), estimator_search=forest)
+    return models(transform_search= dict(train_years=range(1,10+1), year=YEARS, **violation_state_args), estimator_search=forest) +\
+            models(transform_search= dict(train_years=range(1,10+1), year=YEARS, **violation_state_args), estimator_search=logit)
 
 def violation_state_train_queries():
     transform_search = util.dict_merge(violation_state_args, 
@@ -280,16 +298,10 @@ def violation_state_svm():
 
 # the best model of each class
 def violation_state_best():
-    return (models(transform_search= dict(train_years=5, year=range(2010,2016), **violation_state_args), estimator_search=logit) +
-            models(transform_search= dict(train_years=5, year=range(2010,2016), **violation_state_args), estimator_search=forest) +
-            models(transform_search= dict(train_years=5, year=range(2010,2016), **violation_state_args), estimator_search=adaboost) +
-            models(transform_search= dict(train_years=5, year=range(2010,2016), **violation_state_args), estimator_search=svm) +
-            models(transform_search= dict(train_years=5, year=range(2010,2016), **violation_state_args), estimator_search=gradient))
-
-def evaluation_state_logit():
-    return models(transform_search= dict(train_years=range(2,5), year=range(2012,2018), **evaluation_state_args), estimator_search=logit_search)
-
-
+    return (models(transform_search= dict(train_years=5, year=YEARS, **violation_state_args), estimator_search=logit) +
+            models(transform_search= dict(train_years=5, year=YEARS, **violation_state_args), estimator_search=forest) +
+            models(transform_search= dict(train_years=5, year=YEARS, **violation_state_args), estimator_search=svm) +
+            models(transform_search= dict(train_years=5, year=YEARS, **violation_state_args), estimator_search=gradient))
 
 ## national models
 
