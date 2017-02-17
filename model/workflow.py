@@ -115,7 +115,7 @@ gradient_search = {'_class_name':['sklearn.ensemble.GradientBoostingClassifier']
 
 ### the "baseline" models are random forests with manually selected train_years
 def violation_state_baseline():
-    return models(transform_search= dict(train_years=7, year=YEARS, **violation_state_args), 
+    return models(transform_search= dict(train_years=5, year=YEARS, **violation_state_args), 
                   estimator_search=forest) 
 
 def violation_state_baseline_logit():
@@ -146,6 +146,10 @@ def evaluation_and_violation_state():
 
 def evaluation_and_violation_state_product():
     return evaluation_and_violation_models(evaluation_state_baseline(), violation_state_baseline())
+
+def evaluation_and_violation_state_product_logit():
+    return evaluation_and_violation_models(evaluation_state_baseline_logit(), violation_state_baseline_logit())
+
 
 def violation_state_big_loop():
     transform_search = dict(
@@ -200,8 +204,15 @@ def violation_state_ipw_big_loop():
 def violation_state_ipw():
     transform_search=dict(train_years=5, year=YEARS, **violation_state_args)
     return models(transform_search=transform_search, 
+                  estimator_search=forest, 
+                  evaluation_models = evaluation_state_baseline_logit_predict_train()) 
+
+def violation_state_ipw_states():
+    transform_search=dict(train_years=5, year=YEARS, **violation_state_args)
+    return models(transform_search=transform_search, 
             estimator_search=dict_merge(forest, dict(random_state=range(4))), 
                   evaluation_models = evaluation_state_baseline_logit_predict_train()) 
+
 
 def violation_state_ipw_logit():
     transform_search=dict(train_years=5, year=YEARS, **violation_state_args)
