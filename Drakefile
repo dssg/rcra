@@ -30,7 +30,10 @@ load_data()
     echo > $OUTPUT
 
 %include import/icis/Drakefile
-%include import/tri/Drakefile
+
+; TRI imports not used
+;%include import/tri/Drakefile
+
 %include import/rcra/Drakefile
 %include import/nysdec_reports/Drakefile
 %include import/Drakefile
