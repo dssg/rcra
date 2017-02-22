@@ -11,11 +11,13 @@ $[DATA_DIR]/import/icis/npdes_eff_downloads.zip, $[DATA_DIR]/import/icis/npdes_e
 URL="https://echo.epa.gov/files/echodownloads/case_downloads.zip"
 $[DATA_DIR]/import/icis/case_downloads.zip, $[DATA_DIR]/import/icis/case_downloads/ <- [method:wget_unzip -timecheck]
 
-; create icis schema and tables 
-$[SQL_DIR]/icis/icis <- import/icis/create_table_icis.sql [method:psql -timecheck]
+$[SQL_DIR]/icis/schema <- [method:psql_schema -timecheck]
+
+; create icis tables 
+$[SQL_DIR]/icis/icis <- import/icis/create_table_icis.sql, $[SQL_DIR]/icis/schema [method:psql -timecheck]
 
 ; clean up file names
-$[SQL_DIR]/icis/names <- import/icis/clean_icis_data.sh, $[DATA_DIR]/import/icis/case_downloads, $[DATA_DIR]/import/icis/ICIS-AIR_downloads [-timecheck]
+$[SQL_DIR]/icis/names <- import/icis/clean_icis_data.sh, $[DATA_DIR]/import/icis/case_downloads, $[DATA_DIR]/import/icis/ICIS-AIR_downloads, $[SQL_DIR]/icis/icis, $[SQL_DIR]/icis/schema
     $INPUT $INPUT1 && echo > $OUTPUT
 
 ; load csvs in data base

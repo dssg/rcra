@@ -13,8 +13,8 @@ psql()
 
 ; create a schema (does not drop)
 psql_schema()
-    schema=$(basename $OUTPUT)
-    psql -v ON_ERROR_STOP=1 -c "CREATE SCHEMA IF NOT EXISTS $schema" && mkdir -p $OUTPUT && echo > $OUTPUT/schema
+    schema=$(basename $(dirname $OUTPUT))
+    psql -v ON_ERROR_STOP=1 -c "CREATE SCHEMA IF NOT EXISTS $schema" && mkdir -p $(dirname $OUTPUT) && touch $OUTPUT
 
 ; take all CSVs from import folder $INPUT and puts into schema with title $OUTPUT
 load_data()  
