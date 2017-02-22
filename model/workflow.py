@@ -229,6 +229,14 @@ def violation_state_data():
 
     return data
 
+def violation_state_datasets():
+    transform_search = dict(train_years=5, year=YEARS, **violation_state_args)
+    #transform_search['aggregations'] = [util.dict_subset(aggregations_by_index(['facility']), set(aggregations.keys()).difference([name])) for name in aggregations.keys()]
+    transform_search['aggregations'] = [util.dict_subset(aggregations_by_index(['facility']), [name]) for name in aggregations.keys()]
+                                        
+    return models(transform_search=transform_search, estimator_search=forest)
+
+
 def violation_state_aggregation_levels():
     transform_search = dict(train_years=5, year=YEARS, **violation_state_args)
     transform_search['aggregations'] = [
