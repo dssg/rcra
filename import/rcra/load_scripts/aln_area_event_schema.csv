@@ -1,9 +1,0 @@
-column,start,length
-area_epa_handler_id,1,12
-area_sequence_number,13,4
-event_epa_handler_id,17,12
-event_code_owner,29,2
-event_code,31,7
-event_sequence_number,38,3
-event_responsible_agency,41,1
-event_activity_location,42,2

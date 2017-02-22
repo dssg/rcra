@@ -3,7 +3,6 @@ import re, unicodedata, os, sys
 
 data_dictionary = sys.argv[1]
 output_dir = sys.argv[2]
-create_table = sys.argv[3]
 
 def column_to_snake(column_name):
    
@@ -23,27 +22,23 @@ def column_to_snake(column_name):
 xl = pd.ExcelFile(data_dictionary)
 names = xl.sheet_names
 
-os.chdir(output_dir)
+for name in names:
 
-with open(create_table, 'a') as f:
+    table = name.lower()
 
-    for name in names:
-    
-        table = name.lower()
+    df = xl.parse(name)
+
+    df.columns = ['no.','start','column','type','length']
+    df['column'] = df['column'].map(lambda x: unicodedata.normalize('NFKD', x).encode('ascii','ignore') if isinstance(x, unicode) else x)
+    df['column'] = df['column'].map(lambda x: column_to_snake(x))
+
+    schema = df.ix[:, ['column', 'start', 'length']]
+    schema.to_csv(output_dir + '/schema/' + table + '.csv', index = False, encoding = 'utf-8')
+
+    db_string = ""    
+
+    with open(output_dir + '/create/' + table + '.sql', 'w') as f: 
         f.write("--- " + table + "\n\n")
-    
-        df = xl.parse(name)
-
-        df.columns = ['no.','start','column','type','length']
-        df['column'] = df['column'].map(lambda x: unicodedata.normalize('NFKD', x).encode('ascii','ignore') if isinstance(x, unicode) else x)
-        df['column'] = df['column'].map(lambda x: column_to_snake(x))
-
-        schema = df.ix[:, ['column', 'start', 'length']]
-        schema.to_csv(table + '_schema.csv', index = False, encoding = 'utf-8')
-
-        db_string = ""    
-
-
         for k,v in zip(df['column'], df['type']):
             if v.lower().find('alphanumeric') == 0:
                 db_string = db_string + k + " VARCHAR" + ",\n"

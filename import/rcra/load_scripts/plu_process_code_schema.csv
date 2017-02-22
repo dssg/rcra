@@ -1,8 +1,0 @@
-column,start,length
-process_code_owner,1,2
-process_code,3,3
-unit_of_measure_owner,6,2
-unit_of_measure,8,1
-process_code_active_status,9,1
-process_type,10,40
-process_code_description,50,50
