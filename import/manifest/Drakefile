@@ -12,4 +12,4 @@ $[SQL_DIR]/manifest/raw <- import/manifest/manifest_csvtodb.sh, $[DATA_DIR]/impo
     $INPUT0 $INPUT1 $OUTPUT && touch $OUTPUT
 
 ; copy ny manifest data to db
-$[SQL_DIR]/manifest/new_york <- import/manifest/manifest_cleaning.sql, $[DATA_DIR]/import/manifest/clean, $[SQL_DIR]/manifest/schema [method:psql]
+$[SQL_DIR]/manifest/new_york <- import/manifest/manifest_cleaning.sql, $[SQL_DIR]/manifest/raw, $[SQL_DIR]/manifest/schema [method:psql]
