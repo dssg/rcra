@@ -11,7 +11,7 @@ $[SQL_DIR]/rcra/schema <- [method:psql_schema -timecheck]
 $(python import/rcra/drakefile.py import/rcra/generated/create/)
 
 ; create indexes on cmecomp3 and hhandler
-$[SQL_DIR]/rcra/indexes <- import/create_indexes.sql, $[SQL_DIR]/rcra/cmecomp3, $[SQL_DIR]/rcra/hhandler [method:psql]
+$[SQL_DIR]/rcra/indexes <- import/rcra/create_indexes.sql, $[SQL_DIR]/rcra/cmecomp3, $[SQL_DIR]/rcra/hhandler [method:psql]
 
 ; get RCRA facilities CSV
 URL="https://echo.epa.gov/files/echodownloads/rcra_downloads.zip"
