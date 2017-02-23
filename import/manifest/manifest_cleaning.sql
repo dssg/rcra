@@ -93,6 +93,8 @@ create table manifest.mani06_ as
 		select * from manifest.mani15
 		union all
 		select * from manifest.mani16
+		union all
+		select * from manifest.mani17
 	) as a;
 
 

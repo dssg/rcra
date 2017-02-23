@@ -45,7 +45,7 @@ do
 done
 
 #move 06-16 files to OUTPUT_DPATH (for consistency)
-for f in mani06 mani07 mani08 mani9 mani10 mani11 mani12 mani13 mani14 mani15 mani16 
+for f in mani06 mani07 mani08 mani9 mani10 mani11 mani12 mani13 mani14 mani15 mani16 mani17
 do
 	cp $DPATH/$f.csv $OUTPUT_DPATH/$f.csv	
 
@@ -55,12 +55,6 @@ done
 sed -i 's/\xBA/*/g' $OUTPUT_DPATH/mani88_header.csv
 sed -i 's/\xBA/*/g' $OUTPUT_DPATH/mani89_header.csv
 sed -i 's/\xE5/*/g' $OUTPUT_DPATH/mani97_header.csv
-
-# create 'manifest. schema
-eval $(cat psql_profile.config) 
-#psql -c "create schema manifest."
-
-psql -c "CREATE SCHEMA IF NOT EXISTS manifest;"
 
 # create tables and populate
 for f in man8081 mani82 mani83 mani84 mani85 mani86 mani87 mani88 mani89 
@@ -192,7 +186,7 @@ do
 	cat $OUTPUT_DPATH/$f$header.csv | psql -c "\copy manifest.$f from stdin with csv header;"
 done
 
-for f in mani06 mani07 mani08 mani9 mani10 mani11 mani12 mani13 mani14 mani15 mani16 
+for f in mani06 mani07 mani08 mani9 mani10 mani11 mani12 mani13 mani14 mani15 mani16 mani17
 do
 	psql -c "DROP TABLE IF EXISTS manifest.$f;"
 	psql -c "CREATE TABLE manifest.$f (

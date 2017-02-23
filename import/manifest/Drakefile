@@ -7,9 +7,9 @@ $[DATA_DIR]/import/manifest/ <- import/manifest/manifest_download.py [-timecheck
 $[SQL_DIR]/manifest/schema <- [method:psql_schema -timecheck]
 
 ; clean manifest data and put in db 
-$[DATA_DIR]/import/manifest/clean <- import/manifest/manifest_csvtodb.sh, $[DATA_DIR]/import/manifest/ [-timecheck] 
+$[SQL_DIR]/manifest/raw <- import/manifest/manifest_csvtodb.sh, $[DATA_DIR]/import/manifest/, $[SQL_DIR]/manifest/schema 
     mkdir -p $OUTPUT
-    $INPUT0 $INPUT1 $OUTPUT
+    $INPUT0 $INPUT1 $OUTPUT && touch $OUTPUT
 
 ; copy ny manifest data to db
 $[SQL_DIR]/manifest/new_york <- import/manifest/manifest_cleaning.sql, $[DATA_DIR]/import/manifest/clean, $[SQL_DIR]/manifest/schema [method:psql]
