@@ -21,6 +21,10 @@ def get_subdir(table):
         raise ValueError("Unknown table: %s" % table)
 
 for table in tables:
+    if table in ('lu_naics', 'lu_other_permit'):
+        # these tables no longer exist
+        continue
+
     subdir = get_subdir(table)
     # ccitation file is currently misnamed
     filename = table
