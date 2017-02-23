@@ -1,0 +1,5 @@
+URL="https://echo.epa.gov/files/echodownloads/frs_downloads.zip"
+$[DATA_DIR]/import/frs/frs_downloads.zip, $[DATA_DIR]/import/frs/ <- [method:wget_unzip -timecheck]
+
+$[SQL_DIR]/frs <- import/frs/import_frs_data.sh, $[DATA_DIR]/import/frs/ [-timecheck]
+    $INPUT $INPUT1 && echo > $OUTPUT
