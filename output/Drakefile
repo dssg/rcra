@@ -7,11 +7,11 @@ $[SQL_DIR]/output/manifest <- output/manifest.sql, $[SQL_DIR]/manifest/new_york,
 
 $[SQL_DIR]/output/region_states <- output/region_states.sql [method:psql]
 
-$[SQL_DIR]/output/investigations <- $[DATA_DIR]/investigations.sql, $[SQL_DIR]/output/region_states, $[SQL_DIR]/rcra/rcra, $[SQL_DIR]/indexes, $[SQL_DIR]/output/facilities [method:psql]
+$[SQL_DIR]/output/investigations <- $[DATA_DIR]/investigations.sql, $[SQL_DIR]/output/region_states, $[SQL_DIR]/rcra/cmecomp3, $[SQL_DIR]/rcra/indexes, $[SQL_DIR]/output/facilities [method:psql]
 
-$[SQL_DIR]/output/handlers <- output/handlers.sql, $[SQL_DIR]/rcra/rcra, $[SQL_DIR]/output/facilities [method:psql]
+$[SQL_DIR]/output/handlers <- output/handlers.sql, $[SQL_DIR]/rcra/hhandler, $[SQL_DIR]/output/facilities [method:psql]
 
-$[SQL_DIR]/output/facilities <- output/facilities.sql, $[SQL_DIR]/rcra/rcra, $[SQL_DIR]/rcra/rcra_facilities, $[SQL_DIR]/output/region_states [method:psql]
+$[SQL_DIR]/output/facilities <- output/facilities.sql, $[SQL_DIR]/rcra/hnaics, $[SQL_DIR]/rcra/hhandler, $[SQL_DIR]/rcra/cmecomp3, $[SQL_DIR]/rcra/ $[SQL_DIR]/rcra/facilities, $[SQL_DIR]/output/region_states [method:psql]
 
 ; date_floor used by facility_years
 $[SQL_DIR]/util <- output/util.sql [method:psql]
