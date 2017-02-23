@@ -5,7 +5,6 @@ Purpose: To import the 'Hazardous Waste Manifest Data' from http://www.dec.ny.go
             Also contains the tests to check the downloaded files
 '''
 from bs4 import BeautifulSoup
-#from urllib.request import urlopen,urlretrieve
 import urllib
 import os
 import sys
@@ -14,7 +13,7 @@ download_dir = sys.argv[1]
 response = urllib.urlopen('http://www.dec.ny.gov/chemical/9098.html')
 
 doc = response.read()
-soup = BeautifulSoup(doc)
+soup = BeautifulSoup(doc, "html.parser")
 
 # Download the required files and save them in manifest_data directory
 for link in soup.find_all('a'):
