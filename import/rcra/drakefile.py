@@ -24,6 +24,9 @@ for table in tables:
     if table in ('lu_naics', 'lu_other_permit'):
         # these tables no longer exist
         continue
+    elif table in ('howner_operator', 'hcertification', 'fcost_estimate', 'fmechanism_detail'):
+        # these tables have datatype import errors
+        continue
 
     subdir = get_subdir(table)
     # ccitation file is currently misnamed
