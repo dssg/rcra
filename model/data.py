@@ -54,9 +54,7 @@ where date between '{date_min}' and '{date_max}'""".format(**sql_vars),
 	# Merge is a wrapper for df.merge in pandas 
 	# Left joins facility_years with the entire output.facilities postgres table using rcra_id
 	# output.facilities contains state, region, NAICS code
-        facilities = FromSQL(table='output.facilities',
-            parse_dates=['min_start_date', 'max_start_date',
-                         'min_receive_date', 'max_receive_date'])
+        facilities = FromSQL(table='output.facilities')
         facilities.target = True
 
         handler_names = FromSQL('select rcra_id, dedupe_id as entity_id from dedupe.unique_map', tables=['dedupe.unique_map'])
