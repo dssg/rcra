@@ -6,8 +6,12 @@ RCRA Info files are organized by module: handler (H), permit (P), corrective act
 
 The ETL process for RCRA Info is as follows:
 
-1. Download flat files from EPA FTP and unzip
-2. The script `make_import_scripts.sh` uses the .xlsx files for each module in the `data_dictionary` directory to write schemas to convert the flat files to CSVs and write a SQL script containing create table statements. Here we use Python to clean the column names and write the files. 
-3. Using these schemas and SQL scripts, we convert the flat files to CSVs and load each CSV as a table into the `rcra` schema in a PostgreSQL database.
+1. For each module, use the specification sheets to generate schema data and CREATE TABLE script for each table.
+
+2. For each table:
+
+    a) Download and unzip the flat file data from the EPA ftp
+    b) Convert the data from flat file to CSV using in2csv
+    c) Import the data using PostgreSQL COPY
 
 The ETL process is automated using Drake. This process assumes that the credentials for the PostgreSQL server have been specified in `default_profile`. 
