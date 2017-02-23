@@ -8,7 +8,7 @@ import/rcra/generated/ <- import/rcra/parse_specifications.sh, import/rcra/data_
 $[SQL_DIR]/rcra/schema <- [method:psql_schema -timecheck]
 
 ; drakefile.py generates the drakefile for downloading, processing and importing each table
-$(python import/rcra/drakefile.py import/rcra/generated/create/)
+$(python $[BASE]/import/rcra/drakefile.py)
 
 ; create indexes on cmecomp3 and hhandler
 $[SQL_DIR]/rcra/indexes <- import/rcra/create_indexes.sql, $[SQL_DIR]/rcra/cmecomp3, $[SQL_DIR]/rcra/hhandler [method:psql]

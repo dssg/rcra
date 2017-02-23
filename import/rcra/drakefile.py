@@ -1,7 +1,8 @@
 import os
 import sys
 
-create_scripts = os.listdir(sys.argv[1])
+path = os.path.dirname(os.path.abspath(__file__))
+create_scripts = os.listdir(os.path.join(path, 'generated/create/'))
 tables = [c[:-4] for c in create_scripts]
 
 prefix_subdirs = {
