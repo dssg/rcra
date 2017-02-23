@@ -13,7 +13,7 @@ select
     location_street_2,
     location_city,
     location_state,
-    location_zip_code,
+    hhandler.location_zip_code,
 
     mailing_street_number,
     mailing_street_1,
@@ -26,7 +26,7 @@ select
     non_notifier = 'O'  as handler_non_notifier_former,
     non_notifier = 'E'  as handler_non_notifier_exempt,
 
-    location_zip_code = mailing_zip_code as handler_location_eq_mailing,
+    hhandler.location_zip_code = mailing_zip_code as handler_location_eq_mailing,
     
     federal_waste_generator_code = 'N'  as handler_not_generator,
     federal_waste_generator_code = '1'  as handler_lqg,

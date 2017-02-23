@@ -56,3 +56,11 @@ $$
     RETURN return_array;
  END;
 $$ LANGUAGE plpgsql;
+
+
+CREATE OR REPLACE FUNCTION date_floor(date, int, int) RETURNS date AS
+E'SELECT (make_date(extract(year from $1)::int, $2, $3) - (make_date(extract(year from $1)::int, $2, $3) > $1)::int * interval \'1 year\')::date' LANGUAGE SQL;
+
+CREATE OR REPLACE FUNCTION date_ceil(date, int, int) RETURNS date AS
+E'SELECT (make_date(extract(year from $1)::int, $2, $3) + (make_date(extract(year from $1)::int, $2, $3) < $1)::int * interval \'1 year\')::date' LANGUAGE SQL;
+

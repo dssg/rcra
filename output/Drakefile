@@ -11,19 +11,24 @@ $[SQL_DIR]/output/investigations <- $[DATA_DIR]/investigations.sql, $[SQL_DIR]/o
 
 $[SQL_DIR]/output/handlers <- output/handlers.sql, $[SQL_DIR]/rcra/hhandler, $[SQL_DIR]/output/facilities [method:psql]
 
-$[SQL_DIR]/output/facilities <- output/facilities.sql, $[SQL_DIR]/rcra/hnaics, $[SQL_DIR]/rcra/hhandler, $[SQL_DIR]/rcra/cmecomp3, $[SQL_DIR]/rcra/, $[SQL_DIR]/rcra/facilities, $[SQL_DIR]/output/region_states [method:psql]
+$[SQL_DIR]/output/facilities <- output/facilities.sql, $[SQL_DIR]/rcra/hnaics, $[SQL_DIR]/rcra/hhandler, $[SQL_DIR]/output/activity, $[SQL_DIR]/rcra/facilities, $[SQL_DIR]/output/region_states [method:psql]
 
 ; date_floor used by facility_years
 $[SQL_DIR]/util <- output/util.sql [method:psql]
 
 $[SQL_DIR]/output/br <- output/br.sql, $[SQL_DIR]/rcra/br_reporting, $[SQL_DIR]/output/facilities [method:psql]
 
+MIN_YEAR=2000
+MAX_YEAR=2017
+MONTH=01
+DAY=01
 ; takes 15 minutes to run
-$[SQL_DIR]/output/facility_years0101 <- output/facility_years.py, output/facility_years.sql, $[SQL_DIR]/output/investigations, $[SQL_DIR]/output/facilities, $[SQL_DIR]/output/handlers, $[SQL_DIR]/util, $[SQL_DIR]/output/br
-    python $INPUT $INPUT1 2000 2017 01 01 | psql -v ON_ERROR_STOP=1 && echo > $OUTPUT
+$[SQL_DIR]/output/facility_years0101 <- output/facility_years.sql, $[SQL_DIR]/output/investigations, $[SQL_DIR]/output/facilities, $[SQL_DIR]/output/handlers, $[SQL_DIR]/util, $[SQL_DIR]/output/br [method:psql]
 
 $[SQL_DIR]/output/icis_fec <- output/icis_fec.sql, $[SQL_DIR]/icis/fec, $[SQL_DIR]/output/facilities [method:psql]
 
 $[SQL_DIR]/output/nysdec_reports <- output/nysdec_reports.sql, $[SQL_DIR]/util, $[SQL_DIR]/nysdec_reports/reports [method:psql]
 
 $[SQL_DIR]/output/handler_names <- output/handler_names.sql, $[SQL_DIR]/output/handlers [method:psql]
+
+$[SQL_DIR]/output/activity <- output/activity.sql, $[SQL_DIR]/rcra/cmecomp3, $[SQL_DIR]/rcra/hhandler, $[SQL_DIR]/manifest/new_york, $[SQL_DIR]/rcra/br_reporting, $[SQL_DIR]/rcra/indexes [method:psql]

@@ -3,3 +3,6 @@ create index cmecomp3_handler_id_evaluation_start_date_idx on rcra.cmecomp3 (han
 
 drop index if exists rcra.hhandler_epa_handler_id_idx;
 create index hhandler_epa_handler_id_idx on rcra.hhandler (epa_handler_id);
+
+drop index if exists rcra.br_reporting_handler_id_idx;
+create index br_reporting_handler_id_idx on rcra.br_reporting (handler_id);

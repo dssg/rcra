@@ -1,5 +1,7 @@
 PROFILE:=default_profile
 FACILITIES_CONDITION:="True"
+ACTIVITY_CONDITION:="True"
+
 %include $[PROFILE]
 
 ; $ZIP_DEST, $EXTRACT_DEST <- [-timecheck]
