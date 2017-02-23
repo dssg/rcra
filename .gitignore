@@ -9,7 +9,7 @@ model/output
 notebooks
 data
 
-
+database.yaml
 api_keys
 db_profile.yaml
 connection.yaml
