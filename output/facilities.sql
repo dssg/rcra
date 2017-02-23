@@ -17,7 +17,7 @@ naics as (
 
 handler as (
     select epa_handler_id as rcra_id, 
-        max(substring(location_zip_code for 5)) as location_zip_code
+        max(substring(location_zip_code for 5)) as zip_code
     from rcra.hhandler group by 1
 ),
 
