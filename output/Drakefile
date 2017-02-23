@@ -11,7 +11,7 @@ $[SQL_DIR]/output/investigations <- $[DATA_DIR]/investigations.sql, $[SQL_DIR]/o
 
 $[SQL_DIR]/output/handlers <- output/handlers.sql, $[SQL_DIR]/rcra/hhandler, $[SQL_DIR]/output/facilities [method:psql]
 
-$[SQL_DIR]/output/facilities <- output/facilities.sql, $[SQL_DIR]/rcra/hnaics, $[SQL_DIR]/rcra/hhandler, $[SQL_DIR]/rcra/cmecomp3, $[SQL_DIR]/rcra/ $[SQL_DIR]/rcra/facilities, $[SQL_DIR]/output/region_states [method:psql]
+$[SQL_DIR]/output/facilities <- output/facilities.sql, $[SQL_DIR]/rcra/hnaics, $[SQL_DIR]/rcra/hhandler, $[SQL_DIR]/rcra/cmecomp3, $[SQL_DIR]/rcra/, $[SQL_DIR]/rcra/facilities, $[SQL_DIR]/output/region_states [method:psql]
 
 ; date_floor used by facility_years
 $[SQL_DIR]/util <- output/util.sql [method:psql]

@@ -29,16 +29,17 @@ load_data()
     done
     echo > $OUTPUT
 
-;%include import/icis/Drakefile
+%include import/icis/Drakefile
 
 ; TRI imports not used
 ;%include import/tri/Drakefile
 
 %include import/rcra/Drakefile
 %include import/nysdec_reports/Drakefile
-%include import/Drakefile
 %include import/manifest/Drakefile
+%include import/frs/Drakefile
 ; shapefile importing disabled -- steps are broken at the moment
 ;%include import/geo/Drakefile
+
 %include output/Drakefile
 %include dedupe/Drakefile

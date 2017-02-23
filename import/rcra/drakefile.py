@@ -47,10 +47,13 @@ $[DATA_DIR]/import/rcra/csv/{subdir}/{table}.csv <- $[DATA_DIR]/import/rcra/down
     # use iconv replace non-ascii chars
     mkdir -p $(dirname $OUTPUT)
     iconv -f ISO-8859-1 -t ascii//TRANSLIT $INPUT0 | in2csv -v -e ascii -f fixed -s $INPUT1/schema/{table}.csv > $OUTPUT || exit 1""".format(subdir=subdir, table=table))
+    # TODO: import as text then clean and cast
     if table == 'cmecomp3':
         # remove a couple lines with invalid dates
-        # TODO: import as text then clean and cast to date
         print "    sed -i '/,\(0051207\|26226\|18340\|(CASE CL\),/d' $OUTPUT"
+    elif table == 'br_reporting':
+        # remove a couple lines with invalid numbers
+        print "    sed -i '/,NN0,/d; /,YN./d' $OUTPUT"
 
     # drop create table and copy
     print(
