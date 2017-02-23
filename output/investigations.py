@@ -10,7 +10,7 @@ from drain.step import Step
 from drain.aggregation import SpacetimeAggregation, SimpleAggregation
 from drain.aggregate import Aggregate, Count, aggregate_counts, days
 
-from epa.output import investigations_sql, facilities
+from . import investigations_sql, facilities
 
 # these are arrays that get concatenated and then counted and proportioned
 #list_columns = ['violation_type', 'enforcement_type', 'evaluation_type',

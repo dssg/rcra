@@ -7,7 +7,7 @@ from drain.data import FromSQL, Merge
 from drain.aggregate import Aggregate, Count
 from drain.aggregation import SpacetimeAggregation
 
-from epa.output import facilities
+from . import facilities
 
 icis = FromSQL(table='output.icis_fec', parse_dates=['activity_status_date'])
 icis.target = True

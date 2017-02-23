@@ -2,8 +2,8 @@ from drain import data, aggregate, util
 from drain.data import ToHDF, FromSQL, index_as_series, Merge
 from drain.step import Step
 from drain.aggregation import AggregationJoin
-from epa.output import aggregations, investigations
-from epa.output.handlers import HANDLER_BOOLEANS
+from ..output import aggregations, investigations
+from ..output.handlers import HANDLER_BOOLEANS
 
 import os
 from datetime import date

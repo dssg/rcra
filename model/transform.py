@@ -1,5 +1,5 @@
-from epa.model.data import EpaData
-from epa.model.reader import EpaHDFReader
+from .data import EpaData
+from .reader import EpaHDFReader
 
 from drain.data import ToHDF, index_as_series
 from drain import data, aggregate, util

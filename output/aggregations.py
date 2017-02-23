@@ -1,10 +1,10 @@
-from epa.output.handlers import HandlersAggregation
-from epa.output.investigations import InvestigationsAggregation
-from epa.output.icis import IcisFecAggregation
-from epa.output.manifest import ManifestAggregation
-from epa.output.manifest_monthly import ManifestMonthlyAggregation
-from epa.output.br import BrAggregation 
-from epa.output.nysdec_reports import NYSDECReportsAggregation 
+from .handlers import HandlersAggregation
+from .investigations import InvestigationsAggregation
+from .icis import IcisFecAggregation
+from .manifest import ManifestAggregation
+from .manifest_monthly import ManifestMonthlyAggregation
+from .br import BrAggregation 
+from .nysdec_reports import NYSDECReportsAggregation 
 
 from drain import util
 from datetime import date

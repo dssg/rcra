@@ -7,7 +7,7 @@ from drain.data import FromSQL, Merge
 from drain.aggregate import Aggregate, Count
 from drain.aggregation import SpacetimeAggregation
 
-from epa.output import facilities
+from . import facilities
 
 
 boolean_columns = ['management_location_onsite', 'management_location_offsite', 'management_location_none', 

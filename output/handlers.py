@@ -5,7 +5,7 @@ from drain.data import FromSQL, Merge
 from drain.aggregate import Aggregate, Count, days
 from drain.aggregation import SpacetimeAggregation
 
-from epa.output import facilities
+from . import facilities
 
 HANDLER_BOOLEANS = [
        'handler_cesqg', 'handler_furnace_exemption',

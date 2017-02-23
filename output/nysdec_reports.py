@@ -7,7 +7,7 @@ from drain.data import FromSQL, Merge
 from drain.aggregate import Aggregate, Count
 from drain.aggregation import SpacetimeAggregation
 
-from epa.output import facilities
+from . import facilities
 
 reports = FromSQL(table='output.nysdec_reports', parse_dates=['date'])
 reports.target = True

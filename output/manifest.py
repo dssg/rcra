@@ -8,7 +8,7 @@ from drain.data import FromSQL, Merge
 from drain.aggregate import Aggregate, Count, days
 from drain.aggregation import SpacetimeAggregation
 
-from epa.output import facilities
+from . import facilities
 
 WASTE_CODE_PREFIXES = ('P', 'U', 'D', 'F')
 # acute waste is defined as either P waste or one of these six F wastes
