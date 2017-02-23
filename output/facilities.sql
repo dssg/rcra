@@ -22,11 +22,11 @@ evaluations as (
 ),
 
 handlers as (
-    select rcra_id, 
+    select epa_handler_id as rcra_id, 
         min(receive_date) as min_receive_date, 
         max(receive_date) as max_receive_date,
         max(substring(location_zip_code for 5)) as location_zip_code
-    from output.handlers group by 1
+    from rcra.hhandler group by 1
 ),
 
 f as (select epa_handler_id as rcra_id from rcra.hhandler UNION select rcra_id from active_facilities UNION select handler_id from rcra.cmecomp3)
