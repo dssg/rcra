@@ -11,7 +11,8 @@ with active as (
 ),
 
 naics as (
-    select epa_handler_id as rcra_id, array_agg(distinct naics_code) as naics_codes
+    select epa_handler_id as rcra_id, 
+        array_remove(array_agg(distinct naics_code), null) as naics_codes
     from rcra.hnaics group by epa_handler_id
 ),
 
