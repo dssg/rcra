@@ -4,7 +4,7 @@ from .transform import EpaTransform
 from ..output.aggregations import spacedeltas
 from itertools import product
 
-YEARS = range(2010, 2016+1)
+YEARS = range(2010, 2016+1) + [2017]
 
 ACTIVE = 'handler_received and (active_today or (handler_age < 365) or br)'
 LQG = '(manifest_monthly_3y_approx_qty_max >= 2200)'
@@ -458,7 +458,7 @@ def models(transform_search, estimator_search, evaluation_models=None, predict_t
             util.dict_product(transform_search), 
             util.dict_product(estimator_search)):
 
-        transform = EpaTransform(month=1, day=1, **transform_args)
+        transform = EpaTransform(month=2, day=1, **transform_args)
         transform.name='transform'
 
         estimator = step.Construct(**estimator_args)
@@ -474,7 +474,7 @@ def models(transform_search, estimator_search, evaluation_models=None, predict_t
             # find all evaluation models of the same year and add them via IPW
             for e in evaluation_models:
                 if e.inputs[1].year == transform.year:
-                    ipw = model.InverseProbabilityWeights(inputs=[e])
+                    ipw = model.InverseProbabilityWeights(inputs=[e, transform])
                     y = model.FitPredict(inputs=[estimator, transform, ipw])
                     y.target = True
                     y.name = 'y'
