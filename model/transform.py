@@ -97,4 +97,4 @@ class EpaTransform(Step):
                 logging.info('Normalizing')
                 X = data.normalize(X, train=train) 
 
-        return {'X': X, 'y': y, 'aux': aux, 'train': train, 'test':test}
+        return {'X': X, 'y': y, 'train': train, 'test':test}
