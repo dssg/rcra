@@ -90,10 +90,11 @@ where date between '{date_min}' and '{date_max}'""".format(**sql_vars),
         x_drop_columns = aux_columns.union(['receive_date', 'handler_id'])\
                 .difference(['evaluation', 'handler_received', 'handler_age', 'br', 'region', 'state'])
 	
-	# Joins on the br data, 2013 is hard coded as the latest year available!
+	# Joins on the br data, 2015 is hard coded as the latest year available!
         logging.info('Joining BR')
-        year = X.date.dt.year
-        X['br_reporting_year'] = (year - 3 + (year % 2)).apply(lambda y: max(y, 2013))
+        X['year'] = X.date.dt.year
+        data.binarize(X, ['year'], drop=False)
+        X['br_reporting_year'] = (X.year - 3 + (X.year % 2)).apply(lambda y: max(y, 2015))
         data.prefix_columns(br, 'br_', ignore=['rcra_id'])
         X = X.merge(br, on=['rcra_id', 'br_reporting_year'], how='left')
         X.drop(['br_date', 'br_reporting_year'], axis=1, inplace=True)
