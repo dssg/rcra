@@ -20,10 +20,10 @@ $[SQL_DIR]/output/br <- output/br.sql, $[SQL_DIR]/rcra/br_reporting, $[SQL_DIR]/
 
 MIN_YEAR=2000
 MAX_YEAR=2017
-MONTH=01
+MONTH=02
 DAY=01
 ; takes 15 minutes to run
-$[SQL_DIR]/output/facility_years0101 <- output/facility_years.sql, $[SQL_DIR]/output/investigations, $[SQL_DIR]/output/facilities, $[SQL_DIR]/output/handlers, $[SQL_DIR]/util, $[SQL_DIR]/output/br [method:psql]
+$[SQL_DIR]/output/facility_years$[MONTH]$[DAY] <- output/facility_years.sql, $[SQL_DIR]/output/investigations, $[SQL_DIR]/output/facilities, $[SQL_DIR]/output/handlers, $[SQL_DIR]/util, $[SQL_DIR]/output/br [method:psql]
 
 $[SQL_DIR]/output/icis_fec <- output/icis_fec.sql, $[SQL_DIR]/icis/fec, $[SQL_DIR]/output/facilities [method:psql]
 

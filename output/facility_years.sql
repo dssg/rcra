@@ -33,10 +33,10 @@ group by 1,2
 create unique index on investigation_years (rcra_id, date);
 
 create temp table uninvestigated_years as (
-    select f.rcra_id, make_date(year, 1, 1) as date
+    select f.rcra_id, make_date(year, ${MONTH}, ${DAY}) as date
     from output.facilities f
     join generate_series(${MIN_YEAR}, ${MAX_YEAR}) as year on 1=1
-    left join investigation_years i on f.rcra_id = i.rcra_id and i.date = make_date(year, 1, 1)
+    left join investigation_years i on f.rcra_id = i.rcra_id and i.date = make_date(year, ${MONTH}, ${DAY})
     where i.rcra_id is null 
 );
 
