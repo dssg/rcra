@@ -3,7 +3,7 @@ from datetime import date
 import re
 import numpy as np
 
-from drain.util import day
+from drain.util import day, date_to_days
 from drain.data import FromSQL, Merge
 from drain.aggregate import Aggregate, Count, days
 from drain.aggregation import SpacetimeAggregation
@@ -32,10 +32,14 @@ class ManifestAggregation(SpacetimeAggregation):
                 parallel=parallel)
 
     def get_aggregates(self, date, delta):
-        
+        # pandas bug prevents us from doing 
+        # Aggregate('gen_sign_date', lambda d: max(d.max() - d.min() / day, 1))
+        date_range = Aggregate(lambda m: date_to_days(m.gen_sign_date), lambda d: max((d.max() - d.min()),1), name='gen_sign_date', fname='range_days')
         aggregates = [
             Count(name='line_items'),
             Aggregate('gen_sign_date', 'nunique'),
+            date_range,
+            Aggregate('approx_qty', 'sum')/date_range,
             Aggregate('approx_qty', ['sum','max','min','mean','std','skew'], name='pounds_shipped'),
             Aggregate([has_waste_type(p) for p in WASTE_CODE_PREFIXES],
                 ['any'], name = ['waste_code_%s' % p for p in WASTE_CODE_PREFIXES]),
